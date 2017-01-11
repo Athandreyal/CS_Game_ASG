@@ -4,16 +4,16 @@
 ## General Game Overview
 =============================
 
-Tron ñ light cycle is a 2D territory claiming skill based racing game. 
+Tron ‚Äì light cycle is a 2D territory claiming skill based racing game. 
 The aim is to survive longest within the confines of the playing field 
 while also interfering with the survival/play of the competing player.
  
 Play is controlled via the WASD keys or the arrow keys (user preference) 
-each player directly controls a ìlightcycleî that can move up,down,left and right
+each player directly controls a ‚Äúlightcycle‚Äù that can move up,down,left and right
  within the rectangular playing field. 
 
 For both players any movement 
-is trailed by a ìlight wallî with collision, if either player comes into 
+is trailed by a ‚Äúlight wall‚Äù with collision, if either player comes into 
 contact with either the field wall, their own light wall or the opposing
  players light wall, they have died and the opposing player win.
 
@@ -23,7 +23,4 @@ timed training mode to allow for practice in this highly skill based game.
 
 A potential gameplay screen (will be converted to greyscale)
 
-![Start Screen](/art/gameplay.jpg)
-
-
-assignment
+![Start Screen](https://github.com/Athandreyal/CS_Game_ASG/blob/master/art/gameplay.png)
