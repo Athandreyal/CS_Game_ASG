@@ -1,4 +1,4 @@
-# Game Specification - __Tron - LightCycle__
+# Game Specification [ __Tron - LightCycle__]
 -----------------------------
 
 ## General Game Overview
@@ -23,4 +23,21 @@ timed training mode to allow for practice in this highly skill based game.
 
 A potential gameplay screen (will be converted to greyscale)
 
-![Start Screen](https://github.com/Athandreyal/CS_Game_ASG/blob/master/art/gameplay.png)
+![Gameplay Screen](https://github.com/Athandreyal/CS_Game_ASG/blob/master/art/gameplay.png)
+
+
+
+# Gameplay Details [Player one - core]
+--------------------------------------
+
+## Objectives and Rules
+======================================
+
+### Start Screen
+
+ilubareflaewjfgblaifh start screen stuff
+
+![Start Screen](https://github.com/Athandreyal/CS_Game_ASG/blob/master/art/splash.jpg)
+
+Admittedly the shapes are probably a bit too complex and will have to be simplified
+
