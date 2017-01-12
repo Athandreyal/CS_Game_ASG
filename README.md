@@ -27,10 +27,10 @@ A potential gameplay screen (will be converted to greyscale)
 
 
 
-# Gameplay Details [Player one - core]
+## Gameplay Details [Player one - core]
 --------------------------------------
 
-## Objectives and Rules
+### Objectives and Rules
 ======================================
 
 ### Start Screen
@@ -41,3 +41,66 @@ ilubareflaewjfgblaifh start screen stuff
 
 Admittedly the shapes are probably a bit too complex and will have to be simplified
 
+
+#### Objects
+
+|Object Name	|Properties|Behaviours|Graphics|
+|---	        |---	      |---	      |---	    |
+|   	        |   	      |   	      |   	    |
+|           	|         	|         	|       	|
+|   	        |         	|         	|       	| 
+
+#### Physics
+==============================================
+
+#### Asynchronous Events
+
+|Event|Trigger Input|Description|
+|---	|---	|---	|
+|   	|   	|   	|
+|   	|   	|   	|
+|   	|   	|   	|
+
+#### Synchronous Events
+
+|Event|Trigger Input|Description|
+|---	|---	|---	|
+|   	|   	|   	|
+|   	|   	|   	|
+|   	|   	|   	|
+
+#### Conditional Events
+
+|Event|Trigger Input|Description|
+|---	|---	|---	|
+|   	|   	|   	|
+|   	|   	|   	|
+|   	|   	|   	|
+
+#### Typical Gaming Session
+
+blah balkdf jplay the gaems
+
+## Gameplay Details [Two Player - core]
+--------------------------------------
+
+laksdhbla bla two player stuff
+
+two player pic goes here
+
+list differences from 1 player events
+
+## Sound Effects 
+--------------------------------------
+
+|Name|Brief Description|Triggers|
+|---	|---	|---	|
+| | | |
+
+note include background music
+
+## Additional Features
+
+-Scripted AI stages 
+
+-more complex music / sound
