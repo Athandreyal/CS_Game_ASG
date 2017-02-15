@@ -3,8 +3,6 @@
 
 #include "types.h"
 
-
-
 /* [TO DO] the functions below are examples. Replace them! */
 int MIN(int x, int y);
 void plot_pix(UINT8 *base, int x, int y);
