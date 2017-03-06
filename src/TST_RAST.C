@@ -1,39 +1,59 @@
 #include <osbind.h>
 #include "raster.h"
-#include "TronShapes.h"
+#include "Objects.h"
+#include "TYPES.H"
 
 int main()
 {
-	void *base = Physbase();
+    int x,y,i,j;
+	UINT8 *base = Physbase();
+    clr_scrn(base);
+    x = 80;
+    y = 20;
+    while( x < SCREEN_WIDTH && y < SCREEN_HEIGHT)
+        plot_pix(base, x++, y++);
 
-	plot_pix(base, 111, 111);
-	plot_pix(base, 112, 112);
-	plot_pix(base, 113, 113);
-	plot_pix(base, 114, 114);
-	plot_pix(base, 115, 115);
-	plot_pix(base, 116, 116);
-	plot_pix(base, 117, 117);
-	plot_pix(base, 118, 118);
-	plot_pix(base, 119, 119);
-	
-	p_h_ln(base, 110, 110, 10);
-	p_h_ln(base, 110, 120, 10);
-	p_v_ln(base, 110, 110, 10);
-	p_v_ln(base, 120, 110, 10);
-	
-	p_btmp_8(base, 200,100,BIKE1[0]);
-	p_btmp_8(base, 220,100,BIKE1[1]);
-	p_btmp_8(base, 240,100,BIKE1[2]);
-	p_btmp_8(base, 260,100,BIKE1[3]);
-	
-	p_btmp_8(base, 200,120,BIKE2[0]);
-	p_btmp_8(base, 220,120,BIKE2[1]);
-	p_btmp_8(base, 240,120,BIKE2[2]);
-	p_btmp_8(base, 260,120,BIKE2[3]);
-	
-	p_btmp_8(base, 300,200, STICKMAN);
-	p_btmp_8(base, 300,208, STICKMAN);
-	p_btmp_8(base, 300,216, STICKMAN);
-	
+    x = 80;
+    y = 20;
+    while (x < 640){
+        p_h_ln(base, x, y, 6);
+        x += 5;
+        y++;
+    }    
+    x = 80;
+    y = 20;
+    while(y < 400){
+        p_v_ln(base, x, y, 6);
+        y += 5;
+        x++;
+    }
+    x = 196;
+    y = 100;
+    for(j=0;j<4;j++){
+        for(i = 0;i<8;i++){
+            p_btmp_8(base, x+i,y+i*10,CYCLE1[j]);
+            }
+        x+=8;
+        }
+    for(j=0;j<4;j++){
+        for(i = 0;i<8;i++){
+            p_btmp_8(base, x+i,y+i*10,CYCLE2[j]);
+            }
+        x+=8;
+        }
+    
+    i = j = 0;
+    x = 300;
+    y = 240;
+    while (j++<8)
+        p_h_ln(base,x,y+j,40);
+    while(i<5){
+        p_btmp_8(base,x+i++*8,y,STICKMAN);
+        
+    }
+    
+    drawBackground(base);
+    drawLives(base, 5, 0);
+    drawLives(base, 5, 1);
 	return 0;
 }

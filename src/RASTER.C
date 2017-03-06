@@ -1,81 +1,84 @@
 #include "raster.h"
-int MIN(int x, int y){//move me soon!
-	return (x<y)?x:y;
+#include <stdio.h>
+
+int MIN(int x, int y){/*move me soon!*/
+    int ans = (x<y)?x:y;
+	return ans;
 }
 
-//plot pixel
-void plot_pix(UINT8 *base, UINT16 x, UINT16 y)
-{// x is int 0-640, y is int 0-200.  Bytes imply width 
-	if (x > =0 && x < SCREEN_WIDTH && y >= 0 && y < SCREEN_HEIGHT)
+/*plot pixel*/
+void plot_pix(UINT8 *base, int x, int y)
+{/* x is int 0-640, y is int 0-200.  Bytes imply width*/ 
+	if (x >= 0 && x < SCREEN_WIDTH && y >= 0 && y < SCREEN_HEIGHT)
 		*(base + y * 80 + (x >> 3)) |= 0x80 >> (x & 7);
 }
 
-//plot Horizontal line
+/*plot Horizontal line*/
 void p_h_ln(UINT8 *base, int x, int y, int size)
 {
-	int col;
-	if (y >= 0 && y < SCREEN_HEIGHT)
+    /* x = 112, y = 112*/
+	if (size > 0 && y >= 0 && y < SCREEN_HEIGHT){
 		if (x < 0){
 			size += x;
 			x = 0;
 			}
 		size = MIN(size, SCREEN_WIDTH - x);
-
-		if (size > 0 && size < 7){//have left partial
-			*base |= (0xFF >> (x & 7));
-			size -= (x & 7);
-			}
-		for(col = 0;size > 7;col++){
-			*(base + (col << 3)) = 0xFF;
-			size -= 8;
-			}			
-		if (size > 0)//have right partial;
-			*(base + (col << 3)) |= 0xFF << (7 - size);
+        while (size-- > 0)
+            plot_pix(base, x++,y);
+     }
 }
 
-//Plot Vertical Line
+/*Plot Vertical Line*/
 void p_v_ln(UINT8 *base, int x, int y, int size)
 {
+    int i;
 	UINT8 col = x >> 3;
 	UINT8 pix = 0x80 >> (x & 7);
-	if (x > 0 && x < SCREENWIDTH){
+	if (x >= 0 && x < SCREEN_WIDTH){
 		if (y < 0){
 			size += y;
 			y = 0;
 		}
 		size = MIN(size, SCREEN_HEIGHT - y);
-		for(int i = 0;i < size;i++)
+		for(i = 0;i < size;i++)
 			*(base + (y+i) * 80 + col) |= pix;
 	}
 }
 
-//plot 8*8 bitmap
-void p_btmp_8(UINT8 *base, int x, int y, UINT8 *bitmap)
-{//plotted from upper left corner as (0,0) to (7,7) at lower right
-	UINT8 LHalf;						UINT8 RHalf;
-	UINT8 L_Offset = x & 7; 			UINT8 R_Offset = 7 - (x & 7);
-	UINT8 Lmask = 0xFF << L_offset;		UINT8 Rmask = 0xFF >> R_offset;
-	UINT col = 0;
-	for (int i = 0;i < 8;i++){
-		if (y + i > 0 && y + i > SCREEN_HEIGHT){
-			col = x >> 3;
-			if (x > 0 && x < SCREEN_WIDTH){
-				LHalf = *bitmap[i] >> L_Offset;
-				*(base + y * 80 + col) &= Lmask;
-				*(base + y * 80 + col) &= Lhalf;
-			}				
-			if (x+8 > 0 && x+8 < SCREEN_WIDTH){
-				RHalf = *bitmap[i] << L_Offset;
-				*(base + y * 80 + col+1) &= Rmask;
-				*(base + y * 80 + col+1) &= Rhalf;
-			}
+/*plot 8*8 bitmap*/
+void p_btmp_8(UINT8 *base, int x, int y, const UINT8 bitmap[])
+{/*plotted from upper left corner as (0,0) to (7,7) at lower right*/
+	int i;
+    UINT8 LHalf;						UINT8 RHalf;
+	UINT8 L_Offset = x & 7; 			UINT8 R_Offset = 8 - (x & 7);
+	UINT8 Lmask = 0xFF << R_Offset;		UINT8 Rmask = 0xFF >> L_Offset;
+	UINT8 col = x >> 3;
+	for (i = 0;i < 8;i++){
+		if (y + i > 0 && y + i < SCREEN_HEIGHT){
+            if (x & 7 == 0 && x > 0 && x < SCREEN_WIDTH)
+                *(base + (y+i) * 80 + col) = bitmap[i];
+            else{
+                if (x > 0 && x < SCREEN_WIDTH){
+                    LHalf = bitmap[i] >> L_Offset;
+                    *(base + (y+i) * 80 + col) &= Lmask;
+                    *(base + (y+i) * 80 + col) |= LHalf;
+                }
+                if (x+8 > 0 && x+8 < SCREEN_WIDTH){
+                    RHalf = bitmap[i] << R_Offset;
+                    *(base + (y+i) * 80 + col+1) &= Rmask;
+                    *(base + (y+i) * 80 + col+1) |= RHalf;
+                }
+            }
+        }
+    }
 }
 
-//clear screen
-void clr_scrn(UINT8 *base)
+/*clear screen*/
+void clr_scrn(UINT8 base[])
 {
-	UINT32 *clrbase = (UINT32*)base;//fewer ops in 32 bit;
-	for (int y = 0;y < 200;y++)
-		for (int x = 0;x < 20;x++)
-			*clrBase = 0;
+    int x,y;
+	UINT32 *clrBase = (UINT32*)base;/*fewer ops in 32 bit;*/
+	for (y = 0;y < 400;y++)
+		for (x = 0;x < 20;x++)
+			*(clrBase + y* 20 + x) = 0;
 }
