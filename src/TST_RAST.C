@@ -2,6 +2,8 @@
 #include "raster.h"
 #include "Objects.h"
 #include "TYPES.H"
+#include "Render.h"
+#include "Model.h"
 
 int main()
 {
@@ -61,8 +63,8 @@ int main()
         
     }
     
-    drawBackground(base);
-    drawLives(base, 5, 0);
-    drawLives(base, 5, 1);
+    drawBgnd(base);
+    rndr_lif(base, 5, 0);
+    rndr_lif(base, 5, 1);
 	return 0;
 }
