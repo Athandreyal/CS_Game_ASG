@@ -16,15 +16,36 @@ void plot_pix(UINT8 *base, int x, int y)
 /*plot Horizontal line*/
 void p_h_ln(UINT8 *base, int x, int y, int size)
 {
-    /* x = 112, y = 112*/
+    int col=0;
+    UINT8 head = 0xFF;
+    UINT8 body = 0xFF;
+    UINT8 tail = 0xFF;
 	if (size > 0 && y >= 0 && y < SCREEN_HEIGHT){
 		if (x < 0){
 			size += x;
 			x = 0;
 			}
 		size = MIN(size, SCREEN_WIDTH - x);
-        while (size-- > 0)
-            plot_pix(base, x++,y);
+        if (size > 0){/*work to do*/
+            head = head >> (x & 7);
+            tail = tail << (8 - ((x + size) & 7));
+            col = x >> 3;
+            if ((size + x) >> 3 == col){/*then we start and end in same block, special case, mask both ends*/
+                body = head & tail;
+                *(base + y * 80 + col) |= body; 
+            }
+            else {/*start mask, body, end mask*/
+                *(base + y * 80 + col) |= head;
+                size -= MIN(size,8-(x & 7));
+                while(size > 7){
+                    col++;
+                    *(base + (y * 80 + col)) |= body;
+                    size -= 8;
+                }
+                col++;
+                *(base + y * 80 + col) |= tail;
+            }
+        }
      }
 }
 

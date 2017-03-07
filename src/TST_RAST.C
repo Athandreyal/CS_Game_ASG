@@ -27,6 +27,15 @@ int main()
         y += 5;
         x++;
     }
+    
+    x = 110;
+    y = 130;
+    i = j = 0;
+    for(;i < 80;i++){
+        p_h_ln(base,x+i,y+i,1+j);/*over one, down one, one longer every other i*/
+        j += i & 1;
+        }
+    
     x = 196;
     y = 100;
     for(j=0;j<4;j++){
