@@ -2,48 +2,48 @@
 #include "RASTER.H"
 
 void render(UINT8 *base, Model *model){
-	/*render black */
-	rndr_blk(base, model);
-	/*render field*/
-	rndr_fld(base, model);    /*gifting this control over the paths, since its a field thing*/
+    /*render black */
+    rndr_blk(base, model);
+    /*render field*/
+    rndr_fld(base, model);    /*gifting this control over the paths, since its a field thing*/
 }
 
 void rndr_blk(UINT8 *base, Model *model){/*square corners, overwrites whatever it finds along border!*/
-	UINT16* rebase = (UINT16*)base;
-	int Vmin = 20;/*why can't I use #define values here??*/
-	int Vmax = SCREEN_HEIGHT - 20;
-	int Hmin = 80>>4;
-	int Hmax = (SCREEN_WIDTH - 80) >> 4;
+    UINT16* rebase = (UINT16*)base;
+    int Vmin = 20;/*why can't I use #define values here??*/
+    int Vmax = SCREEN_HEIGHT - 20;
+    int Hmin = 80>>4;
+    int Hmax = (SCREEN_WIDTH - 80) >> 4;
     int x,y;
-	for(x = 0;x < 40;x++){
-		for (y = 0;y < 400;y++){
+    for(x = 0;x < 40;x++){
+        for (y = 0;y < 400;y++){
             if (y < Vmin || y >= Vmax || x < Hmin || x >= Hmax)
                 *(rebase + y * 40 + x) = 0xFFFF;
             }
         }
         
-	rndr_lif(base, &(model->user));
-	rndr_lif(base, &(model->program));
+    rndr_lif(base, &(model->user));
+    rndr_lif(base, &(model->program));
 }
 
 void rndr_fld(UINT8 *base, Model *model)
 {/*field?  should handle the paths then*/
     /*need to implement the field manipulation in here*/
     /*field involves cycles and walls, maybe explosions if we implement*/
-	rndr_cyc(base, &(model->user));
-	rndr_cyc(base, &(model->program));
-	rndr_lw(base, model->grid);
+    rndr_cyc(base, &(model->user));
+    rndr_cyc(base, &(model->program));
+    rndr_lw(base, model->grid);
 }
 
 void rndr_lif(UINT8 *base, Player *player)
 {
     int i;
-	for (i = 0;i < player->life;i++){
+    for (i = 0;i < player->life;i++){
         if (player->isUser)
             p_btmp_8(base, P1LIFEX + (i<<3),P1LIFEY, STICKMAN);
         else
             p_btmp_8(base, P2LIFEX + (i<<3),P2LIFEY, STICKMAN);
-	}
+    }
 }
 
 void rndr_lw(UINT8 *base, UINT8 grid[][])
