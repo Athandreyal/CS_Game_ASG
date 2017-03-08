@@ -1,7 +1,5 @@
 #include "Objects.h"
 #include "raster.h"
-#include "types.h"
-#include "Model.h"
 
 
 UINT8 STICKMAN[] = {0xEF, 0xEF, 0x93, 0x6D, 0xEF, 0xD7, 0xBB, 0xBB};
@@ -36,7 +34,7 @@ void rndr_blk(UINT8* base){/*square corners, overwrites whatever it finds along 
             }
         }
 }*/
-/*				
+/*
 void drawLives(UINT8* base, int lives, int player){
     int i;
 	for (i = 0;i < lives;i++){
