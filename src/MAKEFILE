@@ -1,6 +1,5 @@
-tst_rast: tst_rast.o raster.o rast_asm.o Objects.o   
-	cc68x -g tst_rast.o raster.o Objects.o -o tst_rast.tos
-#	cc68x -g tst_rast.o raster.o rast_asm.o -o tst_rast
+tst_rast: tst_rast.o raster.o rast_asm.o Objects.o Model.o Renderer.o 
+	cc68x -g tst_rast.o raster.o Objects.o Model.o Renderer.o -o tst_rast.tos
 
 tst_rast.o: tst_rast.c raster.h
 	cc68x -g -c tst_rast.c
@@ -14,10 +13,15 @@ rast_asm.o: rast_asm.s
 Objects.o: Objects.c Objects.h
 	cc68x -g -c Objects.c
     
+Model.o: Model.c Model.h
+	cc68x -g -c Model.c
+    
+Renderer.o: Renderer.c Renderer.h
+	cc68x -g -c Renderer.c
+    
 clean:
 	$(RM) *.o
     
-
 all: clean tst_rast
     
 test: all

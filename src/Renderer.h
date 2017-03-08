@@ -1,12 +1,13 @@
 #ifndef RENDERER_H
 #define RENDERER_H
+#include "Model.h"
+#include "TYPES.H"
+#include "Objects.h"
 
-#include "types.h"
-
-void render(Model *model, UINT8 *base);
-void rndr_blk(UINT8 *base);
-void rndr_fld(UINT8 *base);
-void rndr_lif(Player *player, UINT8 *base);
-void rndr_lw(lgt_walls *lw, UINT8 *base);
-void rndr_cyc(Cycle cycle, UINT8 *base);
+void render(UINT8 *base, Model *model);
+void rndr_blk(UINT8 *base, Model *model);
+void rndr_fld(UINT8 *base, Model *model);
+void rndr_lif(UINT8 *base, Player *player);
+void rndr_lw(UINT8 *base, UINT8 grid[][]);
+void rndr_cyc(UINT8 *base, Player *player);
 #endif
