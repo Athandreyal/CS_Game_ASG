@@ -4,6 +4,7 @@
 #include "TYPES.H"
 #include "Renderer.h"
 #include "Model.h"
+#include <stdio.h>
 
 int main()
 {
@@ -11,6 +12,15 @@ int main()
     Model model;
     Model* model_ptr = &model;
 	UINT8 *base = Physbase();
+    FILE *f = fopen("log.txt","w");
+    
+    
+    if (f == NULL)
+        exit(1);
+
+    fprinf(f,"Address of model struct: %s",&model);
+    fclose(f);
+
     
     clr_scrn(base);
 
@@ -72,9 +82,9 @@ int main()
         p_h_ln(base,x,y+j,40);
     while(i<5)  /*stickman*/
         p_btmp_8(base,x+i++*8,y,STICKMAN);
-  
-    model_ptr -> user.life = 5;
-    model_ptr -> program.life = 5;
+        
+    model.user.life = 5;
+    model.program.life = 5;
     
 /*    init(model_ptr);
 /*    rndr_blk(base, &model);
