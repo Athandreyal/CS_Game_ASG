@@ -20,7 +20,7 @@ void p_h_ln(UINT8 *base, int x, int y, int size)
     UINT8 head = 0xFF;
     UINT8 body = 0xFF;
     UINT8 tail = 0xFF;
-	if (size > 0 && y >= 0 && y < SCREEN_HEIGHT){
+	if (size > 0 && x < SCREEN_WIDTH && y >= 0 && y < SCREEN_HEIGHT){
 		if (x < 0){
 			size += x;
 			x = 0;
