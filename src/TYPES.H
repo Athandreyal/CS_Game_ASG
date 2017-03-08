@@ -7,11 +7,6 @@
 typedef unsigned char UINT8;
 typedef unsigned int  UINT16;
 typedef unsigned long UINT32;
+typedef enum bool{ false, true } bool;
 
-/*
-#define False 0
-#define True  1
-#define bool int
-*/
-typedef enum { false, true } bool;
 #endif
