@@ -9,7 +9,7 @@
         
 int main()
 {
-    int x,y,i,j;
+    int x,y,i,j,k;
 /*    struct Cycle2 cycle2;/* = {
                             1,
                             1,
@@ -55,21 +55,50 @@ int main()
         }
 
     /*player cycle printouts*/
-    x = 196;
-    y = 100;
-    for(j=0;j<4;j++){
-        for(i = 0;i<8;i++){
-            p_btmp_8(base, x+i,y+i*10,CYCLE1[j]);
+    for (k=0;k<5;k++){ /*ITERATE CYCLE SET
+        /*DRAW CYCLE SET*/
+        x = 196;
+        y = 100;
+        Vsync();
+        for(j=1;j<5;j++){
+            for(i = 0;i<8;i++){
+                p_btmp_8(base, x+i,y+i*10,CYCLE1[(j+k)%4]);
+                }
+            x+=8;
             }
-        x+=8;
-        }
-    for(j=0;j<4;j++){
-        for(i = 0;i<8;i++){
-            p_btmp_8(base, x+i,y+i*10,CYCLE2[j]);
+        for(j=1;j<5;j++){
+            for(i = 0;i<8;i++){
+                p_btmp_8(base, x+i,y+i*10,CYCLE2[(j+k)%4]);
+                }
+            x+=8;
             }
-        x+=8;
+        switch(k){
+            case 0: printf("cycle print set N.E.S.W");   break;
+            case 1: printf(" E.S.W.N");                  break;
+            case 2: printf(" S.W.N.E");                  break;
+            case 3: printf(" W.N.E.S");                  break;
+            case 4: printf(" N.E.S.W");                  break;
         }
-    
+        Cnecin();
+        /*UNDRAW CYCLE SET*/
+        x = 196;
+        y = 100;
+        Vsync();
+        for(j=1;j<5;j++){
+            for(i = 0;i<8;i++){
+                p_btmp_8(base, x+i,y+i*10,CYCLE1[(j+k)%4]);
+                }
+            x+=8;
+            }
+        for(j=1;j<5;j++){
+            for(i = 0;i<8;i++){
+                p_btmp_8(base, x+i,y+i*10,CYCLE2[(j+k)%4]);
+                }
+            x+=8;
+            }    
+        }
+
+        
 
     /*player life stickman printouts*/
     x = 300;
@@ -79,7 +108,7 @@ int main()
         x+=8;
     }
     render(base, model_ptr);
-    Cconin();
+    Cnecin();
     Vsync();
     clr_scrn(base); 
     
@@ -91,7 +120,8 @@ int main()
     fprintf(f,"user:%d    program:%d\n",model.user.isUser,model.program.isUser);
     fclose(f);
     render(base, model_ptr);/*why no new placement?*/
-    Cconin();
+    Cnecin();
+    
     for(i=0;i<50;i++){
 /*        clr_scrn(base); */
         fprintf(f,"\n--");
