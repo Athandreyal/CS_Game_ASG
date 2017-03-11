@@ -8,5 +8,6 @@ typedef unsigned char UINT8;
 typedef unsigned int  UINT16;
 typedef unsigned long UINT32;
 typedef enum bool{ false, true } bool;
+typedef enum velocity {slow=2, norm = 4, fast=6} velocity;
 
 #endif

@@ -1,0 +1,24 @@
+#ifndef CONSTANT_H
+#define CONSTANT_H
+#include "TYPES.H"
+
+/*    CURRENT UNITS      */
+extern UINT8 SCREEN_WIDTH = 80;
+extern UINT8 MSB = 0x80;
+extern UINT8 REMAINDER_MAX = 7;
+extern UINT8 BITS_PER = 8;
+extern UINT8 SHIFT = 3;
+extern UINT8 LINE_BODY = 0xFF;
+
+
+/*     OTHER  UNITS      */
+extern UINT8 SCREEN_WIDTH_PIX = 640;
+extern UINT8 SCREEN_HEIGHT_PIX = 400;
+extern UINT8 VBORDER_BITS = 20;
+extern UINT8 HBORDER_BITS = 80;
+extern UINT8 SCREEN_WIDTH_WORD = 40;
+extern UINT8 SCREEN_WIDTH_LONG = 20;
+extern UINT8 SHIFT_WORD = 4;
+extern UINT8 LINE_BODY_WORD = 0xFFFF;
+
+#endif

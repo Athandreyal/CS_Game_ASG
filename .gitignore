@@ -1,3 +1,5 @@
 *.TOS
 src/TST_RAST
 *.mak
+src/TST
+src/LOG.TXT

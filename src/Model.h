@@ -15,6 +15,7 @@ void reset(Model *model);
 void release(Model *model);
 bool collision(Model *model);
 void crash(Model *model);
+void matchStart(Model *model);
 
 /*
     Init                initialise model data structures

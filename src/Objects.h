@@ -40,6 +40,7 @@ typedef struct Cycle {
     int y;
     int speed;
     int direction[2];
+    int lastPos[4];/* xy coords, direction[x,y] -- where we were so we can xor ourself*/
 }Cycle;
 
 typedef struct Player {
@@ -54,10 +55,9 @@ typedef struct Model{
     int active;  /*used to acknowledge if I should register keys or not*/
     Player user;
     Player program;/*its what they were called in Tron :P */
-    UINT8 grid[320][200];
+/*    UINT8 grid[320][200];
     /*vertical and horizontal lengths sepaated, it doesn't really matter, and saves computing which is which n redraw*/
     /*cannot do linked list easily, memory management is only a thing if we implement it, hence large arrays*/
 }Model;
-
 
 #endif

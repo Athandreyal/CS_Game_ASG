@@ -1,6 +1,7 @@
 #include "raster.h"
 #include <stdio.h>
 
+
 int MIN(int x, int y){/*move me soon!*/
     int ans = (x<y)?x:y;
     return ans;
@@ -70,28 +71,32 @@ void p_v_ln(UINT8 *base, int x, int y, int size)
 void p_btmp_8(UINT8 *base, int x, int y, const UINT8 bitmap[])
 {/*plotted from upper left corner as (0,0) to (7,7) at lower right*/
     int i;
+    FILE *f = fopen("log.txt", "a");
     UINT8 LHalf;                        UINT8 RHalf;
     UINT8 L_Offset = x & 7;             UINT8 R_Offset = 8 - (x & 7);
     UINT8 Lmask = 0xFF << R_Offset;        UINT8 Rmask = 0xFF >> L_Offset;
     UINT8 col = x >> 3;
+    fprintf(f,"p_btmp_8 %d %d\n",x,y);
     for (i = 0;i < 8;i++){
         if (y + i > 0 && y + i < SCREEN_HEIGHT){
+            fprintf(f,"80 x: %d, y: %d, %04x\n", x, y+i, bitmap[i]);
             if (x & 7 == 0 && x > 0 && x < SCREEN_WIDTH)
-                *(base + (y+i) * 80 + col) = bitmap[i];
+                *(base + (y+i) * 80 + col) ^= bitmap[i];
             else{
                 if (x > 0 && x < SCREEN_WIDTH){
                     LHalf = bitmap[i] >> L_Offset;
-                    *(base + (y+i) * 80 + col) &= Lmask;
-                    *(base + (y+i) * 80 + col) |= LHalf;
+/*                    *(base + (y+i) * 80 + col) &= Lmask;
+*/                    *(base + (y+i) * 80 + col) ^= LHalf;
                 }
                 if (x+8 > 0 && x+8 < SCREEN_WIDTH){
                     RHalf = bitmap[i] << R_Offset;
-                    *(base + (y+i) * 80 + col+1) &= Rmask;
-                    *(base + (y+i) * 80 + col+1) |= RHalf;
+/*                    *(base + (y+i) * 80 + col+1) &= Rmask;
+*/                    *(base + (y+i) * 80 + col+1) ^= RHalf;
                 }
             }
         }
     }
+    fclose(f);
 }
 
 /*clear screen*/

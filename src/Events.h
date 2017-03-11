@@ -8,4 +8,6 @@ void chng_dir(Cycle *cycle, int *direction);
 void chng_spd(Cycle *cycle, int speed);
 int sub_life(Player *player);
 int collide(UINT8 *base);
-void lay_trl(Uint *base);
+void lay_trl(UINT8 *base);
+void move(Cycle* cycle);
+#endif

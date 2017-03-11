@@ -10,28 +10,37 @@ void init(Model *model){
 }
 
 void reset(Model *model){
-    int i,j;
+    int i;
     model->active = false;
     model->user.segments =                  0;    
     model->program.segments =               0;
-    
-    for(i=0;i < 320;i++)
-        for(j=0;j<200;j++)
-            model->grid[i][j] = 0;
+    for(i = 0;i<4;i++){
+        model->user.cycle.lastPos[i]=0;
+        model->program.cycle.lastPos[i]=0;
+    }
 }
 
 void matchStart(Model *model){
     model->user.cycle.x =                 P1STARTX;
     model->user.cycle.y =                 P1STARTY;
-    model->user.cycle.speed =             0;
-    model->user.cycle.direction[0] =     -1;
+    model->user.cycle.speed =             norm;
     model->user.cycle.direction[0] =      0;
+    model->user.cycle.direction[1] =      1;
  
     model->program.cycle.x =              P2STARTX;
     model->program.cycle.y =              P2STARTY;
-    model->program.cycle.speed =          0;
-    model->program.cycle.direction[0] =   1;
+    model->program.cycle.speed =          norm;
     model->program.cycle.direction[0] =   0;
+    model->program.cycle.direction[1] =  -1;
+
+    model->user.cycle.lastPos[0]    =  -100;
+    model->user.cycle.lastPos[1]    =  -100;
+    model->user.cycle.lastPos[2]    =  0;
+    model->user.cycle.lastPos[3]    =  1;
+    model->program.cycle.lastPos[0] =  -100;
+    model->program.cycle.lastPos[1] =  -100;
+    model->program.cycle.lastPos[2] =  0;
+    model->program.cycle.lastPos[3] = -1;
 }
 
 /*used to initiate watching for player key presses

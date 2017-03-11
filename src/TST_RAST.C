@@ -5,23 +5,20 @@
 #include "Renderer.h"
 #include "Model.h"
 #include <stdio.h>
-
+#include "Events.h"
+        
 int main()
 {
     int x,y,i,j;
-    Model model;
+/*    struct Cycle2 cycle2;/* = {
+                            1,
+                            1,
+                            1};
+*/  Model model;
     Model* model_ptr = &model;
 	UINT8 *base = Physbase();
     FILE *f = fopen("log.txt","w");
-    
-    
-    if (f == NULL)
-        exit(1);
-
-    fprinf(f,"Address of model struct: %s",&model);
     fclose(f);
-
-    
     clr_scrn(base);
 
     /*diagonal line */
@@ -75,20 +72,35 @@ int main()
     
 
     /*player life stickman printouts*/
-    i = j = 0;
     x = 300;
     y = 240;
-    while (j++<8)  /*black background*/
-        p_h_ln(base,x,y+j,40);
-    while(i<5)  /*stickman*/
-        p_btmp_8(base,x+i++*8,y,STICKMAN);
-        
-    model.user.life = 5;
-    model.program.life = 5;
+    for(i=0;i<5;i++)/*stickman*/
+        p_btmp_8(base,x+i*8,y,STICKMAN);
+
+    render(base, model_ptr);
+    Cconin();
+    Vsync();
+    clr_scrn(base); 
     
-/*    init(model_ptr);
-/*    rndr_blk(base, &model);
-/*    rndr_lif(base, 5, 0);
-    rndr_lif(base, 5, 1);*/
+    f = fopen("log.txt", "a");
+    fprintf(f,"87 clear screen\n");
+    
+    init(model_ptr);
+    matchStart(model_ptr);
+    fprintf(f,"user:%d    program:%d\n",model.user.isUser,model.program.isUser);
+    fclose(f);
+    render(base, model_ptr);/*why no new placement?*/
+    Cconin();
+    for(i=0;i<50;i++){
+/*        clr_scrn(base); */
+        fprintf(f,"\n--");
+        move(&(model_ptr->user.cycle));
+        move(&(model_ptr->program.cycle));
+        Vsync();
+        rndr_fld(base, model_ptr);/*why no new placement?*/
+        Vsync();
+    }
+
+    
 	return 0;
 }
