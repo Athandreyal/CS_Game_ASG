@@ -6,7 +6,7 @@
 #include "Model.h"
 #include "Events.h"
         
-/*#include <stdio.h>*/
+#include <stdio.h>
 
 
 int main()
@@ -19,8 +19,9 @@ int main()
 */  Model model;
     Model* model_ptr = &model;
 	UINT8 *base = Physbase();
-/*    FILE *f = fopen("log.txt","w");
-    fclose(f);*/
+    int direction[2] = {0,0};
+    FILE *f = fopen("log.txt","w");
+    fclose(f);
     clr_scrn(base);
 
     /*diagonal line */
@@ -105,26 +106,67 @@ int main()
     Vsync();
     clr_scrn(base); 
     
-/*    f = fopen("log.txt", "a");
-    fprintf(f,"87 clear screen\n");*/
+    f = fopen("log.txt", "a");
+    fprintf(f,"110 match Start\n");
     
     init(model_ptr);
     matchStart(model_ptr);
-/*    fprintf(f,"user:%d    program:%d\n",model.user.isUser,model.program.isUser);
-*/    render(base, model_ptr);/*why no new placement?*/
+    render(base, model_ptr);/*why no new placement?*/
     Cnecin();
-    
-    for(i=0;i<50;i++){
-/*        clr_scrn(base); */
-/*        fprintf(f,"\n--");*/
+
+    fprintf(f,"117 cycles in motion\n");
+    /*run to meeting at center*/
+    for(i=0;i<40;i++){
         move(&(model_ptr->user.cycle));
         move(&(model_ptr->program.cycle));
+        rndr_fld(base, model_ptr);
         Vsync();
-        rndr_fld(base, model_ptr);/*why no new placement?*/
         Vsync();
     }
-/*    fclose(f);*/
-
+    /*turn away */
+    direction[0] = -1;
+    fprintf(f,"128 cycles change direction to {%d, %d}\n",direction[0], direction[1]);
+    chng_dir(&(model.user.cycle),   direction);
+    chng_dir(&(model.program.cycle),direction);
+    /*run a little*/
+    chng_spd(&(model_ptr->user.cycle),   slow);
+    chng_spd(&(model_ptr->program.cycle),fast);
+    for(i=0;i<25;i++){
+        move(&(model_ptr->user.cycle));
+        move(&(model_ptr->program.cycle));
+        rndr_fld(base, model_ptr);
+        Vsync();
+        Vsync();
+    }
+    chng_spd(&(model_ptr->user.cycle),   fast);
+    chng_spd(&(model_ptr->program.cycle),slow);
+    for(i=0;i<25;i++){
+        move(&(model_ptr->user.cycle));
+        move(&(model_ptr->program.cycle));
+        rndr_fld(base, model_ptr);
+        Vsync();
+        Vsync();
+    }
+    chng_spd(&(model_ptr->user.cycle),   norm);
+    chng_spd(&(model_ptr->program.cycle),norm);
+    for(i=0;i<10;i++){
+        move(&(model_ptr->user.cycle));
+        move(&(model_ptr->program.cycle));
+        rndr_fld(base, model_ptr);
+        Vsync();
+        Vsync();
+    }
+    Cnecin();
+    for(i=0;i<10;i++){
+        move(&(model_ptr->user.cycle));
+        move(&(model_ptr->program.cycle));
+        rndr_fld(base, model_ptr);
+        Vsync();
+        Vsync();
+    }
+    
+    
+    
     
 	return 0;
 }

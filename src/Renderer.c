@@ -1,7 +1,7 @@
 #include"Renderer.h"
 #include "RASTER.H"
 
-/*#include <stdio.h>*/
+#include <stdio.h>
 
 void render(UINT8 *base, Model *model){
     /*render black */
@@ -57,9 +57,8 @@ void rndr_lw(UINT8 *base, UINT8 grid[][])
 void rndr_cyc(UINT8 *base, Player *player)
 {  /*[n,e,s,w]*/
     int o = -4;/*from center pixel to upper left pixel for both x and y
-    FILE *f = fopen("log.txt", "a");
-    fprintf(f,"63 isUser: %d, x: %d, y: %d, dir: {%d,%d}\n", player->isUser, player->cycle.x, player->cycle.y, player->cycle.direction[0], player->cycle.direction[1]);
-    fclose(f);
+*/    FILE *f = fopen("log.txt", "a");
+    fprintf(f,"61 undraw= x: %d, y: %d, dir: {%d,%d}\n", player->cycle.lastPos[0], player->cycle.lastPos[1], player->cycle.lastPos[2], player->cycle.lastPos[3]);
     /*undraw at current locale*/
                                         /*  y   */
     if      (player->cycle.lastPos[3] ==  1){             /*SOUTH*/
@@ -74,7 +73,16 @@ void rndr_cyc(UINT8 *base, Player *player)
     else if (player->cycle.lastPos[2] == -1){             /*WEST*/
         p_btmp_8(base, player->cycle.lastPos[0]-o,player->cycle.lastPos[1]-o,(player->isUser?CYCLE2[3]:CYCLE1[3]));    
         }
+    
     /*draw at new locale*/
+    fprintf(f,"77 redraw= x: %d, y: %d, dir: {%d,%d}\n", player->cycle.x, player->cycle.y, player->cycle.direction[0], player->cycle.direction[1]);
+
+    /*render must handle this, lastPos must remain unaltered until we redraw so we can accurately undraw*/
+    player->cycle.lastPos[0] = player->cycle.x;
+    player->cycle.lastPos[1] = player->cycle.y;
+    player->cycle.lastPos[2] = player->cycle.direction[0];
+    player->cycle.lastPos[3] = player->cycle.direction[1];
+    
                                         /*  y   */
     if      (player->cycle.direction[1] ==  1){             /*SOUTH*/
         p_btmp_8(base, player->cycle.x-o,player->cycle.y-o,(player->isUser?CYCLE2[2]:CYCLE1[2]));
@@ -88,4 +96,5 @@ void rndr_cyc(UINT8 *base, Player *player)
     else if (player->cycle.direction[0] == -1){             /*WEST*/
         p_btmp_8(base, player->cycle.x-o,player->cycle.y-o,(player->isUser?CYCLE2[3]:CYCLE1[3]));    
         }
+    fclose(f);
 }
