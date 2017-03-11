@@ -2,9 +2,9 @@
 #include "TYPES.H"
 
 void init(Model *model){
-    model->user.life =                     5;
+    model->user.life =                     3;
     model->user.isUser =                     true;    
-    model->program.life =                  5;
+    model->program.life =                  3;
     model->program.isUser =                  false;
     reset(model);
 }

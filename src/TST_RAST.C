@@ -74,9 +74,10 @@ int main()
     /*player life stickman printouts*/
     x = 300;
     y = 240;
-    for(i=0;i<5;i++)/*stickman*/
-        p_btmp_8(base,x+i*8,y,STICKMAN);
-
+    for(i=0;i<5;i++){/*stickman*/
+        p_btmp_8(base,x,y,STICKMAN);
+        x+=8;
+    }
     render(base, model_ptr);
     Cconin();
     Vsync();
