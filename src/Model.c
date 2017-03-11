@@ -2,9 +2,9 @@
 #include "TYPES.H"
 
 void init(Model *model){
-    model->user.life =                     3;
+    model->user.life =                     5;
     model->user.isUser =                     true;    
-    model->program.life =                  3;
+    model->program.life =                  5;
     model->program.isUser =                  false;
     reset(model);
 }
@@ -12,8 +12,6 @@ void init(Model *model){
 void reset(Model *model){
     int i;
     model->active = false;
-    model->user.segments =                  0;    
-    model->program.segments =               0;
     for(i = 0;i<4;i++){
         model->user.cycle.lastPos[i]=0;
         model->program.cycle.lastPos[i]=0;
