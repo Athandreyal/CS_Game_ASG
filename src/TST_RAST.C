@@ -4,9 +4,11 @@
 #include "TYPES.H"
 #include "Renderer.h"
 #include "Model.h"
-#include <stdio.h>
 #include "Events.h"
         
+/*#include <stdio.h>*/
+
+
 int main()
 {
     int x,y,i,j,k;
@@ -17,8 +19,8 @@ int main()
 */  Model model;
     Model* model_ptr = &model;
 	UINT8 *base = Physbase();
-    FILE *f = fopen("log.txt","w");
-    fclose(f);
+/*    FILE *f = fopen("log.txt","w");
+    fclose(f);*/
     clr_scrn(base);
 
     /*diagonal line */
@@ -72,13 +74,6 @@ int main()
                 }
             x+=8;
             }
-        switch(k){
-            case 0: printf("cycle print set N.E.S.W");   break;
-            case 1: printf(" E.S.W.N");                  break;
-            case 2: printf(" S.W.N.E");                  break;
-            case 3: printf(" W.N.E.S");                  break;
-            case 4: printf(" N.E.S.W");                  break;
-        }
         Cnecin();
         /*UNDRAW CYCLE SET*/
         x = 196;
@@ -98,8 +93,6 @@ int main()
             }    
         }
 
-        
-
     /*player life stickman printouts*/
     x = 300;
     y = 240;
@@ -112,25 +105,25 @@ int main()
     Vsync();
     clr_scrn(base); 
     
-    f = fopen("log.txt", "a");
-    fprintf(f,"87 clear screen\n");
+/*    f = fopen("log.txt", "a");
+    fprintf(f,"87 clear screen\n");*/
     
     init(model_ptr);
     matchStart(model_ptr);
-    fprintf(f,"user:%d    program:%d\n",model.user.isUser,model.program.isUser);
-    fclose(f);
-    render(base, model_ptr);/*why no new placement?*/
+/*    fprintf(f,"user:%d    program:%d\n",model.user.isUser,model.program.isUser);
+*/    render(base, model_ptr);/*why no new placement?*/
     Cnecin();
     
     for(i=0;i<50;i++){
 /*        clr_scrn(base); */
-        fprintf(f,"\n--");
+/*        fprintf(f,"\n--");*/
         move(&(model_ptr->user.cycle));
         move(&(model_ptr->program.cycle));
         Vsync();
         rndr_fld(base, model_ptr);/*why no new placement?*/
         Vsync();
     }
+/*    fclose(f);*/
 
     
 	return 0;

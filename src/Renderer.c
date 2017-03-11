@@ -1,6 +1,7 @@
 #include"Renderer.h"
 #include "RASTER.H"
-#include <stdio.h>
+
+/*#include <stdio.h>*/
 
 void render(UINT8 *base, Model *model){
     /*render black */
