@@ -3,3 +3,4 @@ src/TST_RAST
 *.mak
 src/TST
 src/LOG.TXT
+src/LOG2.TXT

@@ -40,7 +40,8 @@ typedef struct Cycle {
     int y;
     int speed;
     int direction[2];
-    int lastPos[4];/* xy coords, direction[x,y] -- where we were so we can xor ourself*/
+    int lastPos1[4];/* xy coords, direction[x,y] -- where were we*/
+    int lastPos2[4];/* xy coords, direction[x,y] -- where were we*/
 }Cycle;
 
 typedef struct Player {

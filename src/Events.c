@@ -13,21 +13,20 @@ void chng_spd(Cycle *cycle, velocity speed)
 }
 
 /*returns 1 as true for no life left*/
-int sub_life(Player *player)
+void sub_life(Player *player)
 {
     player->life -= 1;
 }
 
-int collide(UINT8 *base)
-{
-        ;
+bool collide(UINT8 *base, Model *model)
+{/*read in the cycles planned memory location, check for non zero in the cells the cycle's will occupy.*/
+    
 }
 
-/*lay Trail*/
-void lay_trl(UINT8 *base)
-{
-    ;
-}
+/*lay Trail
+void lay_trl(UINT8 *base, Cycle *cycle)
+{/*lay trail, 3 px wide, length as per move rate.  location is offset by 4 from location pix.
+}*/
 
 void move(Cycle* cycle){
     cycle->x = cycle->x + cycle->direction[0] * cycle->speed;
