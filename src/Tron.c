@@ -4,6 +4,7 @@
 #include "Model.h"
 #include "Events.h"
 #include "Renderer.h"
+#define ESC_KEY 27
 
 FILE *f;
 
@@ -23,7 +24,7 @@ void main(){
         timeNow = getTime();
         timeElapsed = timeNow - timeThen;
         if (Cconis())
-            onKey((char)Cnecin(), &model);
+            quit = onKey((char)Cnecin(), &model);
         if (timeElapsed > 2){
 /*            process_synchronous;*/
             move(&(model.user.cycle));
@@ -47,9 +48,13 @@ UINT32 getTime(){
 }
 
 bool onKey(char key, Model *model){
+    bool quit = false;
     f = fopen("log.txt","a");
     fprintf(f, "key captured: %d", (int)key);
     switch(key){ 
+        case ESC_KEY:
+            quit = true;
+            break;
         case 'j':/*left turn*/
             setTurn(&(model->user.cycle),left);
             break;
@@ -63,4 +68,5 @@ bool onKey(char key, Model *model){
             setSpd(&(model->user.cycle),slower);
     }
     fclose(f);
+    return quit;
 }
