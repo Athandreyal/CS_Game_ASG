@@ -18,9 +18,12 @@ void sub_life(Player *player)
     player->life -= 1;
 }
 
-bool collide(UINT8 *base, Model *model)
+bool collide(UINT8 *base, Cycle *cycle)
 {/*read in the cycles planned memory location, check for non zero in the cells the cycle's will occupy.*/
-    
+    int x = cycle->x - 4;/*offset from center pix to upper left corner of bitmap tile*/
+    int y = cycle->y - 4;
+    x += cycle->speed * cycle->direction[0];/*new location to investigate*/
+    y += cycle->speed * cycle->direction[1];
 }
 
 /*lay Trail
