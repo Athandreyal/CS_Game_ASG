@@ -25,30 +25,30 @@ void matchStart(Model *model){
     model->user.cycle.y =                 P1STARTY;
     model->user.cycle.speed =             norm;
     model->user.cycle.direction[0] =      0;
-    model->user.cycle.direction[1] =      1;
+    model->user.cycle.direction[1] =      -1;
  
     model->program.cycle.x =              P2STARTX;
     model->program.cycle.y =              P2STARTY;
     model->program.cycle.speed =          norm;
     model->program.cycle.direction[0] =   0;
-    model->program.cycle.direction[1] =  -1;
+    model->program.cycle.direction[1] =   1;
 
     model->user.cycle.lastPos1[0]    =  -100;
     model->user.cycle.lastPos1[1]    =  -100;
     model->user.cycle.lastPos1[2]    =  0;
-    model->user.cycle.lastPos1[3]    =  1;
+    model->user.cycle.lastPos1[3]    =  -1;
     model->user.cycle.lastPos2[0]    =  -100;
     model->user.cycle.lastPos2[1]    =  -100;
     model->user.cycle.lastPos2[2]    =  0;
-    model->user.cycle.lastPos2[3]    =  1;
+    model->user.cycle.lastPos2[3]    =  -1;
     model->program.cycle.lastPos1[0] =  -100;
     model->program.cycle.lastPos1[1] =  -100;
     model->program.cycle.lastPos1[2] =  0;
-    model->program.cycle.lastPos1[3] = -1;
+    model->program.cycle.lastPos1[3] =  1;
     model->program.cycle.lastPos2[0] =  -100;
     model->program.cycle.lastPos2[1] =  -100;
     model->program.cycle.lastPos2[2] =  0;
-    model->program.cycle.lastPos2[3] = -1;
+    model->program.cycle.lastPos2[3] =  1;
 }
 
 /*used to initiate watching for player key presses
@@ -59,9 +59,7 @@ void release(Model *model){
 }
 
 bool collision (Model *model){
-    /*check for player collides with other player or path or boundary
-      should probably switch to 5x7 for cycles!....grrr....they took a while.
-      5x7 allows a central location pixel, so we can have 'center mass' for location.*/
+    /*check for player collides with other player or path or boundary*/
       
     /*TODO -- STUBBED FOR NOW --*/
     return true;

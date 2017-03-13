@@ -2,9 +2,9 @@
 #define MODEL_H
 #include "Objects.h"
 #define P1STARTX 320
-#define P1STARTY 31
+#define P1STARTY 361
 #define P2STARTX 320
-#define P2STARTY 361
+#define P2STARTY 31
 
 /*const int PLAYERLIVES = 5;*/
 

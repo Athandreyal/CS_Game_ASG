@@ -17,6 +17,7 @@ void rndr_blk(UINT8 *base, Model *model){/*square corners, overwrites whatever i
     int Hmin = 80>>4;
     int Hmax = (SCREEN_WIDTH - 80) >> 4;
     int x,y;
+    clr_scrn(base);
     for(x = 0;x < 40;x++){
         for (y = 0;y < 400;y++){
             if (y < Vmin || y >= Vmax || x < Hmin || x >= Hmax)

@@ -1,10 +1,68 @@
 #include "TYPES.H"
 #include "Events.h"
 
+void setTurn(Cycle *cycle,Turn dir){
+    if      (cycle->direction[0] ==  0 && cycle->direction[1] == -1){/*North*/
+        switch(dir){
+            case left:
+                cycle->direction[0]=-1;
+                cycle->direction[1]=0;
+                break;
+            case right:
+                cycle->direction[0]=1;
+                cycle->direction[1]=0;
+            }
+        }
+    else if (cycle->direction[0] ==  0 && cycle->direction[1] ==  1){/*South*/
+        switch(dir){
+            case left:
+                cycle->direction[0]=1;
+                cycle->direction[1]=0;
+                break;
+            case right:
+                cycle->direction[0]=-1;
+                cycle->direction[1]=0;
+            }
+        }
+    else if (cycle->direction[0] ==  1 && cycle->direction[1] ==  0){/*East*/
+        switch(dir){
+            case left:
+                cycle->direction[0]=0;
+                cycle->direction[1]=-1;
+                break;
+            case right:
+                cycle->direction[0]=0;
+                cycle->direction[1]=1;
+            }
+        }
+    else if (cycle->direction[0] == -1 && cycle->direction[1] ==  0){/*West*/
+        switch(dir){
+            case left:
+                cycle->direction[0]=0;
+                cycle->direction[1]=1;
+                break;
+            case right:
+                cycle->direction[0]=0;
+                cycle->direction[1]=-1;
+            }
+        }
+}
+
 void chng_dir(Cycle *cycle, int direction[])
 {
     cycle->direction[0] = direction[0];
     cycle->direction[1] = direction[1];
+}
+
+void setSpd(Cycle *cycle, accelerate accel){
+    if (accel == faster){
+        if      (cycle->speed == norm) chng_spd(cycle, fast);
+        else if (cycle->speed == slow) chng_spd(cycle, norm);
+        }
+    else{
+        if      (cycle->speed == fast) chng_spd(cycle, norm);
+        else if (cycle->speed == norm) chng_spd(cycle, slow);
+        }
 }
 
 void chng_spd(Cycle *cycle, velocity speed)
