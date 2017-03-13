@@ -101,6 +101,7 @@ int main()
         p_btmp_8(base,x,y,STICKMAN);
         x+=8;
     }
+    init(model_ptr);
     render(base, model_ptr);
     Cnecin();
     Vsync();
