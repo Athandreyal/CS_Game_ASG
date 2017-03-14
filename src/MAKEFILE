@@ -3,7 +3,13 @@ tst_rast: tst_rast.o raster.o rast_asm.o Objects.o Model.o Renderer.o Events.o
 
 game: raster.o rast_asm.o Objects.o Model.o Renderer.o Events.o Tron.o
 	cc68x -g raster.o rast_asm.o Objects.o Model.o Renderer.o Events.o Tron.o -o Tron
-    
+
+tst_sound: PSG.o
+	cc68x -g PSG.o -o psg
+	
+PSG.o: PSG.c PSG.h
+	cc68x -g -c PSG.c
+	
 Tron.o: Tron.c Tron.h    
 	cc68x -g -c Tron.c
     
@@ -36,4 +42,4 @@ clean:
     
 all: clean game
     
-test: clean tst_rast
+test: clean tst_rast tst_sound
