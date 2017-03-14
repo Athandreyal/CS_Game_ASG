@@ -2,11 +2,7 @@
 #define MODEL_H
 #include "TYPES.H"
 #include "Objects.h"
-#define P1STARTX 320
-#define P1STARTY 361
-#define P2STARTX 320
-#define P2STARTY 31
-
+#include "Constant.h"
 
 void init(Model *model);
 void reset(Model *model);

@@ -1,5 +1,6 @@
 #include"Renderer.h"
 #include "RASTER.H"
+#include "Constant.h"
 
 #include <stdio.h>
 
@@ -12,18 +13,18 @@ void render(UINT8 *base, Model *model){
 
 void rndr_blk(UINT8 *base, Model *model){/*square corners, overwrites whatever it finds along border!*/
     UINT16* rebase = (UINT16*)base;
-    int Vmin = 20;/*why can't I use #define values here??*/
-    int Vmax = SCREEN_HEIGHT - 20;
-    int Hmin = 80>>4;
-    int Hmax = (SCREEN_WIDTH - 80) >> 4;
+    int Vmin = VBORDER_BITS;/*why can't I use #define values here??*/
+    int Vmax = SCREEN_HEIGHT_PIX - VBORDER_BITS;
+    int Hmin = HBORDER_BITS >> SHIFT_WORD;
+    int Hmax = (SCREEN_WIDTH_PIX - HBORDER_BITS) >> SHIFT_WORD;
     int x,y;
 	printf("\033f");
 	fflush(stdout);
     clr_scrn(base);
-    for(x = 0;x < 40;x++){
-        for (y = 0;y < 400;y++){
+    for(x = 0;x < SCREEN_WIDTH_WORD;x++){
+        for (y = 0;y < SCREEN_HEIGHT_PIX;y++){
             if (y < Vmin || y >= Vmax || x < Hmin || x >= Hmax)
-                *(rebase + y * 40 + x) = 0xFFFF;
+                *(rebase + y * SCREEN_WIDTH_WORD + x) = LINE_BODY_WORD;
             }
         }
         
@@ -61,9 +62,9 @@ void rndr_lif(UINT8 *base, Player *player)
     int i;
     for (i = 0;i < player->life;i++){
         if (player->isUser)
-            p_btmp_8(base, P1LIFEX + (i<<3),P1LIFEY, STICKMAN);
+            p_btmp_8(base, P1LIFEX + (i<<SHIFT),P1LIFEY, STICKMAN);
         else
-            p_btmp_8(base, P2LIFEX + (i<<3),P2LIFEY, STICKMAN);
+            p_btmp_8(base, P2LIFEX + (i<<SHIFT),P2LIFEY, STICKMAN);
     }
 }
 
@@ -89,38 +90,36 @@ void rndr_lw(UINT8 *base, Cycle *cycle)
 
 void uRndrCyc(UINT8 *base, Player *player){
     /*[n,e,s,w]*/
-    int o = -4;/*from center pixel to upper left pixel for both x and y
     /*undraw at current locale*/
                                         /*  y   */
     if      (player->cycle.lastPos1[3] ==  1){             /*SOUTH*/
-        p_btmp_8(base, player->cycle.lastPos1[0]+o,player->cycle.lastPos1[1]+o,(player->isUser?CYCLE2[2]:CYCLE1[2]));
+        p_btmp_8(base, player->cycle.lastPos1[0]+BMP_OFFSET,player->cycle.lastPos1[1]+BMP_OFFSET,(player->isUser?CYCLE2[2]:CYCLE1[2]));
         }                                /*  x   */
     else if (player->cycle.lastPos1[2] ==  1){             /*EAST*/
-        p_btmp_8(base, player->cycle.lastPos1[0]+o,player->cycle.lastPos1[1]+o,(player->isUser?CYCLE2[1]:CYCLE1[1]));
+        p_btmp_8(base, player->cycle.lastPos1[0]+BMP_OFFSET,player->cycle.lastPos1[1]+BMP_OFFSET,(player->isUser?CYCLE2[1]:CYCLE1[1]));
         }                                /*  y   */
     else if (player->cycle.lastPos1[3] == -1){             /*NORTH*/
-        p_btmp_8(base, player->cycle.lastPos1[0]+o,player->cycle.lastPos1[1]+o,(player->isUser?CYCLE2[0]:CYCLE1[0]));
+        p_btmp_8(base, player->cycle.lastPos1[0]+BMP_OFFSET,player->cycle.lastPos1[1]+BMP_OFFSET,(player->isUser?CYCLE2[0]:CYCLE1[0]));
         }                                /*  x   */
     else if (player->cycle.lastPos1[2] == -1){             /*WEST*/
-        p_btmp_8(base, player->cycle.lastPos1[0]+o,player->cycle.lastPos1[1]+o,(player->isUser?CYCLE2[3]:CYCLE1[3]));    
+        p_btmp_8(base, player->cycle.lastPos1[0]+BMP_OFFSET,player->cycle.lastPos1[1]+BMP_OFFSET,(player->isUser?CYCLE2[3]:CYCLE1[3]));    
         }
 }
 
 /* Render Cycle*/
 void rndr_cyc(UINT8 *base, Player *player)
 {  /*[n,e,s,w]*/
-    int o = -4;/*from center pixel to upper left pixel for both x and y*/
     /*draw at new locale*/
     if      (player->cycle.direction[1] ==  1){             /*SOUTH*/
-        p_btmp_8(base, player->cycle.x+o,player->cycle.y+o,(player->isUser?CYCLE2[2]:CYCLE1[2]));
+        p_btmp_8(base, player->cycle.x+BMP_OFFSET,player->cycle.y+BMP_OFFSET,(player->isUser?CYCLE2[2]:CYCLE1[2]));
         }                                /*  x   */
     else if (player->cycle.direction[0] ==  1){             /*EAST*/
-        p_btmp_8(base, player->cycle.x+o,player->cycle.y+o,(player->isUser?CYCLE2[1]:CYCLE1[1]));
+        p_btmp_8(base, player->cycle.x+BMP_OFFSET,player->cycle.y+BMP_OFFSET,(player->isUser?CYCLE2[1]:CYCLE1[1]));
         }                                /*  y   */
     else if (player->cycle.direction[1] == -1){             /*NORTH*/
-        p_btmp_8(base, player->cycle.x+o,player->cycle.y+o,(player->isUser?CYCLE2[0]:CYCLE1[0]));
+        p_btmp_8(base, player->cycle.x+BMP_OFFSET,player->cycle.y+BMP_OFFSET,(player->isUser?CYCLE2[0]:CYCLE1[0]));
         }                                /*  x   */
     else if (player->cycle.direction[0] == -1){             /*WEST*/
-        p_btmp_8(base, player->cycle.x+o,player->cycle.y+o,(player->isUser?CYCLE2[3]:CYCLE1[3]));    
+        p_btmp_8(base, player->cycle.x+BMP_OFFSET,player->cycle.y+BMP_OFFSET,(player->isUser?CYCLE2[3]:CYCLE1[3]));    
         }
 }

@@ -4,9 +4,7 @@
 #include "Model.h"
 #include "Events.h"
 #include "Renderer.h"
-#if 0
-#define ESC_KEY 27
-#endif
+
 #define ESC_KEY   0x0001001B
 #define LARW_KEY  0x004B0000
 #define RARW_KEY  0x004D0000

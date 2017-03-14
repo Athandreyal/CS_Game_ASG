@@ -5,7 +5,7 @@
 #include "Renderer.h"
 #include "Model.h"
 #include "Events.h"
-        
+#include "Constant.h"        
 #include <stdio.h>
 
 
@@ -27,13 +27,13 @@ int main()
     /*diagonal line */
     x = 80;
     y = 20;
-    while( x < SCREEN_WIDTH && y < SCREEN_HEIGHT)
+    while( x < SCREEN_WIDTH_PIX && y < SCREEN_HEIGHT_PIX)
         plot_pix(base, x++, y++);
 
     /*diagonal using p_h_ln*/
     x = 80;
     y = 20;
-    while (x < 640){
+    while (x < SCREEN_WIDTH_PIX){
         p_h_ln(base, x, y, 6);
         x += 5;
         y++;
@@ -42,7 +42,7 @@ int main()
     /*diagonal using p_v_ln*/
     x = 80;
     y = 20;
-    while(y < 400){
+    while(y < SCREEN_HEIGHT_PIX){
         p_v_ln(base, x, y, 6);
         y += 5;
         x++;
@@ -52,7 +52,7 @@ int main()
     x = 110;
     y = 130;
     i = j = 0;
-    for(;i < 80;i++){
+    for(;i < SCREEN_WIDTH;i++){
         p_h_ln(base,x+i,y+i,1+j);/*over one, down one, one longer every other i*/
         j += i & 1;
         }

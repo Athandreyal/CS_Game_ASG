@@ -2,9 +2,9 @@
 #include "Events.h"
 
 void init(Model *model){
-    model->user.life =                     5;
+    model->user.life =                     PLAYER_LIVES;
     model->user.isUser =                     true;    
-    model->program.life =                  5;
+    model->program.life =                  PLAYER_LIVES;
     model->program.isUser =                  false;
     model->ghost.isUser =                    false;
     reset(model);
