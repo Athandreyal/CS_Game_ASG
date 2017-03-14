@@ -1,8 +1,9 @@
 *.TOS
-src/TST_RAST
 *.mak
+*.o
 src/TST
+rc/TST_RAST
 src/LOG.TXT
 src/LOG2.TXT
 src/TRON
-src/TRON
+src/PSG

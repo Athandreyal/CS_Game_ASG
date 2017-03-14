@@ -42,4 +42,4 @@ clean:
     
 all: clean game
     
-test: clean tst_rast
+test: clean tst_rast tst_sound
