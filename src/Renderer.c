@@ -1,17 +1,38 @@
+/*
+Name:       Phillip Renwick, Jaden McConkey
+Email:      prenw499@mtroyal.ca
+Course:     COMP 2659-001
+Instructor: Paul pospisil
+
+Purpose:    raster driver functions: access the model and call the appropriate raster code to display it.
+*/
+
 #include"Renderer.h"
 #include "RASTER.H"
 #include "Constant.h"
 
 #include <stdio.h>
 
+/*///////////////////////////////////////////////////////////////////
+// Function Name:  render
+// Purpose:        top level render call to generate a full frame
+// Inputs:         UINT8 *base  :  the frame buffer
+//                 Model *model :  the current game model, to be drawn
+///////////////////////////////////////////////////////////////////*/
 void render(UINT8 *base, Model *model){
     /*render black */
-    rndr_blk(base, model);
+    rndr_bak(base, model);
     /*render field*/
     rndr_fld(base, model);    /*gifting this control over the paths, since its a field thing*/
 }
 
-void rndr_blk(UINT8 *base, Model *model){/*square corners, overwrites whatever it finds along border!*/
+/*///////////////////////////////////////////////////////////////////
+// Function Name:  rndr_bak
+// Purpose:        renders full background, effectively all details not part of the active game grid
+// Inputs:         UINT8 *base  :  the frame buffer
+//                 Model *model :  the current game model, to be drawn
+///////////////////////////////////////////////////////////////////*/
+void rndr_bak(UINT8 *base, Model *model){/*square corners, overwrites whatever it finds along border!*/
     UINT16* rebase = (UINT16*)base;
     int Vmin = VBORDER_BITS;/*why can't I use #define values here??*/
     int Vmax = SCREEN_HEIGHT_PIX - VBORDER_BITS;
@@ -32,10 +53,17 @@ void rndr_blk(UINT8 *base, Model *model){/*square corners, overwrites whatever i
     rndr_lif(base, &(model->program));
 }
 
+/*///////////////////////////////////////////////////////////////////
+// Function Name:  rndr_fld
+// Purpose:        renders game grid incrementally: calls to unrender the current cycles from their old positions using position history
+//                                                  calls to render the lightwalls they produce using position history
+//                                                  calls to update the position history
+//                                                  calls to render the cycles in their new positions
+// Inputs:         UINT8 *base  :  the frame buffer
+//                 Model *model :  the current game model, to be drawn
+///////////////////////////////////////////////////////////////////*/
 void rndr_fld(UINT8 *base, Model *model)
-{/*field?  should handle the paths then*/
-    /*need to implement the field manipulation in here*/
-    /*field involves cycles and walls, maybe explosions if we implement*/
+{
     uRndrCyc(base, &(model->user));
     uRndrCyc(base, &(model->program));
     rndr_lw(base, &(model->user.cycle));
@@ -46,6 +74,12 @@ void rndr_fld(UINT8 *base, Model *model)
     rndr_cyc(base, &(model->program));
 }
 
+/*///////////////////////////////////////////////////////////////////
+// Function Name:  setLPos
+// Purpose:        Position history, used to know where to unrender the cycles, and where to draw light walls
+// Inputs:         UINT8 *base  :  the frame buffer
+//                 Model *model :  the current game model, to be drawn
+///////////////////////////////////////////////////////////////////*/
 void setLPos(Cycle* cycle){
     cycle->lastPos2[0] = cycle->lastPos1[0];
     cycle->lastPos2[1] = cycle->lastPos1[1];
@@ -57,6 +91,12 @@ void setLPos(Cycle* cycle){
     cycle->lastPos1[3] = cycle->direction[1];
 }
 
+/*///////////////////////////////////////////////////////////////////
+// Function Name:  rndr_lif
+// Purpose:        renders the given player's lives
+// Inputs:         UINT8 *base    :  the frame buffer
+//                 Player *player :  the current player whose lives will be drawn
+///////////////////////////////////////////////////////////////////*/
 void rndr_lif(UINT8 *base, Player *player)
 {
     int i;
@@ -68,6 +108,12 @@ void rndr_lif(UINT8 *base, Player *player)
     }
 }
 
+/*///////////////////////////////////////////////////////////////////
+// Function Name:  rndr_lw
+// Purpose:        renders game grid light walls using positional history
+// Inputs:         UINT8 *base  :  the frame buffer
+//                 Cycle *cycle :  the current cycle whose light wall will be drawn
+///////////////////////////////////////////////////////////////////*/
 void rndr_lw(UINT8 *base, Cycle *cycle)
 {
     int x, y, length;
@@ -88,6 +134,12 @@ void rndr_lw(UINT8 *base, Cycle *cycle)
         /*funky math to figure this out*/
 }
 
+/*///////////////////////////////////////////////////////////////////
+// Function Name:  uRndrCyc
+// Purpose:        un-renders light cycle using positional history to determine position and orientation
+// Inputs:         UINT8 *base  :  the frame buffer
+//                 Player *player :  the current player whose cycle will be removed
+///////////////////////////////////////////////////////////////////*/
 void uRndrCyc(UINT8 *base, Player *player){
     /*[n,e,s,w]*/
     /*undraw at current locale*/
@@ -106,7 +158,12 @@ void uRndrCyc(UINT8 *base, Player *player){
         }
 }
 
-/* Render Cycle*/
+/*///////////////////////////////////////////////////////////////////
+// Function Name:  rndr_cyc
+// Purpose:        renders light cycle using the models co-ordinates for the cycle to position it
+// Inputs:         UINT8 *base  :  the frame buffer
+//                 Player *player :  the current player whose cycle will be rendered
+///////////////////////////////////////////////////////////////////*/
 void rndr_cyc(UINT8 *base, Player *player)
 {  /*[n,e,s,w]*/
     /*draw at new locale*/

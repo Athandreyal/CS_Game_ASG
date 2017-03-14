@@ -6,7 +6,6 @@
 
 void init(Model *model);
 void reset(Model *model);
-void release(Model *model);
 bool crashed(UINT8 *base, Model *model);
 void matchStart(Model *model);
 

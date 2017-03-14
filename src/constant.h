@@ -1,24 +1,38 @@
+/*
+Name:       Phillip Renwick, Jaden McConkey
+Email:      prenw499@mtroyal.ca
+Course:     COMP 2659-001
+Instructor: Paul pospisil
+*/
 #ifndef CONSTANT_H
 #define CONSTANT_H
 #include "TYPES.H"
 
 /*    CURRENT UNITS      */
-extern UINT8 SCREEN_WIDTH = 80;
-extern UINT8 MSB = 0x80;
-extern UINT8 REMAINDER_MAX = 7;
-extern UINT8 BITS_PER = 8;
-extern UINT8 SHIFT = 3;
-extern UINT8 LINE_BODY = 0xFF;
+extern UINT8 SCREEN_WIDTH;
+extern UINT8 MSB;
+extern UINT8 REMAINDER_MAX;
+extern UINT8 BITS_PER;
+extern UINT8 SHIFT;
+extern UINT8 LINE_BODY;
 
 
 /*     OTHER  UNITS      */
-extern UINT8 SCREEN_WIDTH_PIX = 640;
-extern UINT8 SCREEN_HEIGHT_PIX = 400;
-extern UINT8 VBORDER_BITS = 20;
-extern UINT8 HBORDER_BITS = 80;
-extern UINT8 SCREEN_WIDTH_WORD = 40;
-extern UINT8 SCREEN_WIDTH_LONG = 20;
-extern UINT8 SHIFT_WORD = 4;
-extern UINT8 LINE_BODY_WORD = 0xFFFF;
+extern UINT16 SCREEN_WIDTH_PIX;
+extern UINT16 SCREEN_HEIGHT_PIX;
+extern int    BMP_OFFSET;
+extern UINT8  VBORDER_BITS;
+extern UINT8  HBORDER_BITS;
+extern UINT8  SCREEN_WIDTH_WORD;
+extern UINT8  SCREEN_WIDTH_LONG;
+extern UINT8  SHIFT_WORD;
+extern UINT16 LINE_BODY_WORD;
+
+extern int P1STARTX;
+extern int P1STARTY;
+extern int P2STARTX;
+extern int P2STARTY;
+
+extern int PLAYER_LIVES;
 
 #endif

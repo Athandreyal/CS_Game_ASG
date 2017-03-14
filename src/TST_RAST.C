@@ -1,3 +1,12 @@
+/*
+Name:       Phillip Renwick, Jaden McConkey
+Email:      prenw499@mtroyal.ca
+Course:     COMP 2659-001
+Instructor: Paul pospisil
+
+Purpose:    primary game test code. Has numerous stages of testing and rendering built in.
+*/
+
 #include <osbind.h>
 #include "raster.h"
 #include "Objects.h"
@@ -9,6 +18,10 @@
 #include <stdio.h>
 
 
+/*///////////////////////////////////////////////////////////////////
+// Function Name:  main
+// Purpose:        primary game test code. Has numerous stages of testing and rendering built in.
+///////////////////////////////////////////////////////////////////*/
 int main()
 {
     int x,y,i,j,k;

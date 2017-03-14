@@ -1,3 +1,9 @@
+/*
+Name:       Phillip Renwick, Jaden McConkey
+Email:      prenw499@mtroyal.ca
+Course:     COMP 2659-001
+Instructor: Paul pospisil
+*/
 #ifndef RASTER_H
 #define RASTER_H
 #include "TYPES.H"

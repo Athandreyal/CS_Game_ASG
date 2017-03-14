@@ -1,6 +1,21 @@
+/*
+Name:       Phillip Renwick, Jaden McConkey
+Email:      prenw499@mtroyal.ca
+Course:     COMP 2659-001
+Instructor: Paul pospisil
+
+Purpose:    Primary model manipulations, initialisation, resetting, etc.
+*/
+
 #include "Model.h"
 #include "Events.h"
 
+/*///////////////////////////////////////////////////////////////////
+// Function Name:  init
+// Purpose:        model initialisation, triggers reset to finish off initialisation
+// Inputs:         Model *model:    the current game model for initiaisation and updating
+// Outputs:        Model *model:    the updated game model.
+///////////////////////////////////////////////////////////////////*/
 void init(Model *model){
     model->user.life =                     PLAYER_LIVES;
     model->user.isUser =                     true;    
@@ -10,6 +25,12 @@ void init(Model *model){
     reset(model);
 }
 
+/*///////////////////////////////////////////////////////////////////
+// Function Name:  reset
+// Purpose:        resets the position history of the cycles.
+// Inputs:         Model *model:    the current game model for updating
+// Outputs:        Model *model:    the updated game model.
+///////////////////////////////////////////////////////////////////*/
 void reset(Model *model){
     int i;
     model->active = false;
@@ -21,6 +42,12 @@ void reset(Model *model){
     }
 }
 
+/*///////////////////////////////////////////////////////////////////
+// Function Name:  matchStart
+// Purpose:        sets the intiial state of the cycles for beginning a match, primes them with invalid history to avoid its bing used prematurely.
+// Inputs:         Model *model:    the current game model for manipulation and updating
+// Outputs:        Model *model:    the updated game model.
+///////////////////////////////////////////////////////////////////*/
 void matchStart(Model *model){
     model->user.crashed=false;
     model->ghost.crashed=false;
@@ -61,13 +88,13 @@ void matchStart(Model *model){
     model->program.cycle.lastPos2[3] =  1;
 }
 
-/*used to initiate watching for player key presses
-  input should be supressed until this occurs*/
-void release(Model *model){
-    model->active = true;
-    /*  anything else?....maybe once we hijack the keyboard*/
-}
-
+/*///////////////////////////////////////////////////////////////////
+// Function Name:  crashed
+// Purpose:        detects crashes and updates the model accordingly if found
+// Inputs:         UINT8 *base :    the frame buffer
+//                 Model *model:    the current game model for manipulation and updating
+// Outputs:        Model *model:    the updated game model.
+///////////////////////////////////////////////////////////////////*/
 bool crashed(UINT8 *base, Model *model){
     bool crash = false;
     if(collide(base, &(model->user.cycle)) != 0){

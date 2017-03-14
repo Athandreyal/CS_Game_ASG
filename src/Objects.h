@@ -1,3 +1,12 @@
+/*
+Name:       Phillip Renwick, Jaden McConkey
+Email:      prenw499@mtroyal.ca
+Course:     COMP 2659-001
+Instructor: Paul pospisil
+
+Purpose:    Game object struct definitions
+*/
+
 #ifndef OBJECTS_H
 #define OBJECTS_H
 #include "TYPES.H"

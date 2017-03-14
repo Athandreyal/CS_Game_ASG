@@ -1,6 +1,14 @@
+/*
+Name:       Phillip Renwick, Jaden McConkey
+Email:      prenw499@mtroyal.ca
+Course:     COMP 2659-001
+Instructor: Paul pospisil
+
+Purpose:    Primary game code, Main, doMode, getTime, onKey
+*/
+
 #include "Tron.h"
 #include <osbind.h>
-#include <stdio.h>
 #include "Model.h"
 #include "Events.h"
 #include "Renderer.h"
@@ -11,6 +19,10 @@
 #define UARW_KEY  0x00480000
 #define DARW_KEY  0x00500000
 
+/*///////////////////////////////////////////////////////////////////
+// Function Name:  main
+// Purpose:        core game code and loop
+///////////////////////////////////////////////////////////////////*/
 void main(){
     Model model;
 	UINT8 *base = Physbase();
@@ -37,6 +49,11 @@ void main(){
     /*call cleanup once necessary*/
 }
 
+/*///////////////////////////////////////////////////////////////////
+// Function Name:  getTime
+// Purpose:        access the system timer to onbtaint and return the current time
+// Outputs:        lont timeNow:  the current timer value;
+///////////////////////////////////////////////////////////////////*/
 UINT32 getTime(){
     long *timer = (long*)0x462;
     long old_ssp = Super(0);
@@ -46,26 +63,41 @@ UINT32 getTime(){
     return timeNow;
 }
 
+/*///////////////////////////////////////////////////////////////////
+// Function Name:  doMove
+// Purpose:        top level move driver: initiates moves, detects crashes, triggers reset when necessary.
+// Inputs:         UINT8 *base :    the frame buffer
+//                 Model *model:    the current game model for manipulation and updating
+//                 long timeNow:    the current timer value, used here for random seeding in AIChoice
+// Outputs:        Model *model:    the updated game model.
+///////////////////////////////////////////////////////////////////*/
 bool doMove(UINT8 *base, Model *model, long timeNow){
     bool noCrash = true;
-    FILE *f = fopen("log.txt","a");
     move(&(model->user.cycle));
     move(&(model->ghost.cycle));
     AIChoice(model, timeNow);
     move(&(model->program.cycle));
     setGhost(model);
     if(crashed(base, model)){
-        fprintf(f,"crashed\n");
+        move(&(model->user.cycle));
+        move(&(model->program.cycle));
+        Cnecin();
         reset(model);
         matchStart(model);
         Vsync();
         render(base, model);
         noCrash = false;
     }
-    fclose(f);
     return noCrash;
 }
 
+/*///////////////////////////////////////////////////////////////////
+// Function Name:  onKey
+// Purpose:        top level key driver: initiates key detection, access, and triggers quit and move events.
+// Inputs:         UINT32 key:      the key that was read
+//                 Model *model:    the current game model for manipulation and updating
+// Outputs:        Model *model:    the updated game model.
+///////////////////////////////////////////////////////////////////*/
 bool onKey(UINT32 key, Model *model){
     bool quit = false;
     switch(key){ 
