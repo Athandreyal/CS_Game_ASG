@@ -11,5 +11,4 @@ typedef enum bool{ false, true } bool;
 typedef enum velocity {slow=2, norm = 4, fast=6} velocity;
 typedef enum accelerate {slower,faster} accelerate;
 typedef enum Turn {left,right} Turn;
-
 #endif

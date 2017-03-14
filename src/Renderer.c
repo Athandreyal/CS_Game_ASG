@@ -17,6 +17,8 @@ void rndr_blk(UINT8 *base, Model *model){/*square corners, overwrites whatever i
     int Hmin = 80>>4;
     int Hmax = (SCREEN_WIDTH - 80) >> 4;
     int x,y;
+	printf("\033f");
+	fflush(stdout);
     clr_scrn(base);
     for(x = 0;x < 40;x++){
         for (y = 0;y < 400;y++){
@@ -72,13 +74,13 @@ void rndr_lw(UINT8 *base, Cycle *cycle)
         if (cycle->lastPos1[0] == cycle->lastPos2[0]){
             x = cycle->lastPos1[0];
             y = (cycle->lastPos1[1]<cycle->lastPos2[1]?cycle->lastPos1[1]:cycle->lastPos2[1]);
-            length = (cycle->lastPos1[1]>cycle->lastPos2[1]?cycle->lastPos1[1]:cycle->lastPos2[1]) - y + (cycle->lastPos2[3]==1);
+            length = (cycle->lastPos1[1]>cycle->lastPos2[1]?cycle->lastPos1[1]:cycle->lastPos2[1]) - y;/* + (cycle->lastPos2[3]==1);*/
             p_v_ln(base, x, y, length);
             }
         else{
             x = (cycle->lastPos1[0]<cycle->lastPos2[0]?cycle->lastPos1[0]:cycle->lastPos2[0]);
             y = cycle->lastPos1[1];
-            length = (cycle->lastPos1[0]>cycle->lastPos2[0]?cycle->lastPos1[0]:cycle->lastPos2[0]) - x + (cycle->lastPos2[2]==1);
+            length = (cycle->lastPos1[0]>cycle->lastPos2[0]?cycle->lastPos1[0]:cycle->lastPos2[0]) - x;/* + (cycle->lastPos2[2]==1);*/
             p_h_ln(base, x, y, length);
             }
         }

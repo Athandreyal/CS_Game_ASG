@@ -37,6 +37,7 @@ typedef struct Player {
 typedef struct Model{
     int active;  /*used to acknowledge if I should register keys or not*/
     Player user;
+    Player ghost;/*used to predict of 'program' will crash afte next move*/
     Player program;/*its what they were called in Tron :P */
 }Model;
 

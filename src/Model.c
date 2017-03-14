@@ -1,11 +1,12 @@
 #include "Model.h"
-#include "TYPES.H"
+#include "Events.h"
 
 void init(Model *model){
     model->user.life =                     5;
     model->user.isUser =                     true;    
     model->program.life =                  5;
     model->program.isUser =                  false;
+    model->ghost.isUser =                    false;
     reset(model);
 }
 
@@ -21,6 +22,9 @@ void reset(Model *model){
 }
 
 void matchStart(Model *model){
+    model->user.crashed=false;
+    model->ghost.crashed=false;
+    model->program.crashed=false;
     model->user.cycle.x =                 P1STARTX;
     model->user.cycle.y =                 P1STARTY;
     model->user.cycle.speed =             norm;
@@ -32,6 +36,12 @@ void matchStart(Model *model){
     model->program.cycle.speed =          norm;
     model->program.cycle.direction[0] =   0;
     model->program.cycle.direction[1] =   1;
+
+    model->ghost.cycle.x =              P2STARTX + model->program.cycle.direction[0] * norm;
+    model->ghost.cycle.y =              P2STARTY + model->program.cycle.direction[1] * norm;
+    model->ghost.cycle.speed =          norm;
+    model->ghost.cycle.direction[0] =   0;
+    model->ghost.cycle.direction[1] =   1;
 
     model->user.cycle.lastPos1[0]    =  -100;
     model->user.cycle.lastPos1[1]    =  -100;
@@ -58,16 +68,22 @@ void release(Model *model){
     /*  anything else?....maybe once we hijack the keyboard*/
 }
 
-bool collision (Model *model){
-    /*check for player collides with other player or path or boundary*/
-      
-    /*TODO -- STUBBED FOR NOW --*/
-    return true;
-}
-
-void crash(Model *model){
-    if (model->user.crashed)
-        model->user.life     -= 1;
-    if (model->program.crashed)
-        model->program.life  -= 1;
+bool crashed(UINT8 *base, Model *model){
+    bool crash = false;
+    if(collide(base, &(model->user.cycle)) != 0){
+        sub_life(&(model->user));
+        model->user.crashed = true;
+        crash = true;
+    }
+    
+    if(collide(base, &(model->ghost.cycle)) != 0){
+        model->ghost.crashed = true;
+    }
+    
+    if(collide(base, &(model->program.cycle)) != 0){
+        sub_life(&(model->program));
+        model->program.crashed = true;
+        crash = true;
+    }
+    return crash;
 }

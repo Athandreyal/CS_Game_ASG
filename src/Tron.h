@@ -4,5 +4,6 @@
 #include "Model.h"
 
 UINT32 getTime();
-bool onKey(char key, Model *model);
+bool onKey(UINT32 key, Model *model);
+bool doMove(UINT8 *base, Model *model, long timeNow);
 #endif
