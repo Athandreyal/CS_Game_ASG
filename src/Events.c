@@ -14,7 +14,6 @@ Purpose:    Event handlers, various model manipulations
 #include <stdlib.h>
 #include "Constant.h"
 
-
 #define LARW_KEY  0x004B0000
 #define RARW_KEY  0x004D0000
 #define UARW_KEY  0x00480000
@@ -187,7 +186,7 @@ void sub_life(Player *player)
 // Outputs:        Cycle *cycle  :their cycle struct
 ///////////////////////////////////////////////////////////////////
 */
-
+#if 0
 UINT32 collide(UINT8 *base, Cycle *cycle)
 {
     int col=0;
@@ -234,6 +233,60 @@ UINT32 collide(UINT8 *base, Cycle *cycle)
         }
     }
     return collision;
+}
+#endif
+
+bool collide(UINT8 *base, Cycle *cycle){
+    int x, y,i, length, depth, detected;
+    bool crash = false;
+    if      (cycle->direction[0] > 0){/*east */
+        length = cycle->speed;
+        depth = 7;
+        x = cycle->x + 4;
+        y = cycle->y - 3;
+        }
+    else if (cycle->direction[0] < 0){/*west*/
+        length = cycle->speed;
+        depth = 7;
+        x = cycle->x - 3 - length;
+        y = cycle->y - 3;
+        }
+    else if (cycle->direction[1] > 0){/*south*/
+        length = 7;
+        depth = cycle->speed;
+        x = cycle->x - 3;
+        y = cycle->y + 4;
+        }
+    else if (cycle->direction[1] < 0){/*north*/
+        length = 7;
+        depth = cycle->speed;
+        x = cycle->x - 3;
+        y = cycle->y - 3 - depth;
+        }
+    detected=0;
+    for (i=0;i<depth && detected == 0;i++)
+        detected += readGrid(base, x, y+i, length);
+    crash = (detected > 0);
+    return crash;
+}
+
+int readGrid(UINT8 *base, int x, int y,int length){
+    /*out of bounds detection is unecessary because the grid border is large enough to prevent us getting there*/
+    UINT8 detected = 0;
+    int column = x >> SHIFT;
+    UINT8 head = LINE_BODY;
+    UINT8 tail = LINE_BODY;
+    head = head >> (x & REMAINDER_MAX);
+    tail = tail << (BITS_PER - (x + length) & REMAINDER_MAX);
+    
+    if (column == (x + length-1) >> SHIFT){/*easy case, all within one byte */
+        detected += *(base + y * SCREEN_WIDTH + column) & (head & tail);
+        }
+    else{/*harder case, not all within one byte*/
+        detected += *(base + y * SCREEN_WIDTH + column) & head;
+        detected += *(base + y * SCREEN_WIDTH + column + 1) & tail;
+        }
+    return detected;
 }
 
 /*

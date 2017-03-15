@@ -10,3 +10,4 @@ src/TRON
 *.db
 src/A.OUT
 *.O
+*.O

@@ -20,7 +20,7 @@ Purpose:    Primary model manipulations, initialisation, resetting, etc.
 */
 void init(Model *model){
     model->user.life =                     PLAYER_LIVES;
-    model->user.isUser =                     true;    
+    model->user.isUser =                     true;
     model->program.life =                  PLAYER_LIVES;
     model->program.isUser =                  false;
     model->ghost.isUser =                    false;
@@ -105,17 +105,17 @@ void matchStart(Model *model){
 */
 bool crashed(UINT8 *base, Model *model){
     bool crash = false;
-    if(collide(base, &(model->user.cycle)) != 0){
+    if(collide(base, &(model->user.cycle))){
         sub_life(&(model->user));
         model->user.crashed = true;
         crash = true;
     }
     
-    if(collide(base, &(model->ghost.cycle)) != 0){
+    if(collide(base, &(model->ghost.cycle))){
         model->ghost.crashed = true;
     }
     
-    if(collide(base, &(model->program.cycle)) != 0){
+    if(collide(base, &(model->program.cycle))){
         sub_life(&(model->program));
         model->program.crashed = true;
         crash = true;

@@ -29,23 +29,25 @@ void main(){
     Model model;
 	UINT8 *base = Physbase();
     bool quit = false;
-    long timeNow, timeThen, timeElapsed;    
+    long timeNow, timeThen, timeElapsed;
+    bool noCrash = false;
     timeNow = timeThen = timeElapsed = 0;
+    
     init(&model);
     render(base, &model);
     Cnecin();
     matchStart(&model);
     do{
+        if (noCrash)noCrash = false;
         timeNow = getTime();
         timeElapsed = timeNow - timeThen;
         if (Cconis())
             quit = onKey(Cnecin(), &(model));
         if (timeElapsed > 1){
-            if(doMove(base, &model,timeNow)){
-                Vsync();
-                rndr_fld(base, &model);
-                timeThen = timeNow;
-                }
+            noCrash = doMove(base, &model,timeNow);
+            Vsync();
+            rndr_fld(base, &model);
+            timeThen = timeNow;
             }
     }while (!quit && model.user.life > 0 && model.program.life > 0);
     /*call cleanup once necessary*/
@@ -85,8 +87,6 @@ bool doMove(UINT8 *base, Model *model, long timeNow){
     move(&(model->program.cycle));
     setGhost(model);
     if(crashed(base, model)){
-        move(&(model->user.cycle));
-        move(&(model->program.cycle));
         Cnecin();
         reset(model);
         matchStart(model);
