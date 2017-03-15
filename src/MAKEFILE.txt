@@ -4,14 +4,14 @@ tst_rast: tst_rast.o raster.o rast_asm.o Objects.o Model.o Renderer.o Events.o C
 game: raster.o rast_asm.o Objects.o Model.o Renderer.o Events.o Tron.o Constant.o
 	cc68x -g raster.o rast_asm.o Objects.o Model.o Renderer.o Events.o Tron.o Constant.o -o Tron
 
-tst_sound: TST_PSG.o PSG.o
-	cc68x -g TST_PSG.o PSG.o -o psg
+tst_sound: PSG.o
+	cc68x -g PSG.o -o psg
+
+tst_sound.o: tst_psg.c psg.h
+    cc68x -g -c tst_psg.c
 	
 PSG.o: PSG.c PSG.h
 	cc68x -g -c PSG.c
-
-TST_PSG.o: TST_PSG.c PSG.h
-	cc68x -g -c TST_PSG.c
 	
 Tron.o: Tron.c Tron.h    
 	cc68x -g -c Tron.c
@@ -45,6 +45,4 @@ clean:
     
 all: clean game
     
-test: clean tst_rast 
-
-testSound: clean tst_sound
+test: clean tst_sound tst_rast 

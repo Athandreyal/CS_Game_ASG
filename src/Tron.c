@@ -19,10 +19,12 @@ Purpose:    Primary game code, Main, doMode, getTime, onKey
 #define UARW_KEY  0x00480000
 #define DARW_KEY  0x00500000
 
-/*///////////////////////////////////////////////////////////////////
+/*
+///////////////////////////////////////////////////////////////////
 // Function Name:  main
 // Purpose:        core game code and loop
-///////////////////////////////////////////////////////////////////*/
+///////////////////////////////////////////////////////////////////
+*/
 void main(){
     Model model;
 	UINT8 *base = Physbase();
@@ -49,11 +51,13 @@ void main(){
     /*call cleanup once necessary*/
 }
 
-/*///////////////////////////////////////////////////////////////////
+/*
+///////////////////////////////////////////////////////////////////
 // Function Name:  getTime
 // Purpose:        access the system timer to onbtaint and return the current time
 // Outputs:        lont timeNow:  the current timer value;
-///////////////////////////////////////////////////////////////////*/
+///////////////////////////////////////////////////////////////////
+*/
 UINT32 getTime(){
     long *timer = (long*)0x462;
     long old_ssp = Super(0);
@@ -63,14 +67,16 @@ UINT32 getTime(){
     return timeNow;
 }
 
-/*///////////////////////////////////////////////////////////////////
+/*
+///////////////////////////////////////////////////////////////////
 // Function Name:  doMove
 // Purpose:        top level move driver: initiates moves, detects crashes, triggers reset when necessary.
 // Inputs:         UINT8 *base :    the frame buffer
 //                 Model *model:    the current game model for manipulation and updating
 //                 long timeNow:    the current timer value, used here for random seeding in AIChoice
 // Outputs:        Model *model:    the updated game model.
-///////////////////////////////////////////////////////////////////*/
+///////////////////////////////////////////////////////////////////
+*/
 bool doMove(UINT8 *base, Model *model, long timeNow){
     bool noCrash = true;
     move(&(model->user.cycle));
@@ -91,13 +97,15 @@ bool doMove(UINT8 *base, Model *model, long timeNow){
     return noCrash;
 }
 
-/*///////////////////////////////////////////////////////////////////
+/*
+///////////////////////////////////////////////////////////////////
 // Function Name:  onKey
 // Purpose:        top level key driver: initiates key detection, access, and triggers quit and move events.
 // Inputs:         UINT32 key:      the key that was read
 //                 Model *model:    the current game model for manipulation and updating
 // Outputs:        Model *model:    the updated game model.
-///////////////////////////////////////////////////////////////////*/
+///////////////////////////////////////////////////////////////////
+*/
 bool onKey(UINT32 key, Model *model){
     bool quit = false;
     switch(key){ 
