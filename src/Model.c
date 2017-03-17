@@ -44,6 +44,10 @@ void reset(Model *model){
         model->program.cycle.lastPos1[i]=0;
         model->program.cycle.lastPos2[i]=0;
     }
+    model->user.cycle.player = 0;
+    model->program.cycle.player = 1;
+    model->ghost.cycle.player = 2;
+    
 }
 
 /*
@@ -69,13 +73,13 @@ void matchStart(Model *model){
     model->program.cycle.speed =          norm;
     model->program.cycle.direction[0] =   0;
     model->program.cycle.direction[1] =   1;
-
+/*
     model->ghost.cycle.x =              P2STARTX + model->program.cycle.direction[0] * norm;
     model->ghost.cycle.y =              P2STARTY + model->program.cycle.direction[1] * norm;
     model->ghost.cycle.speed =          norm;
     model->ghost.cycle.direction[0] =   0;
     model->ghost.cycle.direction[1] =   1;
-
+*/
     model->user.cycle.lastPos1[0]    =  -100;
     model->user.cycle.lastPos1[1]    =  -100;
     model->user.cycle.lastPos1[2]    =  0;
@@ -104,21 +108,8 @@ void matchStart(Model *model){
 ///////////////////////////////////////////////////////////////////
 */
 bool crashed(UINT8 *base, Model *model){
-    bool crash = false;
-    if(collide(base, &(model->user.cycle))){
-        sub_life(&(model->user));
-        model->user.crashed = true;
-        crash = true;
-    }
-    
-    if(collide(base, &(model->ghost.cycle))){
-        model->ghost.crashed = true;
-    }
-    
-    if(collide(base, &(model->program.cycle))){
-        sub_life(&(model->program));
-        model->program.crashed = true;
-        crash = true;
-    }
-    return crash;
+    if(model->user.crashed    = collide(base, &(model->user.cycle)))    sub_life(&(model->user));
+    if(model->program.crashed = collide(base, &(model->program.cycle))) sub_life(&(model->program));
+    model->ghost.crashed = collide(base, &(model->ghost.cycle));
+    return (model->user.crashed || model->program.crashed);
 }

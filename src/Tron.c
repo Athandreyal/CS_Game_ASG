@@ -25,9 +25,12 @@ Purpose:    Primary game code, Main, doMode, getTime, onKey
 // Purpose:        core game code and loop
 ///////////////////////////////////////////////////////////////////
 */
+UINT8 framebuffer2[32255];
+
 void main(){
     Model model;
 	UINT8 *base = Physbase();
+/*    UINT8 *base = initBuffer(framebuffer2);*/
     bool quit = false;
     long timeNow, timeThen, timeElapsed;
     bool noCrash = false;
@@ -38,15 +41,20 @@ void main(){
     Cnecin();
     matchStart(&model);
     do{
-        if (noCrash)noCrash = false;
         timeNow = getTime();
         timeElapsed = timeNow - timeThen;
         if (Cconis())
             quit = onKey(Cnecin(), &(model));
         if (timeElapsed > 1){
-            noCrash = doMove(base, &model,timeNow);
-            Vsync();
+            doMove(base, &model,timeNow);
             rndr_fld(base, &model);
+            if(crashed(base, &model)){
+                Cnecin();
+                reset(&model);
+                matchStart(&model);
+                Vsync();
+                render(base, &model);
+            }
             timeThen = timeNow;
             }
     }while (!quit && model.user.life > 0 && model.program.life > 0);
@@ -82,18 +90,10 @@ UINT32 getTime(){
 bool doMove(UINT8 *base, Model *model, long timeNow){
     bool noCrash = true;
     move(&(model->user.cycle));
-    move(&(model->ghost.cycle));
-    AIChoice(model, timeNow);
-    move(&(model->program.cycle));
     setGhost(model);
-    if(crashed(base, model)){
-        Cnecin();
-        reset(model);
-        matchStart(model);
-        Vsync();
-        render(base, model);
-        noCrash = false;
-    }
+    move(&(model->ghost.cycle));
+    AIChoice(base, model, timeNow);
+    move(&(model->program.cycle));
     return noCrash;
 }
 
@@ -120,3 +120,4 @@ bool onKey(UINT32 key, Model *model){
     }
     return quit;
 }
+

@@ -11,3 +11,6 @@ src/TRON
 src/A.OUT
 *.O
 *.O
+src/TRON.S
+*.I
+*.S

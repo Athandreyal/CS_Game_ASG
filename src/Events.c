@@ -13,6 +13,7 @@ Purpose:    Event handlers, various model manipulations
 #include "Events.h"
 #include <stdlib.h>
 #include "Constant.h"
+#include <stdio.h>
 
 #define LARW_KEY  0x004B0000
 #define RARW_KEY  0x004D0000
@@ -239,6 +240,9 @@ UINT32 collide(UINT8 *base, Cycle *cycle)
 bool collide(UINT8 *base, Cycle *cycle){
     int x, y,i, length, depth, detected;
     bool crash = false;
+    FILE *f = fopen("log.txt","a");
+    fprintf(f,"testing %s {%3d,%3d},[%d,%d], spd:%d, for crash\n",(cycle->player==0?"user   ":(cycle->player==1?"program":"ghost  ")),cycle->x,cycle->y,cycle->direction[0],cycle->direction[1],cycle->speed);
+    fprintf(f,"                          %s\n",(cycle->direction[0]?(cycle->direction[0]==1?"EAST":"WEST"):(cycle->direction[1]==1?"SOUTH":"NORTH")));
     if      (cycle->direction[0] > 0){/*east */
         length = cycle->speed;
         depth = 7;
@@ -267,6 +271,8 @@ bool collide(UINT8 *base, Cycle *cycle){
     for (i=0;i<depth && detected == 0;i++)
         detected += readGrid(base, x, y+i, length);
     crash = (detected > 0);
+    fprintf(f,    "crashed? %s\n",(crash?"true":"false"));
+    fclose(f);
     return crash;
 }
 
@@ -317,7 +323,6 @@ void setGhost(Model *model){
     model->ghost.cycle.y = model->program.cycle.y;
     model->ghost.cycle.direction[0] = model->program.cycle.direction[0];
     model->ghost.cycle.direction[1] = model->program.cycle.direction[1];
-    move(&(model->ghost.cycle));
 }
 
 /*
@@ -348,6 +353,31 @@ void AITurn(Cycle *cycle,Turn dir){
         }
 }
 
+/*uses ghost to check for turn collisions
+    0 none 
+    1 left
+    2 right
+    3 both
+*/    
+int ghostTurns(UINT8 *base, Model *model){
+    bool crashLeft, crashRight;
+    int result;
+    Cycle *ghost = &(model->ghost.cycle);
+    setGhost(model); /* re-attach ghost*/
+    AITurn(ghost,left);/*turn ghost left*/
+    move(&(model->ghost.cycle));
+    crashLeft = collide(base, ghost);/*test ghost crash*/
+    setGhost(model);
+    AITurn(ghost,right);/*turn ghost right*/
+    move(&(model->ghost.cycle));
+    crashRight = collide(base, ghost);/*test ghost crash*/
+    if      (crashLeft && crashRight)   result = 0;
+    else if (crashRight)                result = 1;
+    else if (crashLeft)                 result = 2;
+    else                                result = 3;
+    return result;
+}
+
 /*
 ///////////////////////////////////////////////////////////////////
 // Function Name:  AIChoice
@@ -360,28 +390,41 @@ void AITurn(Cycle *cycle,Turn dir){
 // Outputs:        Model *model  :the current game model, so that the ghost and program can be accessed
 ///////////////////////////////////////////////////////////////////
 */
-void AIChoice(Model *model, long time){
+void AIChoice(UINT8 *base, Model *model, long time){
     double random;
+    int turns;
+    FILE *f;
     srand((unsigned)time);
     random = ((double)rand())/RAND_MAX;
-    if ((model->ghost.crashed) || random > 0.98){
-        random = ((double)rand())/RAND_MAX;
-        if (random > 0.5)  /*AI needs to turn, NOW*/
-            AITurn(&(model->program.cycle),left);
-        else
-            AITurn(&(model->program.cycle),right);
-        setGhost(model);
-    }
-    if (random > 0.97){             /*fast*/
+    if (random > 0.97)             /*fast*/
         chng_spd(&(model->program.cycle), fast);
-        setGhost(model);
-    }
-    else if (random < 0.03){        /*slow*/
+    else if (random < 0.03)        /*slow*/
         chng_spd(&(model->program.cycle), slow);
-        setGhost(model);
-    }
-    else{
+    else
         chng_spd(&(model->program.cycle), norm);
-        setGhost(model);
+    model->ghost.crashed = collide(base, &(model->ghost.cycle));
+    f = fopen("log.txt","a");
+    fprintf(f,"ghostCrashed? %s\n",(model->ghost.crashed?"true":"false"));
+    fclose(f);
+    if ((model->ghost.crashed) || random > 0.98){
+        f = fopen("log.txt","a");
+        fprintf(f,"crash or random turn?: %s\n",(random > 0.98?"random":"crash"));
+        fclose(f);
+        random = ((double)rand())/RAND_MAX;
+        turns = ghostTurns(base, model);
+        f = fopen("log.txt","a");
+        fprintf(f,"    turns: %d\n",turns);
+        fclose(f);
+        if (turns == 3){
+            if(random > 0.5)
+                AITurn(&(model->program.cycle),left);
+            else
+                AITurn(&(model->program.cycle),right);
+            }
+        else if (turns == 2)
+            AITurn(&(model->program.cycle),right);
+        else if (turns == 1)
+            AITurn(&(model->program.cycle),left);
     }
+    setGhost(model);
 }

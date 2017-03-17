@@ -22,6 +22,6 @@ void move(Cycle* cycle);
 bool collide(UINT8 *base, Cycle *cycle);
 int readGrid(UINT8 *base, int x, int y,int length);
 void AITurn(Cycle *cycle,Turn dir);
-void AIChoice(Model *model, long time);
+void AIChoice(UINT8 *base, Model *model, long time);
 void setGhost(Model *model);
 #endif
