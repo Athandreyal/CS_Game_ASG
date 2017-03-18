@@ -35,6 +35,7 @@ typedef struct Cycle {
     int lastPos1[4];/* xy coords, direction[x,y] -- where were we*/
     int lastPos2[4];/* xy coords, direction[x,y] -- where were we*/
     int player;/*0 for player, 1 for AI, 2 for ghost*/
+    UINT8 *bmp;
 }Cycle;
 
 typedef struct Player {

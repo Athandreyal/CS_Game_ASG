@@ -6,7 +6,8 @@ typedef unsigned char UINT8;
 typedef unsigned int  UINT16;
 typedef unsigned long UINT32;
 typedef enum bool{ false, true } bool;
-typedef enum velocity {slow=2, norm = 4, fast=6} velocity;
+
+typedef enum velocity {norm = 4, fast=6} velocity;
 typedef enum accelerate {slower,faster} accelerate;
 typedef enum Turn {left,right} Turn;
 # 9 "./Tron.h" 2
@@ -33,6 +34,8 @@ typedef struct Cycle {
     int direction[2];
     int lastPos1[4];
     int lastPos2[4];
+    int player;
+    UINT8 *bmp;
 }Cycle;
 
 typedef struct Player {
@@ -87,6 +90,7 @@ void init(Model *model);
 void reset(Model *model);
 bool crashed(UINT8 *base, Model *model);
 void matchStart(Model *model);
+bool crashed2(UINT8 *base, int x, int y, const UINT8 bitmap[]);
 # 10 "./Tron.h" 2
 
 
@@ -276,7 +280,7 @@ void move(Cycle* cycle);
 bool collide(UINT8 *base, Cycle *cycle);
 int readGrid(UINT8 *base, int x, int y,int length);
 void AITurn(Cycle *cycle,Turn dir);
-void AIChoice(Model *model, long time);
+void AIChoice(UINT8 *base, Model *model, long time);
 void setGhost(Model *model);
 # 13 "Tron.c" 2
 # 1 "./Renderer.h" 1
@@ -298,9 +302,12 @@ void setLPos(Cycle* cycle);
 void uRndrCyc(UINT8 *base, Player *player);
 # 14 "Tron.c" 2
 # 28 "Tron.c"
+UINT8 framebuffer2[32255];
+
 void main(){
     Model model;
 	UINT8 *base = (void*)_trap_14_w((short)0x2) ;
+
     bool quit = false;
     long timeNow, timeThen, timeElapsed;
     bool noCrash = false;
@@ -311,21 +318,26 @@ void main(){
     _trap_1_w((short)0x08) ;
     matchStart(&model);
     do{
-        if (noCrash)noCrash = false;
         timeNow = getTime();
         timeElapsed = timeNow - timeThen;
         if ((short)_trap_1_w((short)0x0B) )
             quit = onKey(_trap_1_w((short)0x08) , &(model));
         if (timeElapsed > 1){
-            noCrash = doMove(base, &model,timeNow);
-            (void)_trap_14_w((short)0x25) ;
+            doMove(base, &model,timeNow);
             rndr_fld(base, &model);
+            if(crashed(base, &model)){
+                _trap_1_w((short)0x08) ;
+                reset(&model);
+                matchStart(&model);
+                (void)_trap_14_w((short)0x25) ;
+                render(base, &model);
+            }
             timeThen = timeNow;
             }
     }while (!quit && model.user.life > 0 && model.program.life > 0);
 
 }
-# 63 "Tron.c"
+# 71 "Tron.c"
 UINT32 getTime(){
     long *timer = (long*)0x462;
     long old_ssp = _trap_1_wl((short)0x20,(long)(0)) ;
@@ -334,22 +346,14 @@ UINT32 getTime(){
     _trap_1_wl((short)0x20,(long)(old_ssp)) ;
     return timeNow;
 }
-# 82 "Tron.c"
+# 90 "Tron.c"
 bool doMove(UINT8 *base, Model *model, long timeNow){
     bool noCrash = true;
     move(&(model->user.cycle));
-    move(&(model->ghost.cycle));
-    AIChoice(model, timeNow);
-    move(&(model->program.cycle));
     setGhost(model);
-    if(crashed(base, model)){
-        _trap_1_w((short)0x08) ;
-        reset(model);
-        matchStart(model);
-        (void)_trap_14_w((short)0x25) ;
-        render(base, model);
-        noCrash = false;
-    }
+    move(&(model->ghost.cycle));
+    AIChoice(base, model, timeNow);
+    move(&(model->program.cycle));
     return noCrash;
 }
 # 109 "Tron.c"

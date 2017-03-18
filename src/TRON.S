@@ -2,190 +2,179 @@
 	text
 	even
 _main:
-	link	a6,#-118
+	link	a6,#-136
 	movem.l	d3/d4/d5/d6/d7/a3/a4,-(a7)
-	lea	-98(a6),a0
-	move.l	a0,d6
-	;line	34
+	lea	-116(a6),a0
+	move.l	a0,d4
+	lea	__trap_1_w,a3
+	;line	37
 	move.w	#2,-(a7)
 	jsr	__trap_14_w
 	addq.l	#2,a7
-	move.l	d0,d5
+	move.l	d0,d3
 	sub.l	a4,a4
-	moveq	#0,d4
-	;line	34
-	moveq	#0,d7
-	move.l	d7,a3
-	move.l	a3,d3
-	;line	36
-	move.l	d6,-(a7)
+	clr.w	-136(a6)
+	;line	37
+	moveq	#0,d6
+	move.l	d6,d7
+	move.l	d7,d5
+	;line	39
+	move.l	d4,-(a7)
 	jsr	_init
 	addq.l	#4,a7
-	;line	37
-	move.l	d6,-(a7)
-	move.l	d5,-(a7)
+	;line	40
+	move.l	d4,-(a7)
+	move.l	d3,-(a7)
 	jsr	_render
 	addq.l	#8,a7
-	;line	38
+	;line	41
 	move.w	#8,-(a7)
-	jsr	__trap_1_w
+	jsr	(a3)
 	addq.l	#2,a7
-	;line	39
-	move.l	d6,-(a7)
+	;line	42
+	move.l	d4,-(a7)
 	jsr	_matchStart
 	addq.l	#4,a7
 L1:
-	;line	41
-	tst.w	d4
-	beq	L4
-	;line	41
-	moveq	#0,d4
-L4:
-	;line	42
-	jsr	_getTime
-	move.l	d0,d3
-	;line	43
-	move.l	d3,d0
-	sub.l	a3,d0
-	move.l	d0,d7
 	;line	44
+	jsr	_getTime
+	move.l	d0,d5
+	;line	45
+	move.l	d5,d0
+	sub.l	d7,d0
+	move.l	d0,d6
+	;line	46
 	move.w	#11,-(a7)
-	jsr	__trap_1_w
+	jsr	(a3)
 	addq.l	#2,a7
 	tst.w	d0
-	beq	L5
-	;line	45
-	move.l	d6,-(a7)
+	beq	L4
+	;line	47
+	move.l	d4,-(a7)
 	move.w	#8,-(a7)
-	jsr	__trap_1_w
+	jsr	(a3)
 	addq.l	#2,a7
 	move.l	d0,-(a7)
 	jsr	_onKey
 	addq.l	#8,a7
 	move.w	d0,a4
-L5:
-	;line	46
-	cmp.l	#1,d7
-	ble	L6
-	;line	47
-	move.l	d3,-(a7)
-	move.l	d6,-(a7)
+L4:
+	;line	48
+	cmp.l	#1,d6
+	ble	L5
+	;line	49
 	move.l	d5,-(a7)
+	move.l	d4,-(a7)
+	move.l	d3,-(a7)
 	jsr	_doMove
 	lea	12(a7),a7
-	move.w	d0,d4
-	;line	48
+	;line	50
+	move.l	d4,-(a7)
+	move.l	d3,-(a7)
+	jsr	_rndr_fld
+	addq.l	#8,a7
+	;line	51
+	move.l	d4,-(a7)
+	move.l	d3,-(a7)
+	jsr	_crashed
+	addq.l	#8,a7
+	tst.w	d0
+	beq	L6
+	;line	52
+	move.w	#8,-(a7)
+	jsr	(a3)
+	addq.l	#2,a7
+	;line	53
+	move.l	d4,-(a7)
+	jsr	_reset
+	addq.l	#4,a7
+	;line	54
+	move.l	d4,-(a7)
+	jsr	_matchStart
+	addq.l	#4,a7
+	;line	55
 	move.w	#37,-(a7)
 	jsr	__trap_14_w
 	addq.l	#2,a7
-	;line	49
-	move.l	d6,-(a7)
-	move.l	d5,-(a7)
-	jsr	_rndr_fld
+	;line	56
+	move.l	d4,-(a7)
+	move.l	d3,-(a7)
+	jsr	_render
 	addq.l	#8,a7
-	;line	50
-	move.l	d3,a3
 L6:
+	;line	58
+	move.l	d5,d7
+L5:
 L2:
 	move.w	a4,d0
 	bne	L7
-	tst.w	-70(a6)
+	tst.w	-82(a6)
 	ble	L7
 	tst.w	-6(a6)
 	bgt	L1
 L7:
 L3:
-	movem.l	-146(a6),d3/d4/d5/d6/d7/a3/a4
+	movem.l	-164(a6),d3/d4/d5/d6/d7/a3/a4
 	unlk	a6
 	rts
 _getTime:
 	link	a6,#-12
-	;line	67
+	;line	75
 	move.l	#1122,-4(a6)
 	pea	0
 	move.w	#32,-(a7)
 	jsr	__trap_1_wl
 	addq.l	#6,a7
 	move.l	d0,-8(a6)
-	;line	67
+	;line	75
 	move.l	-4(a6),a0
 	move.l	(a0),-12(a6)
-	;line	68
+	;line	76
 	move.l	-8(a6),-(a7)
 	move.w	#32,-(a7)
 	jsr	__trap_1_wl
-	;line	69
+	;line	77
 	move.l	-12(a6),d0
 L8:
 	unlk	a6
 	rts
 _doMove:
 	link	a6,#-2
-	movem.l	d3/d4,-(a7)
+	move.l	d3,-(a7)
 	move.l	12(a6),d3
-	;line	84
-	moveq	#1,d4
-	;line	84
+	;line	92
+	move.w	#1,-2(a6)
+	;line	92
 	moveq	#2,d0
 	add.l	d3,d0
 	move.l	d0,-(a7)
 	jsr	_move
 	addq.l	#4,a7
-	;line	85
-	moveq	#34,d0
-	add.l	d3,d0
-	move.l	d0,-(a7)
-	jsr	_move
-	addq.l	#4,a7
-	;line	86
-	move.l	16(a6),-(a7)
-	move.l	d3,-(a7)
-	jsr	_AIChoice
-	addq.l	#8,a7
-	;line	87
-	moveq	#66,d0
-	add.l	d3,d0
-	move.l	d0,-(a7)
-	jsr	_move
-	addq.l	#4,a7
-	;line	88
+	;line	93
 	move.l	d3,-(a7)
 	jsr	_setGhost
 	addq.l	#4,a7
-	;line	89
-	move.l	d3,-(a7)
-	move.l	8(a6),-(a7)
-	jsr	_crashed
-	addq.l	#8,a7
-	tst.w	d0
-	beq	L9
-	;line	90
-	move.w	#8,-(a7)
-	jsr	__trap_1_w
-	addq.l	#2,a7
-	;line	91
-	move.l	d3,-(a7)
-	jsr	_reset
-	addq.l	#4,a7
-	;line	92
-	move.l	d3,-(a7)
-	jsr	_matchStart
-	addq.l	#4,a7
-	;line	93
-	move.w	#37,-(a7)
-	jsr	__trap_14_w
-	addq.l	#2,a7
 	;line	94
+	moveq	#40,d0
+	add.l	d3,d0
+	move.l	d0,-(a7)
+	jsr	_move
+	addq.l	#4,a7
+	;line	95
+	move.l	16(a6),-(a7)
 	move.l	d3,-(a7)
 	move.l	8(a6),-(a7)
-	jsr	_render
-	;line	95
-	moveq	#0,d4
-L9:
+	jsr	_AIChoice
+	lea	12(a7),a7
+	;line	96
+	moveq	#78,d0
+	add.l	d3,d0
+	move.l	d0,-(a7)
+	jsr	_move
 	;line	97
-	move.w	d4,d0
-L10:
-	movem.l	-10(a6),d3/d4
+	move.w	-2(a6),d0
+L9:
+	move.l	-6(a6),d3
 	unlk	a6
 	rts
 _onKey:
@@ -196,39 +185,43 @@ _onKey:
 	;line	111
 	move.l	8(a6),d0
 	sub.l	#65563,d0
-	beq	L12
+	beq	L11
 	sub.l	#4849637,d0
-	beq	L13
+	beq	L12
 	sub.l	#131072,d0
-	beq	L14
+	beq	L13
 	sub.l	#-327680,d0
-	beq	L15
+	beq	L14
 	sub.l	#524288,d0
-	beq	L16
-	bra	L11
-L12:
+	beq	L15
+	bra	L10
+L11:
 	;line	113
 	moveq	#1,d3
 	;line	114
-	bra	L11
+	bra	L10
+L12:
 L13:
 L14:
 L15:
-L16:
 	;line	119
 	move.l	12(a6),d0
 	addq.l	#2,d0
 	move.l	d0,-(a7)
 	move.l	8(a6),-(a7)
 	jsr	_maneuver
-L11:
+L10:
 	;line	121
 	move.w	d3,d0
-L17:
+L16:
 	move.l	-6(a6),d3
 	unlk	a6
 	rts
 	globl	_getTime
 	globl	_onKey
 	globl	_doMove
+	bss
+_framebuffer2:
+	ds.b	32255
+	globl	_framebuffer2
 	globl	_main

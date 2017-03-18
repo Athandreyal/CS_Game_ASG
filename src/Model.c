@@ -9,7 +9,6 @@ Purpose:    Primary model manipulations, initialisation, resetting, etc.
 
 #include "Model.h"
 #include "Events.h"
-
 /*
 ///////////////////////////////////////////////////////////////////
 // Function Name:  init
@@ -48,6 +47,9 @@ void reset(Model *model){
     model->program.cycle.player = 1;
     model->ghost.cycle.player = 2;
     
+    model->user.cycle.bmp = (UINT8*)CYCLE2[0];
+    model->ghost.cycle.bmp = (UINT8*)CYCLE1[2];
+    model->program.cycle.bmp = (UINT8*)CYCLE1[2];
 }
 
 /*
@@ -73,13 +75,7 @@ void matchStart(Model *model){
     model->program.cycle.speed =          norm;
     model->program.cycle.direction[0] =   0;
     model->program.cycle.direction[1] =   1;
-/*
-    model->ghost.cycle.x =              P2STARTX + model->program.cycle.direction[0] * norm;
-    model->ghost.cycle.y =              P2STARTY + model->program.cycle.direction[1] * norm;
-    model->ghost.cycle.speed =          norm;
-    model->ghost.cycle.direction[0] =   0;
-    model->ghost.cycle.direction[1] =   1;
-*/
+
     model->user.cycle.lastPos1[0]    =  -100;
     model->user.cycle.lastPos1[1]    =  -100;
     model->user.cycle.lastPos1[2]    =  0;
@@ -98,6 +94,31 @@ void matchStart(Model *model){
     model->program.cycle.lastPos2[3] =  1;
 }
 
+bool crashed2(UINT8 *base, int x, int y, const UINT8 bitmap[]){
+    int i;
+    bool same = true;
+    UINT8 found;
+    UINT8 LHalf;                            UINT8 RHalf;
+    UINT8 L_Offset = x & REMAINDER_MAX;     UINT8 R_Offset = BITS_PER - (x & REMAINDER_MAX);
+    UINT8 Lmask = LINE_BODY << R_Offset;    UINT8 Rmask = LINE_BODY >> L_Offset;
+    UINT8 col = x >> SHIFT;
+    for (i = 0;i < 8 && same;i++){
+        if (x & REMAINDER_MAX == 0){
+            found = *(base + (y+i) * SCREEN_WIDTH + col) & bitmap[i];
+            same &= found == bitmap[i];
+            }
+        else{
+            LHalf = bitmap[i] >> L_Offset;
+            found = *(base + (y+i) * SCREEN_WIDTH + col) & LHalf;
+            same &= found == LHalf;
+            RHalf = bitmap[i] << R_Offset;
+            found = *(base + (y+i) * SCREEN_WIDTH + col+1) & RHalf;
+            same &= found == RHalf;
+        }
+    }
+    return !same;
+}
+
 /*
 ///////////////////////////////////////////////////////////////////
 // Function Name:  crashed
@@ -108,8 +129,10 @@ void matchStart(Model *model){
 ///////////////////////////////////////////////////////////////////
 */
 bool crashed(UINT8 *base, Model *model){
-    if(model->user.crashed    = collide(base, &(model->user.cycle)))    sub_life(&(model->user));
-    if(model->program.crashed = collide(base, &(model->program.cycle))) sub_life(&(model->program));
+    if(model->user.crashed    = crashed2(base, model->user.cycle.x+BMP_OFFSET,model->user.cycle.y+BMP_OFFSET,model->user.cycle.bmp))
+        sub_life(&(model->user));
+    if(model->program.crashed = crashed2(base, model->program.cycle.x+BMP_OFFSET,model->program.cycle.y+BMP_OFFSET,model->program.cycle.bmp)) 
+        sub_life(&(model->program));
     model->ghost.crashed = collide(base, &(model->ghost.cycle));
     return (model->user.crashed || model->program.crashed);
 }

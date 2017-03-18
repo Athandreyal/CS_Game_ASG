@@ -35,8 +35,6 @@ int main()
     Model* model_ptr = &model;
 	UINT8 *base = Physbase();
     int direction[2] = {0,0};
-/*    FILE *f = fopen("log.txt","w");
-    fclose(f);*/
     clr_scrn(base);
 
     /*diagonal line */
@@ -121,16 +119,12 @@ int main()
     Cnecin();
     Vsync();
     clr_scrn(base); 
-/*    
-    f = fopen("log.txt", "a");
-    fprintf(f,"110 match Start\n");
-  */  
+
     init(model_ptr);
     matchStart(model_ptr);
     render(base, model_ptr);/*why no new placement?*/
     Cnecin();
 
-/*    fprintf(f,"117 cycles in motion\n");*/
     /*run to meeting at center*/
     for(i=0;i<40;i++){
         move(&(model_ptr->user.cycle));

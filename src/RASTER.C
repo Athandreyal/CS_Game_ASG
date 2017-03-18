@@ -140,6 +140,7 @@ void p_btmp_8(UINT8 *base, int x, int y, const UINT8 bitmap[])
     }
 }
 
+
 /*
 ///////////////////////////////////////////////////////////////////
 // Function Name:  clr_scrn

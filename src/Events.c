@@ -58,19 +58,22 @@ void setTurn(Cycle *cycle, UINT32 key){
         case LARW_KEY:
             cycle->direction[0] = -1;
             cycle->direction[1] = 0;
+            cycle->bmp = (cycle->player==0?CYCLE2[3]:CYCLE1[3]);
             break;
         case RARW_KEY:
             cycle->direction[0] = 1;
             cycle->direction[1] = 0;
+            cycle->bmp = (cycle->player==0?CYCLE2[1]:CYCLE1[1]);
             break;
         case UARW_KEY:
             cycle->direction[0] = 0;
             cycle->direction[1] = -1;
+            cycle->bmp = (cycle->player==0?CYCLE2[0]:CYCLE1[0]);
             break;
         case DARW_KEY:
             cycle->direction[0] = 0;
             cycle->direction[1] = 1;
-            break;
+            cycle->bmp = (cycle->player==0?CYCLE2[2]:CYCLE1[2]);
     }
 }
 
@@ -87,11 +90,11 @@ void setTurn(Cycle *cycle, UINT32 key){
 void setSpd2(Cycle *cycle, accelerate accel){
     if (accel == faster){
         if      (cycle->speed == norm) chng_spd(cycle, fast);
-        else if (cycle->speed == slow) chng_spd(cycle, norm);
+/*        else if (cycle->speed == slow) chng_spd(cycle, norm);*/
         }
     else{
         if      (cycle->speed == fast) chng_spd(cycle, norm);
-        else if (cycle->speed == norm) chng_spd(cycle, slow);
+/*        else if (cycle->speed == norm) chng_spd(cycle, slow);*/
         }
 }
 
@@ -129,10 +132,8 @@ void setSpd(Cycle *cycle, UINT32 key){
                 setSpd2(cycle, faster);
             else
                 setSpd2(cycle, slower);
-            break;
     }
 }
-
 
 /*
 ///////////////////////////////////////////////////////////////////
@@ -163,7 +164,6 @@ void chng_spd(Cycle *cycle, velocity speed)
     cycle->speed = speed;
 }
 
-
 /*
 ///////////////////////////////////////////////////////////////////
 // Function Name:  sub_life
@@ -177,7 +177,6 @@ void sub_life(Player *player)
     player->life -= 1;
 }
 
-
 /*
 ///////////////////////////////////////////////////////////////////
 // Function Name:  collide
@@ -187,62 +186,10 @@ void sub_life(Player *player)
 // Outputs:        Cycle *cycle  :their cycle struct
 ///////////////////////////////////////////////////////////////////
 */
-#if 0
-UINT32 collide(UINT8 *base, Cycle *cycle)
-{
-    int col=0;
-    int x1, x2, y1, y2;
-    UINT8 head = LINE_BODY;
-    UINT8 tail = LINE_BODY;
-    UINT32 collision = 0;
-    if (cycle->direction[1] == 0){/*horizontal*/
-        y1 = cycle->y - 2;
-        y2 = cycle->y + 3;
-        if      (cycle->direction[0] == -1){
-            x2 = cycle->x - 2;
-            x1 = x2 - cycle->speed;
-            }
-        else if (cycle->direction[0] ==  1){
-            x1 = cycle->x + 3;
-            x2 = x1 + cycle->speed;
-            }
-        }
-    else{/*vertical*/
-        x1 = cycle->x - 3;
-        x2 = cycle->x + 3;
-        if      (cycle->direction[1] == -1){
-            y2 = cycle->y - 2;
-            y1 = y2 - cycle->speed;
-            }
-        else if (cycle->direction[1] ==  1){
-            y1 = cycle->y + 3;
-            y2 = y1 + cycle->speed;
-            }
-        }
-
-    for(;y1<=y2;y1++){
-        if (x1 > 0 && x2 < SCREEN_WIDTH_PIX && y1 >= 0 && y2 < SCREEN_HEIGHT_PIX){
-            head = head >> (x1 & REMAINDER_MAX);
-            tail = tail << (BITS_PER - (x2 & REMAINDER_MAX));
-            col = x1 >> SHIFT;
-            if (x2 >> SHIFT == col){/*then we start and end in same block, special case, mask both ends*/
-                collision += *(base + y1 * SCREEN_WIDTH + col) & head & tail; 
-            }
-            else {/*start mask, body, end mask*/
-                collision += (*(base + y1 * SCREEN_WIDTH + col) & head) + (*(base + y1 * SCREEN_WIDTH + (col+1)) & tail);
-            }
-        }
-    }
-    return collision;
-}
-#endif
 
 bool collide(UINT8 *base, Cycle *cycle){
     int x, y,i, length, depth, detected;
     bool crash = false;
-    FILE *f = fopen("log.txt","a");
-    fprintf(f,"testing %s {%3d,%3d},[%d,%d], spd:%d, for crash\n",(cycle->player==0?"user   ":(cycle->player==1?"program":"ghost  ")),cycle->x,cycle->y,cycle->direction[0],cycle->direction[1],cycle->speed);
-    fprintf(f,"                          %s\n",(cycle->direction[0]?(cycle->direction[0]==1?"EAST":"WEST"):(cycle->direction[1]==1?"SOUTH":"NORTH")));
     if      (cycle->direction[0] > 0){/*east */
         length = cycle->speed;
         depth = 7;
@@ -271,8 +218,6 @@ bool collide(UINT8 *base, Cycle *cycle){
     for (i=0;i<depth && detected == 0;i++)
         detected += readGrid(base, x, y+i, length);
     crash = (detected > 0);
-    fprintf(f,    "crashed? %s\n",(crash?"true":"false"));
-    fclose(f);
     return crash;
 }
 
@@ -351,6 +296,14 @@ void AITurn(Cycle *cycle,Turn dir){
             cycle->direction[0] = (dir==left?-1:1);
             cycle->direction[1] = 0;
         }
+    if      (cycle->direction[0] == -1)
+        cycle->bmp = CYCLE1[3];
+    else if (cycle->direction[0] ==  1)
+        cycle->bmp = CYCLE1[1];
+    else if (cycle->direction[1] == -1)
+        cycle->bmp = CYCLE1[0];
+    else if (cycle->direction[1] ==  1)
+        cycle->bmp = CYCLE1[2];
 }
 
 /*uses ghost to check for turn collisions
@@ -393,28 +346,18 @@ int ghostTurns(UINT8 *base, Model *model){
 void AIChoice(UINT8 *base, Model *model, long time){
     double random;
     int turns;
-    FILE *f;
     srand((unsigned)time);
     random = ((double)rand())/RAND_MAX;
     if (random > 0.97)             /*fast*/
         chng_spd(&(model->program.cycle), fast);
-    else if (random < 0.03)        /*slow*/
-        chng_spd(&(model->program.cycle), slow);
     else
         chng_spd(&(model->program.cycle), norm);
+/*    else if (random < 0.03)        /*slow*/
+/*        chng_spd(&(model->program.cycle), slow);*/
     model->ghost.crashed = collide(base, &(model->ghost.cycle));
-    f = fopen("log.txt","a");
-    fprintf(f,"ghostCrashed? %s\n",(model->ghost.crashed?"true":"false"));
-    fclose(f);
     if ((model->ghost.crashed) || random > 0.98){
-        f = fopen("log.txt","a");
-        fprintf(f,"crash or random turn?: %s\n",(random > 0.98?"random":"crash"));
-        fclose(f);
         random = ((double)rand())/RAND_MAX;
         turns = ghostTurns(base, model);
-        f = fopen("log.txt","a");
-        fprintf(f,"    turns: %d\n",turns);
-        fclose(f);
         if (turns == 3){
             if(random > 0.5)
                 AITurn(&(model->program.cycle),left);
