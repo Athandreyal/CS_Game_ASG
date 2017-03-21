@@ -13,7 +13,6 @@ Purpose:    Event handlers, various model manipulations
 #include "Events.h"
 #include <stdlib.h>
 #include "Constant.h"
-#include <stdio.h>
 
 #define LARW_KEY  0x004B0000
 #define RARW_KEY  0x004D0000

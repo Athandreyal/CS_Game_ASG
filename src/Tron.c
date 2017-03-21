@@ -19,46 +19,48 @@ Purpose:    Primary game code, Main, doMode, getTime, onKey
 #define UARW_KEY  0x00480000
 #define DARW_KEY  0x00500000
 
+UINT8 framebuffer2[32255];
+
 /*
 ///////////////////////////////////////////////////////////////////
 // Function Name:  main
 // Purpose:        core game code and loop
 ///////////////////////////////////////////////////////////////////
 */
-UINT8 framebuffer2[32255];
-
 void main(){
     Model model;
-	UINT8 *base = Physbase();
-/*    UINT8 *base = initBuffer(framebuffer2);*/
-    bool quit = false;
+    /*UINT8 *base = Physbase();*/
+    UINT8 *base, *base0, *base1;
+    bool buffer, crash, quit;
     long timeNow, timeThen, timeElapsed;
-    bool noCrash = false;
-    timeNow = timeThen = timeElapsed = 0;
-    
+    buffer = crash = quit = false;
+    getScreen(&buffer, &base, &base0, &base1);
+    Setscreen(-1,base,-1);
+    buffer = true;
     init(&model);
-    render(base, &model);
+    timeNow = timeThen = timeElapsed = 0;
     Cnecin();
-    matchStart(&model);
-    do{
-        timeNow = getTime();
-        timeElapsed = timeNow - timeThen;
-        if (Cconis())
-            quit = onKey(Cnecin(), &(model));
-        if (timeElapsed > 1){
-            doMove(base, &model,timeNow);
-            rndr_fld(base, &model);
-            if(crashed(base, &model)){
-                Cnecin();
-                reset(&model);
-                matchStart(&model);
-                Vsync();
-                render(base, &model);
-            }
-            timeThen = timeNow;
-            }
+    do{/*render twice to catch both buffers for a full screen draw*/
+        doReset(&model);
+        render(base, &model);  /*full frame render*/
+        toggleScreen(&buffer, &base, base0, base1);
+        render(base, &model);  /*full frame render*/
+        do{
+            timeNow = getTime();
+            timeElapsed = timeNow - timeThen;
+            if (Cconis())
+                quit = onKey(Cnecin(), &(model));
+            if (timeElapsed > 1){
+                toggleScreen(&buffer, &base, base0, base1);
+                doMove(base, &model,timeNow);
+                rndr_fld(base, &model);/*render the field after the model changes, to reflect the move*/
+                crash = crashed(base, &model);
+                timeThen = timeNow;
+                }
+        }while (!quit && !crash);
+        Cnecin();
     }while (!quit && model.user.life > 0 && model.program.life > 0);
-    /*call cleanup once necessary*/
+    cleanUp(buffer, base0, base1);
 }
 
 /*
@@ -75,6 +77,38 @@ UINT32 getTime(){
     timeNow = (UINT32)*timer;
     Super(old_ssp);
     return timeNow;
+}
+
+void getScreen(bool *buffer, UINT8 **base, UINT8 **base0, UINT8 **base1){
+	*base0 = Physbase();
+    *base1 = (UINT8*)((((long)(&framebuffer2)) + 255) & 0xffffff00);
+    *base = *base1;
+    *buffer = true;
+}
+
+void cleanUp(bool buffer, UINT8 *base0, UINT8 *base1){
+    if (buffer)
+        Setscreen(-1,base0,-1);/*restore the screen*/
+    else
+        Setscreen(-1,base1,-1);/*restore the screen*/
+}
+
+void toggleScreen(bool *buffer, UINT8 **base, UINT8 *base0, UINT8 *base1){
+    if (*buffer){
+        Setscreen(-1, base1, -1);
+        *base = base0;
+        }
+    else{
+        Setscreen(-1, base0, -1);
+        *base = base1;
+        }
+    *buffer = !(*buffer);
+    Vsync();
+}
+
+void doReset(Model *model){
+    reset(model);
+    matchStart(model);
 }
 
 /*

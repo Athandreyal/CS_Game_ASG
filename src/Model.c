@@ -38,10 +38,12 @@ void reset(Model *model){
     int i;
     model->active = false;
     for(i = 0;i<4;i++){
-        model->user.cycle.lastPos1[i]=0;
-        model->user.cycle.lastPos2[i]=0;
-        model->program.cycle.lastPos1[i]=0;
-        model->program.cycle.lastPos2[i]=0;
+        model->user.cycle.last[0][i]=0;
+        model->user.cycle.last[1][i]=0;
+        model->user.cycle.last[2][i]=0;
+        model->program.cycle.last[0][i]=0;
+        model->program.cycle.last[1][i]=0;
+        model->program.cycle.last[2][i]=0;
     }
     model->user.cycle.player = 0;
     model->program.cycle.player = 1;
@@ -50,6 +52,10 @@ void reset(Model *model){
     model->user.cycle.bmp = (UINT8*)CYCLE2[0];
     model->ghost.cycle.bmp = (UINT8*)CYCLE1[2];
     model->program.cycle.bmp = (UINT8*)CYCLE1[2];
+
+    model->user.crashed=false;
+    model->ghost.crashed=false;
+    model->program.crashed=false;
 }
 
 /*
@@ -61,9 +67,6 @@ void reset(Model *model){
 ///////////////////////////////////////////////////////////////////
 */
 void matchStart(Model *model){
-    model->user.crashed=false;
-    model->ghost.crashed=false;
-    model->program.crashed=false;
     model->user.cycle.x =                 P1STARTX;
     model->user.cycle.y =                 P1STARTY;
     model->user.cycle.speed =             norm;
@@ -76,22 +79,31 @@ void matchStart(Model *model){
     model->program.cycle.direction[0] =   0;
     model->program.cycle.direction[1] =   1;
 
-    model->user.cycle.lastPos1[0]    =  -100;
-    model->user.cycle.lastPos1[1]    =  -100;
-    model->user.cycle.lastPos1[2]    =  0;
-    model->user.cycle.lastPos1[3]    =  -1;
-    model->user.cycle.lastPos2[0]    =  -100;
-    model->user.cycle.lastPos2[1]    =  -100;
-    model->user.cycle.lastPos2[2]    =  0;
-    model->user.cycle.lastPos2[3]    =  -1;
-    model->program.cycle.lastPos1[0] =  -100;
-    model->program.cycle.lastPos1[1] =  -100;
-    model->program.cycle.lastPos1[2] =  0;
-    model->program.cycle.lastPos1[3] =  1;
-    model->program.cycle.lastPos2[0] =  -100;
-    model->program.cycle.lastPos2[1] =  -100;
-    model->program.cycle.lastPos2[2] =  0;
-    model->program.cycle.lastPos2[3] =  1;
+    model->user.cycle.last[0][0] = -100;
+    model->user.cycle.last[0][1] = -100;
+    model->user.cycle.last[0][2] = 0;
+    model->user.cycle.last[0][3] = -1;
+    model->user.cycle.last[1][0] = -100;
+    model->user.cycle.last[1][1] = -100;
+    model->user.cycle.last[1][2] = 0;
+    model->user.cycle.last[1][3] = -1;
+    model->user.cycle.last[2][0] = -100;
+    model->user.cycle.last[2][1] = -100;
+    model->user.cycle.last[2][2] = 0;
+    model->user.cycle.last[2][3] = -1;
+    
+    model->program.cycle.last[0][0] = -100;
+    model->program.cycle.last[0][1] = -100;
+    model->program.cycle.last[0][2] = 0;
+    model->program.cycle.last[0][3] = 1;
+    model->program.cycle.last[1][0] = -100;
+    model->program.cycle.last[1][1] = -100;
+    model->program.cycle.last[1][2] = 0;
+    model->program.cycle.last[1][3] = 1;
+    model->program.cycle.last[2][0] = -100;
+    model->program.cycle.last[2][1] = -100;
+    model->program.cycle.last[2][2] = 0;
+    model->program.cycle.last[2][3] = 1;
 }
 
 bool crashed2(UINT8 *base, int x, int y, const UINT8 bitmap[]){
