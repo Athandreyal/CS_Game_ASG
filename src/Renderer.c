@@ -10,7 +10,7 @@ Purpose:    raster driver functions: access the model and call the appropriate r
 #include"Renderer.h"
 #include "RASTER.H"
 #include "Constant.h"
-
+#include <stdio.h>
 
 /*
 ///////////////////////////////////////////////////////////////////
