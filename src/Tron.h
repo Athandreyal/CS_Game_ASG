@@ -13,7 +13,7 @@ UINT32 getTime();
 bool onKey(UINT32 key, Model *model);
 bool doMove(UINT8 *base, Model *model, long timeNow);
 void getScreen(bool *buffer, UINT8 **base, UINT8 **base0, UINT8 **base1);
-void cleanUp(bool buffer, UINT8 *base0, UINT8 *base1);
+void setBuffer(UINT8 *base0);
 void toggleScreen(bool *buffer, UINT8 **base, UINT8 *base0, UINT8 *base1);
 void doReset(Model *model);
 #endif

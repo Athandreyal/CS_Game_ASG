@@ -5,15 +5,8 @@ src/TST
 src/LOG.TXT
 src/LOG2.TXT
 src/TRON
-src/TRON
-src/TRON
 *.db
 src/A.OUT
 *.O
-*.O
 src/TRON.S
 *.I
-*.S
-*.S
-*.I
-src/TRON.S

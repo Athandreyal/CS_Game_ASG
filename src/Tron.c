@@ -12,6 +12,7 @@ Purpose:    Primary game code, Main, doMode, getTime, onKey
 #include "Model.h"
 #include "Events.h"
 #include "Renderer.h"
+#include "mSetScrn.h"
 
 #define ESC_KEY   0x0001001B
 #define LARW_KEY  0x004B0000
@@ -29,13 +30,11 @@ UINT8 framebuffer2[32255];
 */
 void main(){
     Model model;
-    /*UINT8 *base = Physbase();*/
     UINT8 *base, *base0, *base1;
     bool buffer, crash, quit;
     long timeNow, timeThen, timeElapsed;
     buffer = crash = quit = false;
     getScreen(&buffer, &base, &base0, &base1);
-    Setscreen(-1,base,-1);
     buffer = true;
     init(&model);
     timeNow = timeThen = timeElapsed = 0;
@@ -60,7 +59,7 @@ void main(){
         }while (!quit && !crash);
         Cnecin();
     }while (!quit && model.user.life > 0 && model.program.life > 0);
-    cleanUp(buffer, base0, base1);
+    setBuffer(base0);
 }
 
 /*
@@ -80,28 +79,33 @@ UINT32 getTime(){
 }
 
 void getScreen(bool *buffer, UINT8 **base, UINT8 **base0, UINT8 **base1){
+    long old_ssp = Super(0);
 	*base0 = Physbase();
+    myPhysBase(*base0);
+    Super(old_ssp);
     *base1 = (UINT8*)((((long)(&framebuffer2)) + 255) & 0xffffff00);
     *base = *base1;
     *buffer = true;
+    setBuffer(*base);
 }
 
-void cleanUp(bool buffer, UINT8 *base0, UINT8 *base1){
-    if (buffer)
-        Setscreen(-1,base0,-1);/*restore the screen*/
-    else
-        Setscreen(-1,base1,-1);/*restore the screen*/
+void setBuffer(UINT8 *base){
+    long old_ssp = Super(0);
+    mySetScreen(base);
+    Super(old_ssp);
 }
 
 void toggleScreen(bool *buffer, UINT8 **base, UINT8 *base0, UINT8 *base1){
+    long old_ssp = Super(0);
     if (*buffer){
-        Setscreen(-1, base1, -1);
+        mySetScreen(base1);
         *base = base0;
         }
     else{
-        Setscreen(-1, base0, -1);
+        mySetScreen(base0);
         *base = base1;
         }
+    Super(old_ssp);
     *buffer = !(*buffer);
     Vsync();
 }
