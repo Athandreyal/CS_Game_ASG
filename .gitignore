@@ -1,9 +1,12 @@
 *.TOS
+src/TST_RAST
 *.mak
-*.o
 src/TST
-rc/TST_RAST
 src/LOG.TXT
 src/LOG2.TXT
 src/TRON
-src/PSG
+*.db
+src/A.OUT
+*.O
+src/TRON.S
+*.I

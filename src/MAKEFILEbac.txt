@@ -1,0 +1,48 @@
+game: raster.o rast_asm.o Objects.o Model.o Renderer.o Events.o Tron.o Constant.o
+	cc68x -g raster.o rast_asm.o Objects.o Model.o Renderer.o Events.o Tron.o Constant.o -o Tron
+    
+tst_rast: tst_rast.o raster.o rast_asm.o Objects.o Model.o Renderer.o Events.o Constant.o
+	cc68x -g tst_rast.o raster.o Objects.o Model.o Renderer.o Events.o  Constant.o -o tst
+    
+tst_sound: tst_sound.o psg.o
+    cc68x -g tst_sound.o psg.o -o tst_sound
+    
+tst_rast.o: tst_rast.c raster.h
+	cc68x -g -c tst_rast.c
+    
+tst_sound.o: tst_psg.c psg.h
+    cc68x -g -c tst_psg.c
+	
+psg.o: psg.c psg.h
+	cc68x -g -c psg.c
+	
+Tron.o: Tron.c Tron.h    
+	cc68x -g -c Tron.c
+
+raster.o: raster.c raster.h
+	cc68x -g -c raster.c
+
+Events.o: Events.c Events.h
+	cc68x -g -c Events.c
+
+Constant.o: Constant.c Constant.h
+	cc68x -g -c Constant.c
+
+rast_asm.o: rast_asm.s
+	gen -D -L2 rast_asm.s
+
+Objects.o: Objects.c Objects.h
+	cc68x -g -c Objects.c
+    
+Model.o: Model.c Model.h
+	cc68x -g -c Model.c
+    
+Renderer.o: Renderer.c Renderer.h
+	cc68x -g -c Renderer.c
+    
+clean:
+	$(RM) *.o
+    
+all: clean game
+    
+test: clean tst_sound tst_rast 

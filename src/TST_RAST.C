@@ -1,3 +1,12 @@
+/*
+Name:       Phillip Renwick, Jaden McConkey
+Email:      prenw499@mtroyal.ca
+Course:     COMP 2659-001
+Instructor: Paul pospisil
+
+Purpose:    primary game test code. Has numerous stages of testing and rendering built in.
+*/
+
 #include <osbind.h>
 #include "raster.h"
 #include "Objects.h"
@@ -5,10 +14,16 @@
 #include "Renderer.h"
 #include "Model.h"
 #include "Events.h"
-        
+#include "Constant.h"        
 #include <stdio.h>
 
 
+/*
+///////////////////////////////////////////////////////////////////
+// Function Name:  main
+// Purpose:        primary game test code. Has numerous stages of testing and rendering built in.
+///////////////////////////////////////////////////////////////////
+*/
 int main()
 {
     int x,y,i,j,k;
@@ -20,20 +35,18 @@ int main()
     Model* model_ptr = &model;
 	UINT8 *base = Physbase();
     int direction[2] = {0,0};
-/*    FILE *f = fopen("log.txt","w");
-    fclose(f);*/
     clr_scrn(base);
 
     /*diagonal line */
     x = 80;
     y = 20;
-    while( x < SCREEN_WIDTH && y < SCREEN_HEIGHT)
+    while( x < SCREEN_WIDTH_PIX && y < SCREEN_HEIGHT_PIX)
         plot_pix(base, x++, y++);
 
     /*diagonal using p_h_ln*/
     x = 80;
     y = 20;
-    while (x < 640){
+    while (x < SCREEN_WIDTH_PIX){
         p_h_ln(base, x, y, 6);
         x += 5;
         y++;
@@ -42,7 +55,7 @@ int main()
     /*diagonal using p_v_ln*/
     x = 80;
     y = 20;
-    while(y < 400){
+    while(y < SCREEN_HEIGHT_PIX){
         p_v_ln(base, x, y, 6);
         y += 5;
         x++;
@@ -52,7 +65,7 @@ int main()
     x = 110;
     y = 130;
     i = j = 0;
-    for(;i < 80;i++){
+    for(;i < SCREEN_WIDTH;i++){
         p_h_ln(base,x+i,y+i,1+j);/*over one, down one, one longer every other i*/
         j += i & 1;
         }
@@ -106,16 +119,12 @@ int main()
     Cnecin();
     Vsync();
     clr_scrn(base); 
-/*    
-    f = fopen("log.txt", "a");
-    fprintf(f,"110 match Start\n");
-  */  
+
     init(model_ptr);
     matchStart(model_ptr);
     render(base, model_ptr);/*why no new placement?*/
     Cnecin();
 
-/*    fprintf(f,"117 cycles in motion\n");*/
     /*run to meeting at center*/
     for(i=0;i<40;i++){
         move(&(model_ptr->user.cycle));
