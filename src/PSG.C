@@ -1,5 +1,5 @@
 #include <osbind.h>
-
+#include "PSG.h"
 /*Frequencies & volumes */
 #define A_FINE 0
 #define A_COURSE 1 /* lower 4 bits to control */
@@ -24,15 +24,84 @@
 #define IO_PORTA 14
 #define IO_PORTB 15
 
+void setNote(UINT8 channel, UINT32 freq, UINT8 volume)
+{
+    long old_ssp = Super(0);
+    UINT16 TD = getTDVal(freq);
+    UINT8 course;
+    UINT8 cChannel;
+    UINT8 vChannel;
+    UINT8 fine;
+    
+    volatile char *PSG_reg_select = 0xFF8800;
+	volatile char *PSG_reg_write  = 0xFF8802;
+    FILE *f = fopen("log.txt", "a");
+     fprintf(f,"Set note TD Val: %i\n",TD); 
+     fprintf(f,"Channel before switch: %i\n",channel); 
+ 
+    switch(channel){ 
+        case A_FINE: cChannel = A_COURSE;
+                     vChannel = A_LEVEL;
+                     break;
+        case B_FINE: cChannel = B_COURSE;
+                     vChannel = B_LEVEL;
+                     break;
+        case C_FINE: cChannel = C_COURSE;
+                     vChannel = C_LEVEL;
+                     break;
+    }
+    
+    fprintf(f,"cChannel: %i\n", cChannel);
+    fprintf(f,"vChannel: %i\n", vChannel);
+    
+   
+    
+    fine = TD;
+    course = (TD >> 8) & 0x0F;
+    
+    fprintf(f,"Course: %i\n",course );
+    fprintf(f,"Fine: %i\n", fine);  
+    
+    /* fine tune (take lower 8 bits)*/
+    *PSG_reg_select = channel;
+    *PSG_reg_write  = fine;
+    
+    /* course tune (take lower 4 bits)*/
+    *PSG_reg_select = cChannel;
+    *PSG_reg_write  = course;
+    
+    /* Volume (take lower 4 bits)*/
+    *PSG_reg_select = vChannel;
+    *PSG_reg_write  = (volume & 0x0F);   
+    
+    Super(old_ssp);
+    fclose(f);
+}
+UINT16 getTDVal(UINT32 freq)
+{
+   /* assumption that clock speed is 2 MHz */
+   UINT32 clckSpd = 2000000;
+   UINT16 TD = 0;
+   FILE *f = fopen("log.txt", "a");
+   TD = (clckSpd / (16*freq));
+   fprintf(f,"\n");
+   
+   fprintf(f,"GetTDVal output in DEC: %i\n", TD);
+   fprintf(f,"GetTDVal output in HEX: %X\n", TD);
+   fclose(f);
+  
+   return TD;
+}
 
-
-
-int main()
+void tstSound()
 {
 	volatile char *PSG_reg_select = 0xFF8800;
 	volatile char *PSG_reg_write  = 0xFF8802;
 
-	long old_ssp = Super(0);
+    long old_ssp = Super(0);
+    FILE *f = fopen("log.txt", "a");
+    fprintf(f,"Test the fuck out of this shit\n");
+    fclose(f);
     /*divide by 2 to go up an octave
 multiply by 2 to go down
  Note      Period
@@ -91,5 +160,6 @@ multiply by 2 to go down
 
 	Cnecin();
 	Super(old_ssp);
-	return 0;
 }
+
+
