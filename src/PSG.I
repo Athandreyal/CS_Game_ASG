@@ -160,6 +160,18 @@ typedef struct
  long _trap_14_ 	(short,...) ;
  long _trap_13_ 	(short,...) ;
 # 1 "PSG.c" 2
+# 1 "./PSG.h" 1
+# 1 "./TYPES.H" 1
+# 13 "./TYPES.H"
+typedef unsigned char UINT8;
+typedef unsigned int  UINT16;
+typedef unsigned long UINT32;
+typedef enum bool{ false, true } bool;
+
+typedef enum velocity {norm = 4, fast=6} velocity;
+typedef enum accelerate {slower,faster} accelerate;
+typedef enum Turn {left,right} Turn;
+# 4 "./PSG.h" 2
 # 1 "C:/c68/include/stdio.h" 1
 # 20 "C:/c68/include/stdio.h"
 typedef unsigned long  size_t;
@@ -255,31 +267,105 @@ extern	FILE	_iob[];
  void	_getbuf	(FILE *fp) ;
 # 192 "C:/c68/include/stdio.h"
  int	_filbuf	(FILE *) ;
-# 2 "PSG.c" 2
-# 1 "./PSG.h" 1
-# 1 "./TYPES.H" 1
-# 13 "./TYPES.H"
-typedef unsigned char UINT8;
-typedef unsigned int  UINT16;
-typedef unsigned long UINT32;
-typedef enum bool{ false, true } bool;
-typedef enum velocity {slow=2, norm = 4, fast=6} velocity;
-typedef enum accelerate {slower,faster} accelerate;
-typedef enum Turn {left,right} Turn;
-# 3 "./PSG.h" 2
+# 5 "./PSG.h" 2
 
 
-void testSound();
+void setNote(UINT8,UINT32,UINT8);
+void setNoise(UINT8 freq);
 UINT16 getTDVal(UINT32);
-# 3 "PSG.c" 2
-# 29 "PSG.c"
-void testSound()
+void tstSound();
+# 2 "PSG.c" 2
+# 27 "PSG.c"
+void setNoise(UINT8 freq)
 {
+    long old_ssp = _trap_1_wl((short)0x20,(long)(0)) ;
     volatile char *PSG_reg_select = 0xFF8800;
 	volatile char *PSG_reg_write  = 0xFF8802;
 
-	long old_ssp = _trap_1_wl((short)0x20,(long)(0)) ;
+    *PSG_reg_select = 6 ;
+    *PSG_reg_write = (freq & 0x1F);
+     _trap_1_wl((short)0x20,(long)(old_ssp)) ;
+}
 
+void setNote(UINT8 channel, UINT32 freq, UINT8 volume)
+{
+    long old_ssp = _trap_1_wl((short)0x20,(long)(0)) ;
+    UINT16 TD = getTDVal(freq);
+    UINT8 course;
+    UINT8 cChannel;
+    UINT8 vChannel;
+    UINT8 fine;
+
+    volatile char *PSG_reg_select = 0xFF8800;
+	volatile char *PSG_reg_write  = 0xFF8802;
+    FILE *f = fopen("log.txt", "a");
+     fprintf(f,"Set note TD Val: %i\n",TD);
+     fprintf(f,"Channel before switch: %i\n",channel);
+
+    switch(channel){
+        case 0 : cChannel = 1 ;
+                     vChannel = 8 ;
+                     break;
+        case 2 : cChannel = 3 ;
+                     vChannel = 9 ;
+                     break;
+        case 4 : cChannel =;
+                     vChannel = 10 ;
+                     break;
+    }
+
+    fprintf(f,"cChannel: %i\n", cChannel);
+    fprintf(f,"vChannel: %i\n", vChannel);
+
+
+
+    fine = TD;
+    course = (TD >> 8) & 0x0F;
+
+    fprintf(f,"Course: %i\n",course );
+    fprintf(f,"Fine: %i\n", fine);
+
+
+    *PSG_reg_select = channel;
+    *PSG_reg_write  = fine;
+
+
+    *PSG_reg_select = cChannel;
+    *PSG_reg_write  = course;
+
+
+    *PSG_reg_select = vChannel;
+    *PSG_reg_write  = (volume & 0x0F);
+
+    _trap_1_wl((short)0x20,(long)(old_ssp)) ;
+    fclose(f);
+}
+UINT16 getTDVal(UINT32 freq)
+{
+
+   UINT32 clckSpd = 2000000;
+   UINT16 TD = 0;
+   FILE *f = fopen("log.txt", "a");
+   TD = (clckSpd / (16*freq));
+   fprintf(f,"\n");
+
+   fprintf(f,"GetTDVal output in DEC: %i\n", TD);
+   fprintf(f,"GetTDVal output in HEX: %X\n", TD);
+   fclose(f);
+
+   return TD;
+}
+
+void tstSound()
+{
+	volatile char *PSG_reg_select = 0xFF8800;
+	volatile char *PSG_reg_write  = 0xFF8802;
+
+    long old_ssp = _trap_1_wl((short)0x20,(long)(0)) ;
+    FILE *f = fopen("log.txt", "a");
+    fprintf(f,"Test the fuck out of this shit\n");
+    fclose(f);
+# 153 "PSG.c"
     *PSG_reg_select = 0;
 	*PSG_reg_write  = 0xEB;
 
@@ -301,68 +387,4 @@ void testSound()
 
 	_trap_1_w((short)0x08) ;
 	_trap_1_wl((short)0x20,(long)(old_ssp)) ;
-}
-
-
-void setNote(UINT8 channel, UINT32 freq, UINT8 volume)
-{
-    UINT16 TD = getTDVal(freq);
-    UINT8 course;
-    UINT8 cChannel;
-    UINT8 vChannel;
-    UINT8 fine;
-
-    volatile char *PSG_reg_select = 0xFF8800;
-	volatile char *PSG_reg_write  = 0xFF8802;
-    FILE *f = fopen("log.txt", "w");
-
-    switch(channel){
-        case 0 : cChannel = 1 ;
-                     vChannel = 8 ;
-                     break;
-        case 2 : cChannel = 3 ;
-                     vChannel = 9 ;
-                     break;
-        case 4 : cChannel = 5 ;
-                     vChannel = 10 ;
-                     break;
-    }
-
-    fprintf(f,"cChannel: %i\n", cChannel);
-    fprintf(f,"vChannel: %i\n", vChannel);
-
-    fprintf(f,"TD %i\n",TD);
-
-    fine = TD;
-    course = (TD >> 8) & 0x0F;
-
-    fprintf(f,"Course: %i\n",course );
-    fprintf(f,"Fine: %i\n", fine);
-
-
-    *PSG_reg_select = channel;
-    *PSG_reg_write  = fine;
-
-
-    *PSG_reg_select = cChannel;
-    *PSG_reg_write  = course;
-
-
-    *PSG_reg_select = vChannel;
-    *PSG_reg_write  = (volume & 0x0F);
-    fclose(f);
-}
-
-UINT16 getTDVal(UINT32 freq)
-{
-
-   UINT32 clckSpd = 2000000;
-   UINT16 TD = 0;
-   TD = (clckSpd / (16*freq));
-
-   FILE *f = fopen("log.txt", "a");
-   fprintf(f,"GetTDVal output: %X\n", TD);
-   fclose(f);
-
-   return TD;
 }

@@ -24,6 +24,17 @@
 #define IO_PORTA 14
 #define IO_PORTB 15
 
+void setNoise(UINT8 freq)
+{
+    long old_ssp = Super(0);
+    volatile char *PSG_reg_select = 0xFF8800;
+	volatile char *PSG_reg_write  = 0xFF8802;
+    
+    *PSG_reg_select = NOISE_FREQ;
+    *PSG_reg_write = (freq & 0x1F);
+     Super(old_ssp);
+}
+
 void setNote(UINT8 channel, UINT32 freq, UINT8 volume)
 {
     long old_ssp = Super(0);
