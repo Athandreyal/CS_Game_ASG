@@ -1,5 +1,7 @@
 #include <osbind.h>
 #include "PSG.h"
+#include "TYPES.H"
+
 /*Frequencies & volumes */
 #define A_FINE 0
 #define A_COURSE 1 /* lower 4 bits to control */
@@ -24,6 +26,55 @@
 #define IO_PORTA 14
 #define IO_PORTB 15
 
+/*sketch out use in tron update cycle
+UINT32 prevTime = 0;
+UINT32 now;
+UINT32 timeElapsed;
+    
+    
+    
+    new = getTime();
+    timeElapsed = (now - prevTime);
+    prev = now;
+    updtMusc(timeElapsed);
+
+*/
+/*Set Envelope *
+
+UINT8 readPsg(UINT8 register)
+{
+    return 0;
+}
+*/
+
+void setEnvlp(UINT8 shape, UINT32 period)
+{
+}
+/* Change Volume */
+void chngVol(int channel, int volume)
+{
+}
+
+void enable_channel(int channel, int tone_on, int noise_on)
+{
+}
+
+void stop_sound()
+{
+}
+
+void writePsg(UINT8 reg, UINT8 val)
+{
+    long old_ssp = Super(0);
+    volatile char *PSG_reg_select = 0xFF8800;
+	volatile char *PSG_reg_write  = 0xFF8802;
+    
+    *PSG_reg_select = reg;
+    *PSG_reg_write  = val;
+    
+     Super(old_ssp);
+}
+
 void setNoise(UINT8 freq)
 {
     long old_ssp = Super(0);
@@ -37,15 +88,13 @@ void setNoise(UINT8 freq)
 
 void setNote(UINT8 channel, UINT32 freq, UINT8 volume)
 {
-    long old_ssp = Super(0);
     UINT16 TD = getTDVal(freq);
     UINT8 course;
     UINT8 cChannel;
     UINT8 vChannel;
     UINT8 fine;
     
-    volatile char *PSG_reg_select = 0xFF8800;
-	volatile char *PSG_reg_write  = 0xFF8802;
+ 
     FILE *f = fopen("log.txt", "a");
      fprintf(f,"Set note TD Val: %i\n",TD); 
      fprintf(f,"Channel before switch: %i\n",channel); 
@@ -65,8 +114,6 @@ void setNote(UINT8 channel, UINT32 freq, UINT8 volume)
     fprintf(f,"cChannel: %i\n", cChannel);
     fprintf(f,"vChannel: %i\n", vChannel);
     
-   
-    
     fine = TD;
     course = (TD >> 8) & 0x0F;
     
@@ -74,18 +121,14 @@ void setNote(UINT8 channel, UINT32 freq, UINT8 volume)
     fprintf(f,"Fine: %i\n", fine);  
     
     /* fine tune (take lower 8 bits)*/
-    *PSG_reg_select = channel;
-    *PSG_reg_write  = fine;
+    writePsg(channel,fine);
     
     /* course tune (take lower 4 bits)*/
-    *PSG_reg_select = cChannel;
-    *PSG_reg_write  = course;
+    writePsg(cChannel,course);
     
     /* Volume (take lower 4 bits)*/
-    *PSG_reg_select = vChannel;
-    *PSG_reg_write  = (volume & 0x0F);   
+    writePsg(vChannel,(volume & 0x0F));
     
-    Super(old_ssp);
     fclose(f);
 }
 UINT16 getTDVal(UINT32 freq)

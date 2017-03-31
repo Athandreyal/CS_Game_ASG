@@ -8,5 +8,9 @@ src/TRON
 *.db
 src/A.OUT
 *.O
+*.o
 src/TRON.S
 *.I
+*.i
+*.l
+*.L

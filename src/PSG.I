@@ -270,12 +270,47 @@ extern	FILE	_iob[];
 # 5 "./PSG.h" 2
 
 
+UINT8 readPsg(UINT8 register);
+void writePsg(UINT8 reg, UINT8 val);
+void setEnvlp(UINT8 shape, UINT32 period);
+void chngVol(int channel, int volume);
+void enable_channel(int channel, int tone_on, int noise_on);
+void stop_sound();
 void setNote(UINT8,UINT32,UINT8);
 void setNoise(UINT8 freq);
 UINT16 getTDVal(UINT32);
 void tstSound();
 # 2 "PSG.c" 2
-# 27 "PSG.c"
+# 1 "./TYPES.H" 1
+# 3 "PSG.c" 2
+# 49 "PSG.c"
+void writePsg(UINT8 reg, UINT8 val)
+{
+    long old_ssp = _trap_1_wl((short)0x20,(long)(0)) ;
+    volatile char *PSG_reg_select = 0xFF8800;
+	volatile char *PSG_reg_write  = 0xFF8802;
+
+    *PSG_reg_select = reg;
+    *PSG_reg_write  = val;
+
+     _trap_1_wl((short)0x20,(long)(old_ssp)) ;
+}
+void setEnvlp(UINT8 shape, UINT32 period)
+{
+}
+
+void chngVol(int channel, int volume)
+{
+}
+
+void enable_channel(int channel, int tone_on, int noise_on)
+{
+}
+
+void stop_sound()
+{
+}
+
 void setNoise(UINT8 freq)
 {
     long old_ssp = _trap_1_wl((short)0x20,(long)(0)) ;
@@ -289,15 +324,13 @@ void setNoise(UINT8 freq)
 
 void setNote(UINT8 channel, UINT32 freq, UINT8 volume)
 {
-    long old_ssp = _trap_1_wl((short)0x20,(long)(0)) ;
     UINT16 TD = getTDVal(freq);
     UINT8 course;
     UINT8 cChannel;
     UINT8 vChannel;
     UINT8 fine;
 
-    volatile char *PSG_reg_select = 0xFF8800;
-	volatile char *PSG_reg_write  = 0xFF8802;
+
     FILE *f = fopen("log.txt", "a");
      fprintf(f,"Set note TD Val: %i\n",TD);
      fprintf(f,"Channel before switch: %i\n",channel);
@@ -317,8 +350,6 @@ void setNote(UINT8 channel, UINT32 freq, UINT8 volume)
     fprintf(f,"cChannel: %i\n", cChannel);
     fprintf(f,"vChannel: %i\n", vChannel);
 
-
-
     fine = TD;
     course = (TD >> 8) & 0x0F;
 
@@ -326,18 +357,14 @@ void setNote(UINT8 channel, UINT32 freq, UINT8 volume)
     fprintf(f,"Fine: %i\n", fine);
 
 
-    *PSG_reg_select = channel;
-    *PSG_reg_write  = fine;
+    writePsg(channel,fine);
 
 
-    *PSG_reg_select = cChannel;
-    *PSG_reg_write  = course;
+    writePsg(cChannel,course);
 
 
-    *PSG_reg_select = vChannel;
-    *PSG_reg_write  = (volume & 0x0F);
+    writePsg(vChannel,(volume & 0x0F));
 
-    _trap_1_wl((short)0x20,(long)(old_ssp)) ;
     fclose(f);
 }
 UINT16 getTDVal(UINT32 freq)
@@ -365,7 +392,7 @@ void tstSound()
     FILE *f = fopen("log.txt", "a");
     fprintf(f,"Test the fuck out of this shit\n");
     fclose(f);
-# 153 "PSG.c"
+# 194 "PSG.c"
     *PSG_reg_select = 0;
 	*PSG_reg_write  = 0xEB;
 

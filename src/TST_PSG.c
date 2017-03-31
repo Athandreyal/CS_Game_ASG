@@ -20,6 +20,7 @@ int main()
     setNote(CHAN_A,E_4,8);
     setNote(CHAN_B,F_4,5);
     setNote(CHAN_C,C_5,4);
+    setNoise(5);
     while (!Cconis())		/* tone now playing, await key */
 		;
         
