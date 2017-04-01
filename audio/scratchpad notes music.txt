@@ -1,0 +1,21 @@
+update music (soundeffect,song timeelapsed)
+
+note(channel freq vol),noise(freq) enablechannel(chen tone noise)
+
+envelope shape, envelope period, time to run
+
+update music returns time to run 
+
+
+
+
+maybe--------
+if (time elapsed < duration)
+    {
+        duration = update music(
+    }
+    
+    
+    background music --
+    if(timeelapsed >= slice duration 
+    write slice--- 

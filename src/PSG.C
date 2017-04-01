@@ -15,16 +15,20 @@
 #define C_COURSE   /* lower 4 bits to control */
 #define C_LEVEL 10 /* lower 4 bits to control */
 
-#define NOISE_FREQ 6 /* lower 5 bits to control */
+#define NOISE_CHANNEL 6 /* lower 5 bits to control */
+#define MIXER 7
 
-#define ENV_FREQ_FINE 11
-#define ENV_FREQ_COURSE 12
+#define ENV_PERIOD_FINE 11
+#define ENV_PERIOD_COURSE 12
 
 /* lower 4 bits to control */
 #define ENV_SHAPE 13
 
 #define IO_PORTA 14
 #define IO_PORTB 15
+
+#define TONE 1
+#define NOISE 2
 
 /*sketch out use in tron update cycle
 UINT32 prevTime = 0;
@@ -39,28 +43,88 @@ UINT32 timeElapsed;
     updtMusc(timeElapsed);
 
 */
-/*Set Envelope *
-
-UINT8 readPsg(UINT8 register)
+UINT8 readPsg(UINT8 reg)
 {
-    return 0;
+    long old_ssp = Super(0);
+    volatile char *PSG_reg_select = 0xFF8800;
+	volatile char *PSG_reg_write  = 0xFF8802;
+    UINT8 psgVal;
+    
+    *PSG_reg_select = reg;
+     psgVal = *PSG_reg_write;
+    
+     Super(old_ssp);
+     
+    return psgVal;
 }
-*/
 
-void setEnvlp(UINT8 shape, UINT32 period)
+/* max period 65535 min 1 */
+void setEnvlp(UINT8 shape, UINT16 period)
 {
+    UINT8 fine = period;
+    UINT8 course = (period >> 8);
+    writePsg(ENV_PERIOD_FINE, fine);
+    writePsg(ENV_PERIOD_COURSE, course);
+    
+    writePsg(ENV_SHAPE, (shape & 0x0F));
+    
 }
 /* Change Volume */
-void chngVol(int channel, int volume)
+void chngVol(UINT8 channel, UINT8 volume)
 {
+    WritePsg(channel, (volume & 0x0F));
 }
 
-void enable_channel(int channel, int tone_on, int noise_on)
+void setMix(int channel, UINT8 device)
 {
+    UINT8 Setting
+    UINT8 offset;
+    UINT8 psgVal;
+    UINT8 newPsgVal;
+    
+    switch(device){ 
+        case TONE: offset += 0;
+                     break;
+        case NOISE: offset += 3;
+                     break;
+    }
+    switch(channel){ 
+        case A_FINE: offset += 0;
+                     break;
+        case B_FINE: offset += 1;
+                     break;
+        case C_FINE: offset += 2;
+                     break;
+    }
+    
+    psgVal = readPsg();
+    newPsgVal = psgVal | (0x01 << offset)
+    writePsg(MIXER, newPsgVal);
 }
 
 void stop_sound()
 {
+    UINT8 blackout = 0x00;
+    writePsg(A_FINE,blackout);
+    writePsg(A_FINE,blackout);
+    
+    writePsg(B_FINE,blackout);
+    writePsg(B_FINE,blackout);
+    
+    writePsg(C_FINE,blackout);
+    writePsg(C_FINE,blackout);
+    
+    writePsg(NOISE_CHANNEL,blackout);
+    
+    writePsg(MIXER,blackout);
+    
+    writePsg(A_LEVEL,blackout);
+    writePsg(B_LEVEL,blackout);
+    writePsg(B_LEVEL,blackout);
+    
+    writePsg(ENV_PERIOD_FINE,blackout);
+    writePsg(ENV_PERIOD_COURSE,blackout);
+    writePsg(ENV_SHAPE,blackout);
 }
 
 void writePsg(UINT8 reg, UINT8 val)
