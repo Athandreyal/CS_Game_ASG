@@ -30,6 +30,10 @@
 #define TONE 1
 #define NOISE 2
 
+#define CHAN_A 0
+#define CHAN_B 2
+#define CHAN_C 4
+
 /*sketch out use in tron update cycle
 UINT32 prevTime = 0;
 UINT32 now;
@@ -43,15 +47,16 @@ UINT32 timeElapsed;
     updtMusc(timeElapsed);
 
 */
-UINT8 readPsg(UINT8 reg)
+UINT8 readPsg(UINT16 reg)
 {
     long old_ssp = Super(0);
-    volatile char *PSG_reg_select = 0xFF8800;
-	volatile char *PSG_reg_write  = 0xFF8802;
+    volatile UINT16 *PSG_reg_select = 0xFF8800;
+	volatile char *PSG_reg_read  = 0xFF8802;
     UINT8 psgVal;
     
-    *PSG_reg_select = reg;
-     psgVal = *PSG_reg_write;
+    
+    *PSG_reg_select = (reg | 0x0300);
+     psgVal = *PSG_reg_read;
     
      Super(old_ssp);
      
@@ -72,12 +77,17 @@ void setEnvlp(UINT8 shape, UINT16 period)
 /* Change Volume */
 void chngVol(UINT8 channel, UINT8 volume)
 {
-    WritePsg(channel, (volume & 0x0F));
+    writePsg(vChannel, (volume & 0x0F));
 }
 
+void allmOn()
+{
+    
+     writePsg(MIXER, 0xC0 );
+}
 void setMix(int channel, UINT8 device)
 {
-    UINT8 Setting
+    UINT8 Setting;
     UINT8 offset;
     UINT8 psgVal;
     UINT8 newPsgVal;
@@ -97,14 +107,18 @@ void setMix(int channel, UINT8 device)
                      break;
     }
     
-    psgVal = readPsg();
-    newPsgVal = psgVal | (0x01 << offset)
+    psgVal = readPsg(MIXER);
+    newPsgVal = psgVal | (0x01 << offset);
     writePsg(MIXER, newPsgVal);
 }
 
 void stop_sound()
 {
     UINT8 blackout = 0x00;
+    chngVol(CHAN_A,0);
+    chngVol(CHAN_B,0);
+    chngVol(CHAN_C,0);
+  /*
     writePsg(A_FINE,blackout);
     writePsg(A_FINE,blackout);
     
@@ -125,6 +139,7 @@ void stop_sound()
     writePsg(ENV_PERIOD_FINE,blackout);
     writePsg(ENV_PERIOD_COURSE,blackout);
     writePsg(ENV_SHAPE,blackout);
+    */
 }
 
 void writePsg(UINT8 reg, UINT8 val)
@@ -145,7 +160,8 @@ void setNoise(UINT8 freq)
     volatile char *PSG_reg_select = 0xFF8800;
 	volatile char *PSG_reg_write  = 0xFF8802;
     
-    *PSG_reg_select = NOISE_FREQ;
+    /* need to change to xor 0 is out put 1 is off */
+    *PSG_reg_select = NOISE_CHANNEL;
     *PSG_reg_write = (freq & 0x1F);
      Super(old_ssp);
 }
@@ -192,6 +208,7 @@ void setNote(UINT8 channel, UINT32 freq, UINT8 volume)
     
     /* Volume (take lower 4 bits)*/
     writePsg(vChannel,(volume & 0x0F));
+   /* fprintf(f,readPsg(cChannel));*/
     
     fclose(f);
 }

@@ -4,11 +4,12 @@
 #include "TYPES.H"
 #include <stdio.h>
 
-UINT8 readPsg(UINT8 register);
+UINT8 readPsg(UINT16 reg);
+void allmOn();
 void writePsg(UINT8 reg, UINT8 val);
-void setEnvlp(UINT8 shape, UINT32 period);
-void chngVol(int channel, int volume);
-void enable_channel(int channel, int tone_on, int noise_on);
+void setEnvlp(UINT8 shape, UINT16 period);
+void chngVol(UINT8 channel, UINT8 volume);
+void setMix(int channel, UINT8 device);
 void stop_sound();
 void setNote(UINT8,UINT32,UINT8);
 void setNoise(UINT8 freq);
