@@ -35,6 +35,10 @@ int main()
     UINT32 x;
    /* allmOn();*/
     setNoise(0); 
+    setMix(CHAN_A,NOISE);
+    setMix(CHAN_B,NOISE);
+    setMix(CHAN_C,NOISE);
+    
     setEnvlp(0x0F,15625);
     while (!Cconis())		/* tone now playing, await key */
 		;
@@ -73,14 +77,14 @@ int main()
 		;
     setNote(CHAN_A,F_SHARP_4,8);
     setNote(CHAN_B,G_4,5);
-    setNote(CHAN_C,C_SHARP_6,4);
+    setNote(CHAN_C,C_SHARP_6,32);
     Cnecin(); 
 
     while (!Cconis())		/* tone now playing, await key */
 		;
     setNote(CHAN_A,F_SHARP_4,8);
     setNote(CHAN_B,G_4,5);
-    setNote(CHAN_C,A_FLAT_5,4);
+    setNote(CHAN_C,A_FLAT_5,32);
     Cnecin();     
 
     while (!Cconis())		/* tone now playing, await key */

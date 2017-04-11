@@ -77,7 +77,7 @@ void setEnvlp(UINT8 shape, UINT16 period)
 /* Change Volume */
 void chngVol(UINT8 channel, UINT8 volume)
 {
-    writePsg(vChannel, (volume & 0x0F));
+    writePsg(channel, (volume & 0x0F));
 }
 
 void allmOn()
@@ -91,6 +91,9 @@ void setMix(int channel, UINT8 device)
     UINT8 offset;
     UINT8 psgVal;
     UINT8 newPsgVal;
+    long old_ssp = Super(0);
+    volatile UINT16 *PSG_reg_select = 0xFF8800;
+	volatile char *PSG_reg_read  = 0xFF8800;
     
     switch(device){ 
         case TONE: offset += 0;
@@ -103,21 +106,31 @@ void setMix(int channel, UINT8 device)
                      break;
         case B_FINE: offset += 1;
                      break;
+        /* channel c not turning noise off ?? why? */
         case C_FINE: offset += 2;
                      break;
     }
     
-    psgVal = readPsg(MIXER);
+    *PSG_reg_select = MIXER;
+    psgVal = *PSG_reg_read;
+   /* psgVal = readPsg(MIXER);*/
     newPsgVal = psgVal | (0x01 << offset);
+    Super(old_ssp);
     writePsg(MIXER, newPsgVal);
+   
 }
 
 void stop_sound()
 {
     UINT8 blackout = 0x00;
+  /*
     chngVol(CHAN_A,0);
     chngVol(CHAN_B,0);
     chngVol(CHAN_C,0);
+   */ 
+    setNote(CHAN_A,1,0);
+    setNote(CHAN_B,1,0); 
+    setNote(CHAN_C,1,0);
   /*
     writePsg(A_FINE,blackout);
     writePsg(A_FINE,blackout);

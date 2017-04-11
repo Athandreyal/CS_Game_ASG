@@ -315,7 +315,7 @@ void setEnvlp(UINT8 shape, UINT16 period)
 
 void chngVol(UINT8 channel, UINT8 volume)
 {
-    writePsg(vChannel, (volume & 0x0F));
+    writePsg(channel, (volume & 0x0F));
 }
 
 void allmOn()
@@ -329,6 +329,9 @@ void setMix(int channel, UINT8 device)
     UINT8 offset;
     UINT8 psgVal;
     UINT8 newPsgVal;
+    long old_ssp = _trap_1_wl((short)0x20,(long)(0)) ;
+    volatile UINT16 *PSG_reg_select = 0xFF8800;
+	volatile char *PSG_reg_read  = 0xFF8800;
 
     switch(device){
         case 1 : offset += 0;
@@ -345,18 +348,27 @@ void setMix(int channel, UINT8 device)
                      break;
     }
 
-    psgVal = readPsg(7 );
+    *PSG_reg_select = 7 ;
+    psgVal = *PSG_reg_read;
+
     newPsgVal = psgVal | (0x01 << offset);
+    _trap_1_wl((short)0x20,(long)(old_ssp)) ;
     writePsg(7 , newPsgVal);
+
 }
 
 void stop_sound()
 {
     UINT8 blackout = 0x00;
-    chngVol(0 ,0);
-    chngVol(2 ,0);
-    chngVol(4 ,0);
-# 143 "PSG.c"
+
+
+
+
+
+    setNote(0 ,1,0);
+    setNote(2 ,1,0);
+    setNote(4 ,1,0);
+# 155 "PSG.c"
 }
 
 void writePsg(UINT8 reg, UINT8 val)
@@ -454,7 +466,7 @@ void tstSound()
     FILE *f = fopen("log.txt", "a");
     fprintf(f,"Test the fuck out of this shit\n");
     fclose(f);
-# 277 "PSG.c"
+# 289 "PSG.c"
     *PSG_reg_select = 0;
 	*PSG_reg_write  = 0xEB;
 
