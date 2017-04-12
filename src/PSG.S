@@ -226,7 +226,12 @@ _chngVol:
 	rts
 _setMix:
 	link	a6,#-4
-	movem.l	d3/d4,-(a7)
+	movem.l	d3/d4/d5,-(a7)
+	;line	151
+	clr.b	-1(a6)
+	moveq	#0,d3
+	moveq	#0,d5
+	moveq	#0,d4
 	;line	151
 	move.b	11(a6),d0
 	subq.b	#1,d0
@@ -270,7 +275,7 @@ L19:
 	move.w	#7,-(a7)
 	jsr	_readPsg
 	addq.l	#2,a7
-	move.b	d0,d4
+	move.b	d0,d5
 	;line	169
 	moveq	#1,d0
 	clr.w	d1
@@ -278,137 +283,138 @@ L19:
 	asl.w	d1,d0
 	not.w	d0
 	clr.w	d1
-	move.b	d4,d1
-	and.w	d1,d0
-	clr.w	d1
 	move.b	13(a6),d1
 	clr.w	d2
 	move.b	d3,d2
 	asl.w	d2,d1
 	or.w	d1,d0
+	clr.w	d1
+	move.b	d5,d1
+	and.w	d1,d0
 	move.b	d0,d4
 	;line	176
 	clr.w	d0
-	move.b	-4(a6),d0
+	move.b	d4,d0
 	move.w	d0,-(a7)
 	move.w	#7,-(a7)
 	jsr	_writePsg
-	movem.l	-12(a6),d3/d4
+	movem.l	-16(a6),d3/d4/d5
 	unlk	a6
 	rts
 _stop_sound:
 	link	a6,#-2
 	movem.l	d3/a3,-(a7)
 	lea	_writePsg,a3
-	;line	183
+	;line	184
 	moveq	#0,d3
-	;line	183
-	clr.w	-(a7)
-	clr.w	-(a7)
-	jsr	_chngVol
-	addq.l	#4,a7
+	move.b	#255,-2(a6)
 	;line	184
 	clr.w	-(a7)
-	move.w	#2,-(a7)
+	clr.w	-(a7)
 	jsr	_chngVol
 	addq.l	#4,a7
 	;line	185
 	clr.w	-(a7)
+	move.w	#2,-(a7)
+	jsr	_chngVol
+	addq.l	#4,a7
+	;line	186
+	clr.w	-(a7)
 	move.w	#4,-(a7)
 	jsr	_chngVol
 	addq.l	#4,a7
-	;line	192
+	;line	188
 	clr.w	d0
 	move.b	d3,d0
 	move.w	d0,-(a7)
 	clr.w	-(a7)
 	jsr	(a3)
 	addq.l	#4,a7
-	;line	193
+	;line	189
 	clr.w	d0
 	move.b	d3,d0
 	move.w	d0,-(a7)
 	clr.w	-(a7)
+	jsr	(a3)
+	addq.l	#4,a7
+	;line	191
+	clr.w	d0
+	move.b	d3,d0
+	move.w	d0,-(a7)
+	move.w	#2,-(a7)
+	jsr	(a3)
+	addq.l	#4,a7
+	;line	192
+	clr.w	d0
+	move.b	d3,d0
+	move.w	d0,-(a7)
+	move.w	#2,-(a7)
+	jsr	(a3)
+	addq.l	#4,a7
+	;line	194
+	clr.w	d0
+	move.b	d3,d0
+	move.w	d0,-(a7)
+	move.w	#4,-(a7)
 	jsr	(a3)
 	addq.l	#4,a7
 	;line	195
 	clr.w	d0
 	move.b	d3,d0
 	move.w	d0,-(a7)
-	move.w	#2,-(a7)
-	jsr	(a3)
-	addq.l	#4,a7
-	;line	196
-	clr.w	d0
-	move.b	d3,d0
-	move.w	d0,-(a7)
-	move.w	#2,-(a7)
-	jsr	(a3)
-	addq.l	#4,a7
-	;line	198
-	clr.w	d0
-	move.b	d3,d0
-	move.w	d0,-(a7)
 	move.w	#4,-(a7)
 	jsr	(a3)
 	addq.l	#4,a7
-	;line	199
-	clr.w	d0
-	move.b	d3,d0
-	move.w	d0,-(a7)
-	move.w	#4,-(a7)
-	jsr	(a3)
-	addq.l	#4,a7
-	;line	201
+	;line	197
 	clr.w	d0
 	move.b	d3,d0
 	move.w	d0,-(a7)
 	move.w	#6,-(a7)
 	jsr	(a3)
 	addq.l	#4,a7
-	;line	203
+	;line	199
 	clr.w	d0
-	move.b	d3,d0
+	move.b	-2(a6),d0
 	move.w	d0,-(a7)
 	move.w	#7,-(a7)
 	jsr	(a3)
 	addq.l	#4,a7
-	;line	205
+	;line	201
 	clr.w	d0
 	move.b	d3,d0
 	move.w	d0,-(a7)
 	move.w	#8,-(a7)
 	jsr	(a3)
 	addq.l	#4,a7
-	;line	206
+	;line	202
 	clr.w	d0
 	move.b	d3,d0
 	move.w	d0,-(a7)
 	move.w	#9,-(a7)
 	jsr	(a3)
 	addq.l	#4,a7
-	;line	207
+	;line	203
 	clr.w	d0
 	move.b	d3,d0
 	move.w	d0,-(a7)
 	move.w	#9,-(a7)
 	jsr	(a3)
 	addq.l	#4,a7
-	;line	209
+	;line	205
 	clr.w	d0
 	move.b	d3,d0
 	move.w	d0,-(a7)
 	move.w	#11,-(a7)
 	jsr	(a3)
 	addq.l	#4,a7
-	;line	210
+	;line	206
 	clr.w	d0
 	move.b	d3,d0
 	move.w	d0,-(a7)
 	move.w	#12,-(a7)
 	jsr	(a3)
 	addq.l	#4,a7
-	;line	211
+	;line	207
 	clr.w	d0
 	move.b	d3,d0
 	move.w	d0,-(a7)
@@ -419,7 +425,7 @@ _stop_sound:
 	rts
 _setNoise:
 	link	a6,#-12
-	;line	223
+	;line	217
 	pea	0
 	move.w	#32,-(a7)
 	jsr	__trap_1_wl
@@ -427,15 +433,15 @@ _setNoise:
 	move.l	d0,-4(a6)
 	move.l	#16746496,-8(a6)
 	move.l	#16746498,-12(a6)
-	;line	223
+	;line	217
 	move.l	-8(a6),a0
 	move.b	#6,(a0)
-	;line	224
+	;line	218
 	move.b	9(a6),d0
 	and.b	#31,d0
 	move.l	-12(a6),a0
 	move.b	d0,(a0)
-	;line	225
+	;line	219
 	move.l	-4(a6),-(a7)
 	move.w	#32,-(a7)
 	jsr	__trap_1_wl
@@ -443,26 +449,26 @@ _setNoise:
 	rts
 _setEnvlp:
 	link	a6,#-2
-	;line	233
+	;line	227
 	move.b	11(a6),-1(a6)
 	move.w	10(a6),d0
 	lsr.w	#8,d0
 	move.b	d0,-2(a6)
-	;line	233
+	;line	227
 	clr.w	d0
 	move.b	-1(a6),d0
 	move.w	d0,-(a7)
 	move.w	#11,-(a7)
 	jsr	_writePsg
 	addq.l	#4,a7
-	;line	234
+	;line	228
 	clr.w	d0
 	move.b	-2(a6),d0
 	move.w	d0,-(a7)
 	move.w	#12,-(a7)
 	jsr	_writePsg
 	addq.l	#4,a7
-	;line	236
+	;line	230
 	move.b	9(a6),d0
 	and.b	#15,d0
 	and.w	#255,d0
@@ -473,7 +479,7 @@ _setEnvlp:
 	rts
 _allmOn:
 	link	a6,#0
-	;line	243
+	;line	237
 	move.w	#192,-(a7)
 	move.w	#7,-(a7)
 	jsr	_writePsg
@@ -493,7 +499,7 @@ L23:
 _getTDVal:
 	link	a6,#-10
 	movem.l	d3/d4,-(a7)
-	;line	252
+	;line	246
 	move.l	#2000000,-4(a6)
 	moveq	#0,d4
 	pea	L5
@@ -501,34 +507,34 @@ _getTDVal:
 	jsr	_fopen
 	addq.l	#8,a7
 	move.l	d0,d3
-	;line	252
+	;line	246
 	move.l	8(a6),d0
 	asl.l	#4,d0
 	move.l	d0,-(a7)
 	move.l	-4(a6),-(a7)
 	jsr	.Xuldiv
 	move.w	d0,d4
-	;line	253
+	;line	247
 	pea	L23
 	move.l	d3,-(a7)
 	jsr	_fprintf
 	addq.l	#8,a7
-	;line	255
+	;line	249
 	move.w	d4,-(a7)
 	pea	L24
 	move.l	d3,-(a7)
 	jsr	_fprintf
 	lea	10(a7),a7
-	;line	256
+	;line	250
 	move.w	d4,-(a7)
 	pea	L25
 	move.l	d3,-(a7)
 	jsr	_fprintf
 	lea	10(a7),a7
-	;line	257
+	;line	251
 	move.l	d3,-(a7)
 	jsr	_fclose
-	;line	259
+	;line	253
 	move.w	d4,d0
 L26:
 	movem.l	-18(a6),d3/d4
@@ -542,7 +548,7 @@ L27:
 _tstSound:
 	link	a6,#-16
 	movem.l	d3/a3/a4,-(a7)
-	;line	269
+	;line	263
 	lea	16746496,a4
 	lea	16746498,a3
 	pea	0
@@ -555,45 +561,45 @@ _tstSound:
 	jsr	_fopen
 	addq.l	#8,a7
 	move.l	d0,d3
-	;line	269
+	;line	263
 	pea	L27
 	move.l	d3,-(a7)
 	jsr	_fprintf
 	addq.l	#8,a7
-	;line	270
+	;line	264
 	move.l	d3,-(a7)
 	jsr	_fclose
 	addq.l	#4,a7
-	;line	305
+	;line	299
 	clr.b	(a4)
-	;line	306
+	;line	300
 	move.b	#-21,(a3)
-	;line	308
+	;line	302
 	move.b	#1,(a4)
-	;line	309
+	;line	303
 	move.b	#1,(a3)
-	;line	315
+	;line	309
 	move.b	#8,(a4)
-	;line	316
+	;line	310
 	move.b	#3,(a3)
 L28:
 L29:
-	;line	318
+	;line	312
 	move.w	#11,-(a7)
 	jsr	__trap_1_w
 	addq.l	#2,a7
 	tst.w	d0
 	beq	L28
 L30:
-	;line	321
+	;line	315
 	move.b	#8,(a4)
-	;line	322
+	;line	316
 	clr.b	(a3)
-	;line	324
+	;line	318
 	move.w	#8,-(a7)
 	jsr	__trap_1_w
 	addq.l	#2,a7
-	;line	325
+	;line	319
 	move.l	-12(a6),-(a7)
 	move.w	#32,-(a7)
 	jsr	__trap_1_wl

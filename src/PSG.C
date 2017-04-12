@@ -143,10 +143,10 @@ void chngVol(UINT8 channel, UINT8 volume)
 
 void setMix(int channel, UINT8 device, UINT8 onOFF) /*, UINT8 switch)*/
 {
-    UINT8 Setting;
-    UINT8 offset;
-    UINT8 psgVal;
-    UINT8 newPsgVal;
+    UINT8 Setting = 0;
+    UINT8 offset = 0;
+    UINT8 psgVal = 0;
+    UINT8 newPsgVal = 0;
     
     switch(device){ 
         case TONE: offset += 0;
@@ -166,7 +166,7 @@ void setMix(int channel, UINT8 device, UINT8 onOFF) /*, UINT8 switch)*/
     
     psgVal = readPsg(MIXER);
 
-    psgVal = psgVal & ~(1 << offset) | (onOFF << offset);
+    newPsgVal = psgVal & (~(1 << offset) | (onOFF << offset));
     /*
     if(onOFF == ON)
          newPsgVal = psgVal & (0x01 << offset);
@@ -179,15 +179,11 @@ void setMix(int channel, UINT8 device, UINT8 onOFF) /*, UINT8 switch)*/
 void stop_sound()
 {
     UINT8 blackout = 0x00;
+    UINT8 whiteout = 0xFF;
 
     chngVol(CHAN_A,0);
     chngVol(CHAN_B,0);
     chngVol(CHAN_C,0);
-  /*
-    setNote(CHAN_A,1,0);
-    setNote(CHAN_B,1,0); 
-    setNote(CHAN_C,1,0);
-     */ 
  
     writePsg(A_FINE,blackout);
     writePsg(A_FINE,blackout);
@@ -200,7 +196,7 @@ void stop_sound()
     
     writePsg(NOISE_CHANNEL,blackout);
     
-    writePsg(MIXER,blackout);
+    writePsg(MIXER,whiteout);
     
     writePsg(A_LEVEL,blackout);
     writePsg(B_LEVEL,blackout);
@@ -209,7 +205,6 @@ void stop_sound()
     writePsg(ENV_PERIOD_FINE,blackout);
     writePsg(ENV_PERIOD_COURSE,blackout);
     writePsg(ENV_SHAPE,blackout);
-
 }
 
 /*range 1 - 31*/
@@ -218,8 +213,7 @@ void setNoise(UINT8 freq)
     long old_ssp = Super(0);
     volatile char *PSG_reg_select = 0xFF8800;
     volatile char *PSG_reg_write  = 0xFF8802;
-    
-    /* need to change to xor 0 is out put 1 is off */
+
     *PSG_reg_select = NOISE_CHANNEL;
     *PSG_reg_write = (freq & 0x1F);
      Super(old_ssp);

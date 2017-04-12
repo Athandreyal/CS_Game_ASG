@@ -377,10 +377,10 @@ void chngVol(UINT8 channel, UINT8 volume)
 
 void setMix(int channel, UINT8 device, UINT8 onOFF)
 {
-    UINT8 Setting;
-    UINT8 offset;
-    UINT8 psgVal;
-    UINT8 newPsgVal;
+    UINT8 Setting = 0;
+    UINT8 offset = 0;
+    UINT8 psgVal = 0;
+    UINT8 newPsgVal = 0;
 
     switch(device){
         case 1 : offset += 0;
@@ -400,7 +400,7 @@ void setMix(int channel, UINT8 device, UINT8 onOFF)
 
     psgVal = readPsg(7 );
 
-    psgVal = psgVal & ~(1 << offset) | (onOFF << offset);
+    newPsgVal = psgVal & (~(1 << offset) | (onOFF << offset));
 # 176 "PSG.c"
     writePsg(7 , newPsgVal);
 }
@@ -408,11 +408,12 @@ void setMix(int channel, UINT8 device, UINT8 onOFF)
 void stop_sound()
 {
     UINT8 blackout = 0x00;
+    UINT8 whiteout = 0xFF;
 
     chngVol(0 ,0);
     chngVol(2 ,0);
     chngVol(4 ,0);
-# 192 "PSG.c"
+
     writePsg(0 ,blackout);
     writePsg(0 ,blackout);
 
@@ -424,7 +425,7 @@ void stop_sound()
 
     writePsg(6 ,blackout);
 
-    writePsg(7 ,blackout);
+    writePsg(7 ,whiteout);
 
     writePsg(8 ,blackout);
     writePsg(9 ,blackout);
@@ -433,7 +434,6 @@ void stop_sound()
     writePsg(11 ,blackout);
     writePsg(12 ,blackout);
     writePsg(13 ,blackout);
-
 }
 
 
@@ -442,7 +442,6 @@ void setNoise(UINT8 freq)
     long old_ssp = _trap_1_wl((short)0x20,(long)(0)) ;
     volatile char *PSG_reg_select = 0xFF8800;
     volatile char *PSG_reg_write  = 0xFF8802;
-
 
     *PSG_reg_select = 6 ;
     *PSG_reg_write = (freq & 0x1F);
@@ -492,7 +491,7 @@ void tstSound()
     FILE *f = fopen("log.txt", "a");
     fprintf(f,"Test the fuck out of this shit\n");
     fclose(f);
-# 305 "PSG.c"
+# 299 "PSG.c"
     *PSG_reg_select = 0;
 	*PSG_reg_write  = 0xEB;
 
