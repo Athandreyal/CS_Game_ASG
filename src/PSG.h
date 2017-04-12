@@ -9,7 +9,7 @@ void allmOn();
 void writePsg(UINT8 reg, UINT8 val);
 void setEnvlp(UINT8 shape, UINT16 period);
 void chngVol(UINT8 channel, UINT8 volume);
-void setMix(int channel, UINT8 device);
+void setMix(int channel, UINT8 device, UINT8 onOFF);
 void stop_sound();
 void setNote(UINT8,UINT32,UINT8);
 void setNoise(UINT8 freq);
