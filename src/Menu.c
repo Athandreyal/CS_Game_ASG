@@ -1,7 +1,6 @@
 #include "menu.h"
 #include "types.h"
 #include "Objects.h"
-#include "splash.h"
 #include "constant.h"
 #include "raster.h"
 #include "mSetScrn.h"
