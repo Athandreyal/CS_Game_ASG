@@ -9,16 +9,35 @@ Purpose:    Primary game code, Main, doMode, getTime, onKey
 
 #include "Tron.h"
 #include <osbind.h>
+#include <stdlib.h>
 #include "Model.h"
 #include "Events.h"
 #include "Renderer.h"
 #include "mSetScrn.h"
+#include "raster.h"
+#include "Menu.h"
+#include <time.h>
+#include "isr.h"
+#include "isr_asm.h"
 
-#define ESC_KEY   0x0001001B
-#define LARW_KEY  0x004B0000
-#define RARW_KEY  0x004D0000
-#define UARW_KEY  0x00480000
-#define DARW_KEY  0x00500000
+#define ESC_KEY   0x01
+#define LARW_KEY  0x4B
+#define RARW_KEY  0x4D
+#define UARW_KEY  0x48
+#define DARW_KEY  0x50
+#define TRAP_70 70
+
+unsigned char tail;
+unsigned char head;
+int mouse_x_old;
+int mouse_y_old;
+int mouse_x;
+int mouse_y;
+unsigned char keyRegister;
+unsigned char buffer[256];
+unsigned char mouseState;
+unsigned char mouseKeys;
+bool keyWaiting;
 
 UINT8 framebuffer2[32255];
 
@@ -31,35 +50,41 @@ UINT8 framebuffer2[32255];
 void main(){
     Model model;
     UINT8 *base, *base0, *base1;
-    bool buffer, crash, quit;
+    bool buffer, crash, quit, endMatch;
     long timeNow, timeThen, timeElapsed;
-    buffer = crash = quit = false;
+	Vector orig_vector70 = install_vector(TRAP_70,trap70_isr);  /*  kybd  */
+    initKeyboard();
+    buffer = crash = quit = endMatch = false;
     getScreen(&buffer, &base, &base0, &base1);
     buffer = true;
-    init(&model);
     timeNow = timeThen = timeElapsed = 0;
-    Cnecin();
-    do{/*render twice to catch both buffers for a full screen draw*/
-        doReset(&model);
-        render(base, &model);  /*full frame render*/
-        toggleScreen(&buffer, &base, base0, base1);
-        render(base, &model);  /*full frame render*/
-        do{
-            timeNow = getTime();
-            timeElapsed = timeNow - timeThen;
-            if (Cconis())
-                quit = onKey(Cnecin(), &(model));
-            if (timeElapsed > 1){
-                toggleScreen(&buffer, &base, base0, base1);
-                doMove(base, &model,timeNow);
-                rndr_fld(base, &model);/*render the field after the model changes, to reflect the move*/
-                crash = crashed(base, &model);
-                timeThen = timeNow;
-                }
-        }while (!quit && !crash);
-        Cnecin();
-    }while (!quit && model.user.life > 0 && model.program.life > 0);
+    srand(time(NULL));
+    while(!quit){
+        menuInit(&model);
+        quit = menuLoop(&buffer, &base, base0, base1, &model);
+        init(&model);
+        while (!endMatch && (!quit && model.user.life > 0 && model.program.life > 0)){
+            doReset(&model);
+            render(base, &model);
+            toggleScreen(&buffer, &base, base0, base1);
+            render(base, &model);
+            do{
+                timeNow = getTime();
+                timeElapsed = timeNow - timeThen;
+                if (keyWaiting)
+                    endMatch = onKey(&model);
+                if (timeElapsed > 1){
+                    toggleScreen(&buffer, &base, base0, base1);
+                    doMove(base, &model);
+                    rndr_fld(base, &model);/*render the field after the model changes, to reflect the move*/
+                    crash = crashed(base, &model);
+                    timeThen = timeNow;
+                    }
+            }while (!endMatch && !crash);
+        }
+    }
     setBuffer(base0);
+	install_vector(TRAP_70,orig_vector70);
 }
 
 /*
@@ -125,12 +150,12 @@ void doReset(Model *model){
 // Outputs:        Model *model:    the updated game model.
 ///////////////////////////////////////////////////////////////////
 */
-bool doMove(UINT8 *base, Model *model, long timeNow){
+bool doMove(UINT8 *base, Model *model){
     bool noCrash = true;
     move(&(model->user.cycle));
     setGhost(model);
     move(&(model->ghost.cycle));
-    AIChoice(base, model, timeNow);
+    AIChoice(base, model);
     move(&(model->program.cycle));
     return noCrash;
 }
@@ -144,8 +169,12 @@ bool doMove(UINT8 *base, Model *model, long timeNow){
 // Outputs:        Model *model:    the updated game model.
 ///////////////////////////////////////////////////////////////////
 */
-bool onKey(UINT32 key, Model *model){
+bool onKey(Model *model){
+    int origSsp;
+    int origIpl;
     bool quit = false;
+    UINT8 key;
+    getKey(&key);
     switch(key){ 
         case ESC_KEY:
             quit = true;
@@ -156,6 +185,21 @@ bool onKey(UINT32 key, Model *model){
         case DARW_KEY:/*decelerate*/
             maneuver(key, &(model->user.cycle));
     }
+    
+
     return quit;
 }
 
+void getKey(UINT8 *key){
+    int origSsp;
+    int origIpl;
+    while(!keyWaiting);
+    
+    origSsp = Super(0);
+    origIpl = set_ipl(7);
+    *key = buffer[tail];
+    keyWaiting = head == tail;
+    head++;
+    set_ipl(origIpl);
+    Super(origSsp);
+}

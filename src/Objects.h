@@ -21,6 +21,7 @@ Purpose:    Game object struct definitions
 extern UINT8 STICKMAN[];
 extern UINT8 CYCLE1[4][8];
 extern UINT8 CYCLE2[4][8];
+extern UINT32 SPLASH[];
 void drawBackground(UINT8* base);
 void drawLives(UINT8* base, int lives, int player);
 
@@ -61,7 +62,8 @@ typedef struct Player {
 }Player;
 
 typedef struct Model{
-    int active;  /*used to acknowledge if I should register keys or not*/
+    int mode;  
+    int mode2;  
     Player user;
     Player ghost;/*used to predict of 'program' will crash afte next move*/
     Player program;/*its what they were called in Tron :P */

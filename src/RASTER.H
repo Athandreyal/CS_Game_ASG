@@ -17,5 +17,6 @@ void p_h_ln(UINT8 *base, int x, int y, int size);
 void p_v_ln(UINT8 *base, int x, int y, int size);
 void p_btmp_8(UINT8 *base, int x, int y, const UINT8 bitmap[]);
 void clr_scrn(UINT8 *base);
+void plotSplsh(UINT8 *base,UINT32 bitmap[]);
 
 #endif

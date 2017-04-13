@@ -1,8 +1,8 @@
-tst_rast: tst_rast.o raster.o rast_asm.o Objects.o Model.o Renderer.o Events.o Constant.o
-	cc68x -g tst_rast.o raster.o Objects.o Model.o Renderer.o Events.o  Constant.o -o tst
+game: raster.o rast_asm.o Objects.o Model.o Renderer.o Events.o Tron.o Constant.o mSetScrn.o Menu.o isr.o isr_asm.o
+	cc68x -g raster.o rast_asm.o Objects.o Model.o Renderer.o Events.o Tron.o Constant.o mSetScrn.o Menu.o isr.o isr_asm.o -o Tron
 
-game: raster.o rast_asm.o Objects.o Model.o Renderer.o Events.o Tron.o Constant.o mSetScrn.o
-	cc68x -g raster.o rast_asm.o Objects.o Model.o Renderer.o Events.o Tron.o Constant.o mSetScrn.o -o Tron
+tst_rast: tst_rast.o raster.o rast_asm.o Objects.o Model.o Renderer.o Events.o Constant.o
+	cc68x -g tst_rast.o raster.o Objects.o Model.o Renderer.o Events.o Constant.o -o tst
 
 tst_sound: TST_PSG.o PSG.o
 	cc68x -g TST_PSG.o PSG.o -o psg
@@ -39,19 +39,19 @@ Model.o: Model.c Model.h
 
 Renderer.o: Renderer.c Renderer.h
 	cc68x -g -c Renderer.c
-
-phys:clean phys.o pb_asm.o
-	$(RM) phys
-	cc68x -g phys.o pb_asm.o -o phys
-    
-phys.o: physbase.c
-	$(RM) phys.o
-	cc68x -g -c physbase.c -o phys.o
     
 mSetScrn.o: mSetScrn.s
-	$(RM) mSetScrn.o
 	gen -D -L2 mSetScrn.s
-
+    
+Menu.o:Menu.c Menu.h    
+	cc68x -g -c Menu.c
+    
+isr_asm.o:  isr_asm.s
+	gen -D -L2 isr_asm.s
+	
+isr.o: isr.c isr.h
+	cc68x -g -c isr.c
+	    
 clean:
 	$(RM) *.o
     

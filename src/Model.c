@@ -9,6 +9,19 @@ Purpose:    Primary model manipulations, initialisation, resetting, etc.
 
 #include "Model.h"
 #include "Events.h"
+
+void menuInit(Model *model){
+    model->ghost.cycle.x=CHOICE_X;
+    model->ghost.cycle.y=CHOICE_Y;
+    model->mode=1;
+    model->mode2=-1;
+    mouse_x = 0;
+    mouse_y = 0;
+    mouse_x_old = -1;
+    mouse_y_old = -1;
+}
+
+
 /*
 ///////////////////////////////////////////////////////////////////
 // Function Name:  init
@@ -36,7 +49,6 @@ void init(Model *model){
 */
 void reset(Model *model){
     int i;
-    model->active = false;
     for(i = 0;i<4;i++){
         model->user.cycle.last[0][i]=0;
         model->user.cycle.last[1][i]=0;
@@ -147,4 +159,5 @@ bool crashed(UINT8 *base, Model *model){
         sub_life(&(model->program));
     model->ghost.crashed = collide(base, &(model->ghost.cycle));
     return (model->user.crashed || model->program.crashed);
+/*    return false;*/
 }

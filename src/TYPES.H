@@ -18,4 +18,5 @@ typedef enum bool{ false, true } bool;
 typedef enum velocity {norm = 4, fast=6} velocity;
 typedef enum accelerate {slower,faster} accelerate;
 typedef enum Turn {left,right} Turn;
+typedef enum menuPosition {ONE=0, TWO=40, ESCAPE=80} menuPosition;
 #endif

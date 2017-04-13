@@ -156,3 +156,13 @@ void clr_scrn(UINT8 base[])
         for (x = 0;x < SCREEN_WIDTH_LONG;x++)
             *(clrBase + y* SCREEN_WIDTH_LONG + x) = 0;
 }
+
+void plotSplsh(UINT8 *base,UINT32 bitmap[])
+{
+    UINT32 *rebase = (UINT32*)base;
+    int longs = 0;
+    while(longs < 8000){
+        *rebase^=bitmap[longs++];
+        rebase++;
+    }
+}

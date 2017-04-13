@@ -35,4 +35,7 @@ extern int P2STARTY;
 
 extern int PLAYER_LIVES;
 
+extern UINT16 CHOICE_X;
+extern UINT16 CHOICE_Y;
+
 #endif

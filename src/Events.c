@@ -14,10 +14,10 @@ Purpose:    Event handlers, various model manipulations
 #include <stdlib.h>
 #include "Constant.h"
 
-#define LARW_KEY  0x004B0000
-#define RARW_KEY  0x004D0000
-#define UARW_KEY  0x00480000
-#define DARW_KEY  0x00500000
+#define LARW_KEY  0x4B
+#define RARW_KEY  0x4D
+#define UARW_KEY  0x48
+#define DARW_KEY  0x50
 
 /*
 ///////////////////////////////////////////////////////////////////
@@ -28,7 +28,7 @@ Purpose:    Event handlers, various model manipulations
 // Outputs:        Cycle *cycle :their cycle struct
 ///////////////////////////////////////////////////////////////////
 */
-void maneuver(UINT32 key, Cycle* cycle){
+void maneuver(UINT8 key, Cycle* cycle){
     /*speed changes*/
     if     ((key == LARW_KEY && cycle->direction[0]) ||
             (key == RARW_KEY && cycle->direction[0]) ||
@@ -52,7 +52,7 @@ void maneuver(UINT32 key, Cycle* cycle){
 // Outputs:        Cycle *cycle :their cycle struct
 ///////////////////////////////////////////////////////////////////
 */
-void setTurn(Cycle *cycle, UINT32 key){
+void setTurn(Cycle *cycle, UINT8 key){
     switch(key){
         case LARW_KEY:
             cycle->direction[0] = -1;
@@ -106,7 +106,7 @@ void setSpd2(Cycle *cycle, accelerate accel){
 // Outputs:        Cycle *cycle :their cycle struct
 ///////////////////////////////////////////////////////////////////
 */
-void setSpd(Cycle *cycle, UINT32 key){
+void setSpd(Cycle *cycle, UINT8 key){
     switch(key){
         case LARW_KEY:
             if (cycle->direction[0] == -1)
@@ -342,10 +342,9 @@ int ghostTurns(UINT8 *base, Model *model){
 // Outputs:        Model *model  :the current game model, so that the ghost and program can be accessed
 ///////////////////////////////////////////////////////////////////
 */
-void AIChoice(UINT8 *base, Model *model, long time){
+void AIChoice(UINT8 *base, Model *model){
     double random;
     int turns;
-    srand((unsigned)time);
     random = ((double)rand())/RAND_MAX;
     if (random > 0.97)             /*fast*/
         chng_spd(&(model->program.cycle), fast);
