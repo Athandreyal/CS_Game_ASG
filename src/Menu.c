@@ -8,6 +8,7 @@
 #include "model.h"
 #include <stdio.h>
 #include "tron.h"
+#include "isr_asm.h"
 
 #define UARW_KEY  0x48
 #define DARW_KEY  0x50
@@ -109,9 +110,13 @@ void setMenuChoice(UINT8 key, Model *model){
 }
 
 void renderMouse(UINT8 *base){
-    if (mouse_x > -1 && mouse_y > -1)
+    int origSsp = Super(0);
+    int origIpl = set_ipl(7);
+    if (mouse_x_old > -1 && mouse_y_old > -1)
         p_btmp_8(base, mouse_x_old+BMP_OFFSET,mouse_y_old+BMP_OFFSET,CYCLE1[0]);
-    p_btmp_8(base, mouse_x+BMP_OFFSET,mouse_y+BMP_OFFSET,CYCLE1[0]);
     mouse_x_old = mouse_x;
     mouse_y_old = mouse_y;
+    p_btmp_8(base, mouse_x+BMP_OFFSET,mouse_y+BMP_OFFSET,CYCLE1[0]);
+    set_ipl(origIpl);
+    Super(origSsp);
 }
