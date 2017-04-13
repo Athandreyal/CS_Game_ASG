@@ -21,7 +21,7 @@
 bool menuLoop(bool *buffer, UINT8 **base,UINT8 *base0,UINT8 *base1, Model *model){
     bool quit = false;
     UINT8 key;
-    key = 0;
+    bool LRMouse = false;
     fst_blk(*base);
     plotSplsh(*base,SPLASH);/*should be buffer 1 */
     toggleScreen(buffer, base, base0, base1);/*switch to buffer 0*/
@@ -30,16 +30,41 @@ bool menuLoop(bool *buffer, UINT8 **base,UINT8 *base0,UINT8 *base1, Model *model
     else
         renderSplashChoice(base0, model);/*render to current, mode 1, mode2 1*/
     do{
+        key = 0;
         Vsync();
         if(*base != base1)
             renderMouse(base1);
         else
             renderMouse(base0);
             
-        if(keyWaiting)
+        if(keyWaiting || mouseKeys)
         {
-            getKey(&key);
-            quit = ((key == ESC_KEY) || (key == ENT_KEY)) && (model->mode == 0);
+            if (keyWaiting){
+                getKey(&key);
+                quit = ((key == ESC_KEY) || (key == ENT_KEY)) && (model->mode == 0);
+                }
+            else{
+                LRMouse = mouseKeys & 3;
+                if (LRMouse){
+                    quit = false;
+                    if      (mouse_x > 240 && mouse_x < 515 && mouse_y > 208 && mouse_y < 240)
+                    {
+                        setMenuChoice(ONE_KEY,model);
+                        key = ENT_KEY;
+                    }
+                    else if (mouse_x > 240 && mouse_x < 535 && mouse_y > 248 && mouse_y < 275)
+                    {
+                        setMenuChoice(TWO_KEY,model);
+                        key = ENT_KEY;
+                    }
+                    else if (mouse_x > 240 && mouse_x < 420 && mouse_y > 285 && mouse_y < 315)
+                    {
+                        setMenuChoice(ESC_KEY,model);
+                        key = ENT_KEY;
+                        quit = true;
+                    }
+                }
+            }
             if (!quit){
                 setMenuChoice(key,model);
             }

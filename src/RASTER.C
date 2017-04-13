@@ -32,7 +32,7 @@ int MIN(int x, int y){/*move me soon!*/
 ///////////////////////////////////////////////////////////////////
 */
 void plot_pix(UINT8 *base, int x, int y)
-{/* x is int 0-640, y is int 0-200.  Bytes imply width*/ 
+{/* x is int 0-640, y is int 0-400.  Bytes imply width*/ 
     if (x >= 0 && x < SCREEN_WIDTH_PIX && y >= 0 && y < SCREEN_HEIGHT_PIX)
         *(base + y * SCREEN_WIDTH + (x >> SHIFT)) |= MSB >> (x & REMAINDER_MAX);
 }
