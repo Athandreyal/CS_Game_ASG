@@ -19,6 +19,7 @@ Purpose:    Primary game code, Main, doMode, getTime, onKey
 #include <time.h>
 #include "isr.h"
 #include "isr_asm.h"
+#include "Globals.h"
 
 #define ESC_KEY   0x01
 #define LARW_KEY  0x4B
@@ -26,18 +27,6 @@ Purpose:    Primary game code, Main, doMode, getTime, onKey
 #define UARW_KEY  0x48
 #define DARW_KEY  0x50
 #define TRAP_70 70
-
-unsigned char tail;
-unsigned char head;
-int mouse_x_old;
-int mouse_y_old;
-int mouse_x;
-int mouse_y;
-unsigned char keyRegister;
-unsigned char buffer[256];
-unsigned char mouseState;
-unsigned char mouseKeys;
-bool keyWaiting;
 
 UINT8 framebuffer2[32255];
 
@@ -48,8 +37,8 @@ UINT8 framebuffer2[32255];
 ///////////////////////////////////////////////////////////////////
 */
 void main(){
-    Model model;
-    UINT8 *base, *base0, *base1;
+    Model* modelptr = &model;
+    UINT8 *base0, *base1;
     bool buffer, crash, quit, endMatch;
     long timeNow, timeThen, timeElapsed;
 	Vector orig_vector70 = install_vector(TRAP_70,trap70_isr);  /*  kybd  */
@@ -60,24 +49,24 @@ void main(){
     timeNow = timeThen = timeElapsed = 0;
     srand(time(NULL));
     while(!quit){
-        menuInit(&model);
-        quit = menuLoop(&buffer, &base, base0, base1, &model);
-        init(&model);
-        while (!endMatch && (!quit && model.user.life > 0 && model.program.life > 0)){
-            doReset(&model);
-            render(base, &model);
+        menuInit(modelptr);
+        quit = menuLoop(&buffer, &base, base0, base1, modelptr);
+        init(modelptr);
+        while (!endMatch && (!quit && modelptr->user.life > 0 && modelptr->program.life > 0)){
+            doReset(modelptr);
+            render(base, modelptr);
             toggleScreen(&buffer, &base, base0, base1);
-            render(base, &model);
+            render(base, modelptr);
             do{
                 timeNow = getTime();
                 timeElapsed = timeNow - timeThen;
                 if (keyWaiting)
-                    endMatch = onKey(&model);
+                    endMatch = onKey(modelptr);
                 if (timeElapsed > 1){
                     toggleScreen(&buffer, &base, base0, base1);
-                    doMove(base, &model);
-                    rndr_fld(base, &model);/*render the field after the model changes, to reflect the move*/
-                    crash = crashed(base, &model);
+                    doMove(base, modelptr);
+                    rndr_fld(base, modelptr);/*render the field after the model changes, to reflect the move*/
+                    crash = crashed(base, modelptr);
                     timeThen = timeNow;
                     }
             }while (!endMatch && !crash);

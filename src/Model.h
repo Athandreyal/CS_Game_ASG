@@ -3,10 +3,8 @@
 #include "TYPES.H"
 #include "Objects.h"
 #include "Constant.h"
-extern int mouse_x_old;
-extern int mouse_y_old;
-extern int mouse_x;
-extern int mouse_y;
+#include "globals.h"
+
 
 void menuInit(Model *model);
 void init(Model *model);

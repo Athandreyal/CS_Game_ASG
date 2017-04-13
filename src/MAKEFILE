@@ -1,5 +1,5 @@
-game: raster.o rast_asm.o Objects.o Model.o Renderer.o Events.o Tron.o Constant.o mSetScrn.o Menu.o isr.o isr_asm.o
-	cc68x -g raster.o rast_asm.o Objects.o Model.o Renderer.o Events.o Tron.o Constant.o mSetScrn.o Menu.o isr.o isr_asm.o -o Tron
+game: raster.o rast_asm.o Objects.o Model.o Renderer.o Events.o Tron.o Constant.o mSetScrn.o Menu.o isr.o isr_asm.o globals.o
+	cc68x -g raster.o rast_asm.o Objects.o Model.o Renderer.o Events.o Tron.o Constant.o mSetScrn.o Menu.o isr.o isr_asm.o globals.o -o Tron
 
 tst_rast: tst_rast.o raster.o rast_asm.o Objects.o Model.o Renderer.o Events.o Constant.o
 	cc68x -g tst_rast.o raster.o Objects.o Model.o Renderer.o Events.o Constant.o -o tst
@@ -10,6 +10,9 @@ tst_sound: TST_PSG.o PSG.o
 PSG.o: PSG.c PSG.h
 	cc68x -g -c PSG.c
 
+globals.o: globals.c globals.h
+	cc68x -g -c globals.c
+    
 TST_PSG.o: TST_PSG.c PSG.h
 	cc68x -g -c TST_PSG.c
 	
