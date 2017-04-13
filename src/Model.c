@@ -15,8 +15,8 @@ void menuInit(Model *model){
     model->ghost.cycle.y=CHOICE_Y;
     model->mode=1;
     model->mode2=-1;
-    mouse_x = 0;
-    mouse_y = 0;
+    mouse_x = 320;
+    mouse_y = 200;
     mouse_x_old = -1;
     mouse_y_old = -1;
 }

@@ -3,6 +3,8 @@
 void initKeyboard(){
     tail = 0;
     head = 0;
+    mouse_x_old = 0;
+    mouse_y_old = 0;
     mouse_x = 0;
     mouse_y = 0;
     keyRegister = 0;
@@ -32,18 +34,18 @@ void keyboard(){
                 break;
             case 1:/*x*/
                 mouse_x += (int)((signed char)keyRegister);
-                if (mouse_x > 640)
-                    mouse_x = 640;
-                else if (mouse_x < 0)
-                    mouse_x = 0;
+                if (mouse_x > 636)
+                    mouse_x = 636;
+                else if (mouse_x < 4)
+                    mouse_x = 4;
                 mouseState=2;
                 break;
             case 2:/*y*/
                 mouse_y += (int)((signed char)keyRegister);
-                if (mouse_y > 400)
-                    mouse_y = 400;
-                else if (mouse_y < 0)
-                    mouse_y = 0;
+                if (mouse_y > 396)
+                    mouse_y = 396;
+                else if (mouse_y < 4)
+                    mouse_y = 4;
                 mouseState=0;
         }
     }
