@@ -47,7 +47,7 @@ Vector install_vector(int num, Vector vector){
 
 void VBL(){
     ticks++;
-    if (!rndrRqst && ticks >= 3){
+    if (!rndrRqst && (ticks & 1)){
         if (!model.menu){
             if (model.doCrash){
                 if(!crashed());
@@ -58,7 +58,6 @@ void VBL(){
                 model.doCrash = true;
             }
         }
-        ticks = 1;
         rndrRqst = true;
     }
 }

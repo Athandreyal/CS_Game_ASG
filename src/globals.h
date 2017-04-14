@@ -19,7 +19,7 @@ extern  bool rndrRqst;
 extern UINT8 *base;
 extern Model model;
 extern FILE *f;
-extern UINT8 ticks;
+extern UINT32 ticks;
 
 
 

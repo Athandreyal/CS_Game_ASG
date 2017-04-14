@@ -13,7 +13,7 @@ unsigned char mouseKeys;
 bool keyWaiting;
 bool rndrRqst=true;
 FILE *f;
-UINT8 ticks=1;
+UINT32 ticks=0;
 
 
 UINT8 *base;
