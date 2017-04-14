@@ -270,21 +270,70 @@ extern	FILE	_iob[];
 # 5 "./PSG.h" 2
 
 
+UINT32 getTime();
+void wait(UINT32 time);
 UINT8 readPsg(UINT16 reg);
 void allmOn();
 void writePsg(UINT8 reg, UINT8 val);
 void setEnvlp(UINT8 shape, UINT16 period);
+void setEnvSt(UINT8 levelChannel,UINT8 envState);
 void chngVol(UINT8 channel, UINT8 volume);
 void setMix(int channel, UINT8 device, UINT8 onOFF);
 void stop_sound();
-void setNote(UINT8,UINT32,UINT8);
+void setNote(UINT8,UINT32);
 void setNoise(UINT8 freq);
 UINT16 getTDVal(UINT32);
 void tstSound();
+
+typedef struct RegState {
+	UINT32 currentTime;
+
+    UINT8 chanAfine;
+    UINT8 chanAcourse;
+
+    UINT8 chanBfine;
+    UINT8 chanBcourse;
+
+    UINT8 chanCfine;
+    UINT8 chanCcourse;
+
+    UINT8 noise;
+
+    UINT8 mixer;
+
+    UINT8 chanAlevel;
+    UINT8 chanBlevel;
+    UINT8 chanClevel;
+
+    UINT8 envFreq;
+    UINT8 envShape;
+
+}RegState;
 # 2 "PSG.c" 2
 # 1 "./TYPES.H" 1
 # 3 "PSG.c" 2
-# 54 "PSG.c"
+# 67 "PSG.c"
+UINT32 getTime(){
+    long *timer = (long*)0x462;
+    long old_ssp = _trap_1_wl((short)0x20,(long)(0)) ;
+    UINT32 timeNow;
+    timeNow = (UINT32)*timer;
+    _trap_1_wl((short)0x20,(long)(old_ssp)) ;
+    return timeNow;
+}
+
+void wait(UINT32 time)
+{
+    UINT32 originalTime = 0;
+    UINT32 divisor = 17;
+    UINT32 elapsedTime = 0;
+
+    originalTime = getTime();
+
+    while(getTime() <= (originalTime + (divisor*time)))
+        ;
+}
+
 void writePsg(UINT8 reg, UINT8 val)
 {
     long old_ssp = _trap_1_wl((short)0x20,(long)(0)) ;
@@ -322,7 +371,7 @@ UINT8 readPsg(UINT16 reg)
     return psgVal;
 }
 
-void setNote(UINT8 channel, UINT32 freq, UINT8 volume)
+void setNote(UINT8 channel, UINT32 freq)
 {
     UINT16 TD = getTDVal(freq);
     UINT8 course;
@@ -363,16 +412,24 @@ void setNote(UINT8 channel, UINT32 freq, UINT8 volume)
     writePsg(cChannel,course);
 
 
-    writePsg(vChannel,(volume & 0x0F));
 
 
     fclose(f);
 }
 
+void setEnvSt(UINT8 levelChannel,UINT8 envState)
+{
+    UINT8 oldData = 0;
+    UINT8 newState = 0;
+    oldData = readPsg(levelChannel);
 
+
+    writePsg(levelChannel, ((oldData & 0x00) | 0x10));
+}
+# 200 "PSG.c"
 void chngVol(UINT8 channel, UINT8 volume)
 {
-    writePsg(channel, (volume & 0x0F));
+        writePsg(channel, (volume & 0x0F));
 }
 
 void setMix(int channel, UINT8 device, UINT8 onOFF)
@@ -401,7 +458,7 @@ void setMix(int channel, UINT8 device, UINT8 onOFF)
     psgVal = readPsg(7 );
 
     newPsgVal = psgVal & (~(1 << offset) | (onOFF << offset));
-# 176 "PSG.c"
+# 237 "PSG.c"
     writePsg(7 , newPsgVal);
 }
 
@@ -447,17 +504,18 @@ void setNoise(UINT8 freq)
     *PSG_reg_write = (freq & 0x1F);
      _trap_1_wl((short)0x20,(long)(old_ssp)) ;
 }
-
-
+# 296 "PSG.c"
 void setEnvlp(UINT8 shape, UINT16 period)
 {
-    UINT8 fine = period;
-    UINT8 course = (period >> 8);
+    UINT8 fine = 0;
+    UINT8 course = 0;
+
+    fine = period;
+    course = (period >> 8);
     writePsg(11 , fine);
     writePsg(12 , course);
 
     writePsg(13 , (shape & 0x0F));
-
 }
 
 void allmOn()
@@ -491,7 +549,7 @@ void tstSound()
     FILE *f = fopen("log.txt", "a");
     fprintf(f,"Test the fuck out of this shit\n");
     fclose(f);
-# 299 "PSG.c"
+# 374 "PSG.c"
     *PSG_reg_select = 0;
 	*PSG_reg_write  = 0xEB;
 

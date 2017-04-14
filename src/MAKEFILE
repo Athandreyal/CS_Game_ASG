@@ -4,9 +4,12 @@ game: raster.o rast_asm.o Objects.o Model.o Renderer.o Events.o Tron.o Constant.
 tst_rast: tst_rast.o raster.o rast_asm.o Objects.o Model.o Renderer.o Events.o Constant.o
 	cc68x -g tst_rast.o raster.o Objects.o Model.o Renderer.o Events.o Constant.o -o tst
 
-tst_sound: TST_PSG.o PSG.o
-	cc68x -g TST_PSG.o PSG.o -o psg
-	
+tst_sound: TST_PSG.o PSG.o effects.o
+	cc68x -g TST_PSG.o PSG.o effects.o -o psg
+
+effects.o: effects.c effects.h
+	cc68x -g -c effects.c	
+
 PSG.o: PSG.c PSG.h
 	cc68x -g -c PSG.c
 

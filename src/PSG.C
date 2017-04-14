@@ -49,7 +49,41 @@ UINT32 timeElapsed;
     prev = now;
     updtMusc(timeElapsed);
 
+
+
+void playSound(UINT8 Channel, UINT8 envOnOFF, UINT8 noiseOnOff, UINT32 noteFreq, UINT8 envShape, UINT16 envPeriod, UINT8 volume, UINT32 time)
+{
+
+}
 */
+
+/*
+///////////////////////////////////////////////////////////////////
+// Function Name:  getTime
+// Purpose:        access the system timer to onbtaint and return the current time
+// Outputs:        lont timeNow:  the current timer value;
+///////////////////////////////////////////////////////////////////
+*/
+UINT32 getTime(){
+    long *timer = (long*)0x462;
+    long old_ssp = Super(0);
+    UINT32 timeNow;
+    timeNow = (UINT32)*timer;
+    Super(old_ssp);
+    return timeNow;
+}
+
+void wait(UINT32 time)
+{
+    UINT32 originalTime = 0;
+    UINT32 divisor = 17;
+    UINT32 elapsedTime = 0;
+
+    originalTime = getTime();
+
+    while(getTime() <= (originalTime + (divisor*time)))
+        ;
+}
 
 void writePsg(UINT8 reg, UINT8 val)
 {
@@ -88,7 +122,7 @@ UINT8 readPsg(UINT16 reg)
     return psgVal;
 }
 
-void setNote(UINT8 channel, UINT32 freq, UINT8 volume)
+void setNote(UINT8 channel, UINT32 freq)/*, UINT8 volume)*/
 {
     UINT16 TD = getTDVal(freq);
     UINT8 course;
@@ -128,17 +162,44 @@ void setNote(UINT8 channel, UINT32 freq, UINT8 volume)
     /* course tune (take lower 4 bits)*/
     writePsg(cChannel,course);
     
-    /* Volume (take lower 4 bits)*/
+    /* Volume (take lower 4 bits)
     writePsg(vChannel,(volume & 0x0F));
-   /* fprintf(f,readPsg(cChannel));*/
-    
+    */
     fclose(f);
 }
 
-/* Change Volume */
+void setEnvSt(UINT8 levelChannel,UINT8 envState)
+{
+    UINT8 oldData = 0;
+    UINT8 newState = 0;
+    oldData = readPsg(levelChannel);
+    /*newState= oldData & (~(1 << 4) | (envState << 4));
+     writePsg(levelChannel, newState);*/
+    writePsg(levelChannel, ((oldData & 0x00) | 0x10));
+}
+
+/* 
+Change Volume 
+0-1
+1-3
+2-5
+3-7
+4-9
+5-11
+6-13
+7-15
+8-17
+9-19
+10-21
+11-23
+12-25
+13-27
+14-29
+15-31
+*/
 void chngVol(UINT8 channel, UINT8 volume)
 {
-    writePsg(channel, (volume & 0x0F));
+        writePsg(channel, (volume & 0x0F));
 }
 
 void setMix(int channel, UINT8 device, UINT8 onOFF) /*, UINT8 switch)*/
@@ -219,16 +280,30 @@ void setNoise(UINT8 freq)
      Super(old_ssp);
 }
 
-/* max period 65535 min 1 */
+/* max period 65535 min 1 
+
+-0x0? (00xx) -Descent
+-0x04 (01xx) -hitwDropoff
+-0x08        -downSawtooth
+-0x09        -Descent
+-0x0A        -downSine
+-0x0B        -dropdownTomax
+-0x0C        -upsawtooth
+-0x0D        -ascent
+-0x0E        -upSine
+-0x0F        -hitwDropoff
+*/
 void setEnvlp(UINT8 shape, UINT16 period)
 {
-    UINT8 fine = period;
-    UINT8 course = (period >> 8);
+    UINT8 fine = 0;
+    UINT8 course = 0;
+
+    fine = period;
+    course = (period >> 8);
     writePsg(ENV_PERIOD_FINE, fine);
     writePsg(ENV_PERIOD_COURSE, course);
     
-    writePsg(ENV_SHAPE, (shape & 0x0F));
-    
+    writePsg(ENV_SHAPE, (shape & 0x0F));    
 }
 
 void allmOn()
