@@ -132,10 +132,6 @@ void matchStart(){
     model.program.cycle.last[3][3] = 1;
     model.menu = false;
     model.doCrash = false;
-
-    fprintf(f,"reset,    user   : %d   x: %3d  y: %3d  horizontal: %d  Vertical: %d\n",model.user.crashed,model.user.cycle.x,model.user.cycle.y,model.user.cycle.direction[0],model.user.cycle.direction[1]);fflush(f);
-    fprintf(f,"reset,    program: %d   x: %3d  y: %3d  horizontal: %d  Vertical: %d\n\n",model.program.crashed,model.program.cycle.x,model.program.cycle.y,model.program.cycle.direction[0],model.program.cycle.direction[1]);fflush(f);
-    
 }
 
 bool crashed2(int x, int y, const UINT8 bitmap[]){
@@ -148,26 +144,19 @@ bool crashed2(int x, int y, const UINT8 bitmap[]){
     UINT8 col = x >> SHIFT;
     for (i = 0;i < 8 && same;i++){
         if (x & REMAINDER_MAX == 0){
-            fprintf(f,"%02x = ",bitmap[i]);
             found = *(base + (y+i) * SCREEN_WIDTH + col) & bitmap[i];
-            fprintf(f,"%02x ",found);
             same &= found == bitmap[i];
-            fprintf(f,"%s\n",(same?"same":"different"));fflush(f);
             }
         else{
             LHalf = bitmap[i] >> L_Offset;
-            fprintf(f,"%02x",LHalf);
             found = *(base + (y+i) * SCREEN_WIDTH + col) & LHalf;
             same &= found == LHalf;
             RHalf = bitmap[i] << R_Offset;
-            fprintf(f,"%02x = %02x",RHalf,found);
             
             found = *(base + (y+i) * SCREEN_WIDTH + col+1) & RHalf;
             same &= found == RHalf;
-            fprintf(f,"%02x %s\n",found,(same?"same":"different"));
         }
     }
-    fprintf(f,"\n");fflush(f);
     return !same;
 }
 
@@ -181,8 +170,6 @@ bool crashed2(int x, int y, const UINT8 bitmap[]){
 ///////////////////////////////////////////////////////////////////
 */
 bool crashed(){
-    fprintf(f,"crashed2, user   : %d   x: %3d  y: %3d  horizontal: %d  Vertical: %d\n",model.user.crashed,model.user.cycle.x,model.user.cycle.y,model.user.cycle.direction[0],model.user.cycle.direction[1]);fflush(f);
-    fprintf(f,"crashed2, program: %d   x: %3d  y: %3d  horizontal: %d  Vertical: %d\n\n",model.program.crashed,model.program.cycle.x,model.program.cycle.y,model.program.cycle.direction[0],model.program.cycle.direction[1]);fflush(f);
     if(model.user.crashed    = crashed2(model.user.cycle.last[0][0]+BMP_OFFSET,model.user.cycle.last[0][1]+BMP_OFFSET,model.user.cycle.lastbmp[0]))
         sub_life(&(model.user));
     if(model.program.crashed = crashed2(model.program.cycle.last[0][0]+BMP_OFFSET,model.program.cycle.last[0][1]+BMP_OFFSET,model.program.cycle.lastbmp[0])) 
@@ -190,4 +177,22 @@ bool crashed(){
     model.ghost.crashed = collide(&(model.ghost.cycle));
     return (model.user.crashed || model.program.crashed);
 /*    return false;*/
+}
+
+/*
+///////////////////////////////////////////////////////////////////
+// Function Name:  doMove
+// Purpose:        top level move driver: initiates moves, detects crashes, triggers reset when necessary.
+// Inputs:         UINT8 *base :    the frame buffer
+//                 Model *model:    the current game model for manipulation and updating
+//                 long timeNow:    the current timer value, used here for random seeding in AIChoice
+// Outputs:        Model *model:    the updated game model.
+///////////////////////////////////////////////////////////////////
+*/
+void doMove(){
+    move(&(model.user.cycle));
+    setGhost();
+    move(&(model.ghost.cycle));
+    AIChoice();
+    move(&(model.program.cycle));
 }

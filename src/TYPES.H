@@ -19,4 +19,5 @@ typedef enum velocity {norm = 4, fast=6} velocity;
 typedef enum accelerate {slower,faster} accelerate;
 typedef enum Turn {left,right} Turn;
 typedef enum menuPosition {ONE=0, TWO=40, ESCAPE=80} menuPosition;
+typedef void (*Vector)();  /* a vector is a function start address */
 #endif

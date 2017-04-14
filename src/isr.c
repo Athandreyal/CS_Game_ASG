@@ -1,25 +1,6 @@
 #include "isr.h"
 #include "globals.h"
-#include "Events.h"
-
-
-/*
-///////////////////////////////////////////////////////////////////
-// Function Name:  doMove
-// Purpose:        top level move driver: initiates moves, detects crashes, triggers reset when necessary.
-// Inputs:         UINT8 *base :    the frame buffer
-//                 Model *model:    the current game model for manipulation and updating
-//                 long timeNow:    the current timer value, used here for random seeding in AIChoice
-// Outputs:        Model *model:    the updated game model.
-///////////////////////////////////////////////////////////////////
-*/
-void doMove(){
-    move(&(model.user.cycle));
-    setGhost();
-    move(&(model.ghost.cycle));
-    AIChoice();
-    move(&(model.program.cycle));
-}
+#include "Model.h"
 
 void initKeyboard(){
     tail = 0;
