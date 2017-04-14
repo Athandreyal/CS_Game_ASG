@@ -11,11 +11,11 @@ Instructor: Paul pospisil
 
 UINT32 getTime();
 
-bool onKey(Model *model);
-bool doMove(UINT8 *base, Model *model);
-void getScreen(bool *buffer, UINT8 **base, UINT8 **base0, UINT8 **base1);
-void setBuffer(UINT8 *base0);
-void toggleScreen(bool *buffer, UINT8 **base, UINT8 *base0, UINT8 *base1);
-void doReset(Model *model);
+void gameLoop();
+bool onKey();
+void getScreen(bool *buffer, UINT8 **base0, UINT8 **base1);
+void setBuffer(UINT8 *baseX);
+void toggleScreen(bool *buffer, UINT8 *base0, UINT8 *base1);
+void doReset();
 void getKey(UINT8 *key);
 #endif

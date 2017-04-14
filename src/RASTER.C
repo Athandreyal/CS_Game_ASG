@@ -9,7 +9,6 @@ Purpose:    raster graphics functions
 #include "raster.h"
 #include "constant.h"
 
-
 /*
 ///////////////////////////////////////////////////////////////////
 // Function Name:  MIN
@@ -31,7 +30,7 @@ int MIN(int x, int y){/*move me soon!*/
 //                 int x, y   : the x and y co-ordinate to enable
 ///////////////////////////////////////////////////////////////////
 */
-void plot_pix(UINT8 *base, int x, int y)
+void plot_pix(int x, int y)
 {/* x is int 0-640, y is int 0-400.  Bytes imply width*/ 
     if (x >= 0 && x < SCREEN_WIDTH_PIX && y >= 0 && y < SCREEN_HEIGHT_PIX)
         *(base + y * SCREEN_WIDTH + (x >> SHIFT)) |= MSB >> (x & REMAINDER_MAX);
@@ -46,7 +45,7 @@ void plot_pix(UINT8 *base, int x, int y)
 //                 int size   : the length of the line to draw
 ///////////////////////////////////////////////////////////////////
 */
-void p_h_ln(UINT8 *base, int x, int y, int size)
+void p_h_ln(int x, int y, int size)
 {
     int col=0;
     UINT8 head = LINE_BODY;
@@ -90,7 +89,7 @@ void p_h_ln(UINT8 *base, int x, int y, int size)
 //                 int size   : the length of the line to draw
 ///////////////////////////////////////////////////////////////////
 */
-void p_v_ln(UINT8 *base, int x, int y, int size)
+void p_v_ln(int x, int y, int size)
 {
     int i;
     UINT8 col = x >> SHIFT;
@@ -115,7 +114,7 @@ void p_v_ln(UINT8 *base, int x, int y, int size)
 //                 const UINT8 bitmap:  the bitmap to be drawn, assumed 8x8;
 ///////////////////////////////////////////////////////////////////
 */
-void p_btmp_8(UINT8 *base, int x, int y, const UINT8 bitmap[])
+void p_btmp_8(int x, int y, const UINT8 bitmap[])
 {/*plotted from upper left corner as (0,0) to (7,7) at lower right*/
     int i;
     UINT8 LHalf;                        UINT8 RHalf;
@@ -148,7 +147,7 @@ void p_btmp_8(UINT8 *base, int x, int y, const UINT8 bitmap[])
 // Inputs:         UINT8 *base: the screen buffer
 ///////////////////////////////////////////////////////////////////
 */
-void clr_scrn(UINT8 base[])
+void clr_scrn()
 {
     int x,y;
     UINT32 *clrBase = (UINT32*)base;/*fewer ops in 32 bit;*/
@@ -157,7 +156,7 @@ void clr_scrn(UINT8 base[])
             *(clrBase + y* SCREEN_WIDTH_LONG + x) = 0;
 }
 
-void plotSplsh(UINT8 *base,UINT32 bitmap[])
+void plotSplsh(UINT32 bitmap[])
 {
     UINT32 *rebase = (UINT32*)base;
     int longs = 0;

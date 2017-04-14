@@ -186,7 +186,7 @@ void sub_life(Player *player)
 ///////////////////////////////////////////////////////////////////
 */
 
-bool collide(UINT8 *base, Cycle *cycle){
+bool collide(Cycle *cycle){
     int x, y,i, length, depth, detected;
     bool crash = false;
     if      (cycle->direction[0] > 0){/*east */
@@ -215,12 +215,12 @@ bool collide(UINT8 *base, Cycle *cycle){
         }
     detected=0;
     for (i=0;i<depth && detected == 0;i++)
-        detected += readGrid(base, x, y+i, length);
+        detected += readGrid(x, y+i, length);
     crash = (detected > 0);
     return crash;
 }
 
-int readGrid(UINT8 *base, int x, int y,int length){
+int readGrid(int x, int y,int length){
     /*out of bounds detection is unecessary because the grid border is large enough to prevent us getting there*/
     UINT8 detected = 0;
     int column = x >> SHIFT;
@@ -260,13 +260,13 @@ void move(Cycle* cycle){
 // Outputs:        Model *model  :the current model, updated
 ///////////////////////////////////////////////////////////////////
 */
-void setGhost(Model *model){
-    model->ghost.crashed = false;
-    model->ghost.cycle.speed = model->program.cycle.speed;
-    model->ghost.cycle.x = model->program.cycle.x;
-    model->ghost.cycle.y = model->program.cycle.y;
-    model->ghost.cycle.direction[0] = model->program.cycle.direction[0];
-    model->ghost.cycle.direction[1] = model->program.cycle.direction[1];
+void setGhost(){
+    model.ghost.crashed = false;
+    model.ghost.cycle.speed = model.program.cycle.speed;
+    model.ghost.cycle.x = model.program.cycle.x;
+    model.ghost.cycle.y = model.program.cycle.y;
+    model.ghost.cycle.direction[0] = model.program.cycle.direction[0];
+    model.ghost.cycle.direction[1] = model.program.cycle.direction[1];
 }
 
 /*
@@ -311,18 +311,18 @@ void AITurn(Cycle *cycle,Turn dir){
     2 right
     3 both
 */    
-int ghostTurns(UINT8 *base, Model *model){
+int ghostTurns(){
     bool crashLeft, crashRight;
     int result;
-    Cycle *ghost = &(model->ghost.cycle);
-    setGhost(model); /* re-attach ghost*/
+    Cycle *ghost = &(model.ghost.cycle);
+    setGhost(); /* re-attach ghost*/
     AITurn(ghost,left);/*turn ghost left*/
-    move(&(model->ghost.cycle));
-    crashLeft = collide(base, ghost);/*test ghost crash*/
-    setGhost(model);
+    move(&(model.ghost.cycle));
+    crashLeft = collide(ghost);/*test ghost crash*/
+    setGhost();
     AITurn(ghost,right);/*turn ghost right*/
-    move(&(model->ghost.cycle));
-    crashRight = collide(base, ghost);/*test ghost crash*/
+    move(&(model.ghost.cycle));
+    crashRight = collide(ghost);/*test ghost crash*/
     if      (crashLeft && crashRight)   result = 0;
     else if (crashRight)                result = 1;
     else if (crashLeft)                 result = 2;
@@ -342,30 +342,30 @@ int ghostTurns(UINT8 *base, Model *model){
 // Outputs:        Model *model  :the current game model, so that the ghost and program can be accessed
 ///////////////////////////////////////////////////////////////////
 */
-void AIChoice(UINT8 *base, Model *model){
+void AIChoice(){
     double random;
     int turns;
     random = ((double)rand())/RAND_MAX;
     if (random > 0.97)             /*fast*/
-        chng_spd(&(model->program.cycle), fast);
+        chng_spd(&(model.program.cycle), fast);
     else
-        chng_spd(&(model->program.cycle), norm);
+        chng_spd(&(model.program.cycle), norm);
 /*    else if (random < 0.03)        /*slow*/
 /*        chng_spd(&(model->program.cycle), slow);*/
-    model->ghost.crashed = collide(base, &(model->ghost.cycle));
-    if ((model->ghost.crashed) || random > 0.98){
+    model.ghost.crashed = collide(&(model.ghost.cycle));
+    if ((model.ghost.crashed) || random > 0.98){
         random = ((double)rand())/RAND_MAX;
-        turns = ghostTurns(base, model);
+        turns = ghostTurns();
         if (turns == 3){
             if(random > 0.5)
-                AITurn(&(model->program.cycle),left);
+                AITurn(&(model.program.cycle),left);
             else
-                AITurn(&(model->program.cycle),right);
+                AITurn(&(model.program.cycle),right);
             }
         else if (turns == 2)
-            AITurn(&(model->program.cycle),right);
+            AITurn(&(model.program.cycle),right);
         else if (turns == 1)
-            AITurn(&(model->program.cycle),left);
+            AITurn(&(model.program.cycle),left);
     }
-    setGhost(model);
+    setGhost();
 }

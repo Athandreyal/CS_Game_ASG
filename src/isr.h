@@ -9,6 +9,7 @@
 #define TRAP_70 70
 #include "Model.h"
 #include "globals.h"
+void doMove();
 
 UINT32 getTime();
 typedef void (*Vector)();  /* a vector is a function start address */
@@ -16,5 +17,6 @@ typedef void (*Vector)();  /* a vector is a function start address */
 void keyboard();
 Vector install_vector(int num, Vector vector);
 void initKeyboard();
+void VBL();
 
 #endif

@@ -1,4 +1,25 @@
 #include "isr.h"
+#include "globals.h"
+#include "Events.h"
+
+
+/*
+///////////////////////////////////////////////////////////////////
+// Function Name:  doMove
+// Purpose:        top level move driver: initiates moves, detects crashes, triggers reset when necessary.
+// Inputs:         UINT8 *base :    the frame buffer
+//                 Model *model:    the current game model for manipulation and updating
+//                 long timeNow:    the current timer value, used here for random seeding in AIChoice
+// Outputs:        Model *model:    the updated game model.
+///////////////////////////////////////////////////////////////////
+*/
+void doMove(){
+    move(&(model.user.cycle));
+    setGhost();
+    move(&(model.ghost.cycle));
+    AIChoice();
+    move(&(model.program.cycle));
+}
 
 void initKeyboard(){
     tail = 0;
@@ -22,6 +43,24 @@ Vector install_vector(int num, Vector vector){
 	*vectp = vector;
 	Super(old_ssp);
 	return orig;
+}
+
+void VBL(){
+    ticks++;
+    if (!rndrRqst && ticks >= 3){
+        if (!model.menu){
+            if (model.doCrash){
+                if(!crashed());
+                    doMove();
+            }
+            else{
+                doMove();
+                model.doCrash = true;
+            }
+        }
+        ticks = 1;
+        rndrRqst = true;
+    }
 }
 
 void keyboard(){

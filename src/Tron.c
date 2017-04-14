@@ -19,7 +19,7 @@ Purpose:    Primary game code, Main, doMode, getTime, onKey
 #include <time.h>
 #include "isr.h"
 #include "isr_asm.h"
-#include "Globals.h"
+#include "globals.h"
 
 #define ESC_KEY   0x01
 #define LARW_KEY  0x4B
@@ -27,6 +27,7 @@ Purpose:    Primary game code, Main, doMode, getTime, onKey
 #define UARW_KEY  0x48
 #define DARW_KEY  0x50
 #define TRAP_70 70
+#define TRAP_28 28
 
 UINT8 framebuffer2[32255];
 
@@ -37,43 +38,53 @@ UINT8 framebuffer2[32255];
 ///////////////////////////////////////////////////////////////////
 */
 void main(){
-    Model* modelptr = &model;
     UINT8 *base0, *base1;
-    bool buffer, crash, quit, endMatch;
-    long timeNow, timeThen, timeElapsed;
+    bool buffer, quit;
 	Vector orig_vector70 = install_vector(TRAP_70,trap70_isr);  /*  kybd  */
+	Vector orig_vector28 = install_vector(TRAP_28,trap28_isr);  /*  VBL  */
+    rndrRqst = false;
+    f = fopen("log.txt","w");
+    fclose(f);
+    f = fopen("log.txt","a");
+    
     initKeyboard();
-    buffer = crash = quit = endMatch = false;
-    getScreen(&buffer, &base, &base0, &base1);
+    buffer = quit = false;
+    getScreen(&buffer, &base0, &base1);
     buffer = true;
-    timeNow = timeThen = timeElapsed = 0;
+    quit = false;
     srand(time(NULL));
     while(!quit){
-        menuInit(modelptr);
-        quit = menuLoop(&buffer, &base, base0, base1, modelptr);
-        init(modelptr);
-        while (!endMatch && (!quit && modelptr->user.life > 0 && modelptr->program.life > 0)){
-            doReset(modelptr);
-            render(base, modelptr);
-            toggleScreen(&buffer, &base, base0, base1);
-            render(base, modelptr);
-            do{
-                timeNow = getTime();
-                timeElapsed = timeNow - timeThen;
-                if (keyWaiting)
-                    endMatch = onKey(modelptr);
-                if (timeElapsed > 1){
-                    toggleScreen(&buffer, &base, base0, base1);
-                    doMove(base, modelptr);
-                    rndr_fld(base, modelptr);/*render the field after the model changes, to reflect the move*/
-                    crash = crashed(base, modelptr);
-                    timeThen = timeNow;
-                    }
-            }while (!endMatch && !crash);
+        menuInit();
+        quit = menuLoop(&buffer, base0, base1);
+        if (!quit){
+            init();
+            gameLoop(&buffer, base0, base1);
         }
     }
     setBuffer(base0);
 	install_vector(TRAP_70,orig_vector70);
+	install_vector(TRAP_28,orig_vector28);
+}
+
+void gameLoop(bool *buffer, UINT8 *base0, UINT8 *base1){
+    bool endMatch = false;
+    bool crash = false;
+    while (!endMatch && (model.user.life > 0 && model.program.life > 0)){
+        doReset();
+        render();
+        toggleScreen(buffer, base0, base1);
+        render();
+        do{
+            if (keyWaiting)
+                endMatch = onKey();
+            if (rndrRqst){
+                toggleScreen(buffer, base0, base1);
+                rndr_fld();/*render the field after the model changes, to reflect the move*/
+                crash = (model.program.crashed || model.user.crashed);
+                rndrRqst = false;
+            }
+        }while (!endMatch && !crash);
+    }
 }
 
 /*
@@ -92,36 +103,35 @@ UINT32 getTime(){
     return timeNow;
 }
 
-void getScreen(bool *buffer, UINT8 **base, UINT8 **base0, UINT8 **base1){
+void getScreen(bool *buffer, UINT8 **base0, UINT8 **base1){
     long old_ssp = Super(0);
 	*base0 = Physbase();
     myPhysBase(*base0);
     Super(old_ssp);
     *base1 = (UINT8*)((((long)(&framebuffer2)) + 255) & 0xffffff00);
-    *base = *base1;
+    base = *base1;
     *buffer = true;
-    setBuffer(*base);
+    setBuffer(base);
 }
 
-void setBuffer(UINT8 *base){
+void setBuffer(UINT8 *baseX){
     long old_ssp = Super(0);
-    mySetScreen(base);
+    mySetScreen(baseX);
     Super(old_ssp);
 }
 
-void toggleScreen(bool *buffer, UINT8 **base, UINT8 *base0, UINT8 *base1){
+void toggleScreen(bool *buffer, UINT8 *base0, UINT8 *base1){
     long old_ssp = Super(0);
     if (*buffer){
         mySetScreen(base1);
-        *base = base0;
+        base = base0;
         }
     else{
         mySetScreen(base0);
-        *base = base1;
+        base = base1;
         }
     Super(old_ssp);
     *buffer = !(*buffer);
-    Vsync();
 }
 
 void doReset(Model *model){
@@ -129,25 +139,6 @@ void doReset(Model *model){
     matchStart(model);
 }
 
-/*
-///////////////////////////////////////////////////////////////////
-// Function Name:  doMove
-// Purpose:        top level move driver: initiates moves, detects crashes, triggers reset when necessary.
-// Inputs:         UINT8 *base :    the frame buffer
-//                 Model *model:    the current game model for manipulation and updating
-//                 long timeNow:    the current timer value, used here for random seeding in AIChoice
-// Outputs:        Model *model:    the updated game model.
-///////////////////////////////////////////////////////////////////
-*/
-bool doMove(UINT8 *base, Model *model){
-    bool noCrash = true;
-    move(&(model->user.cycle));
-    setGhost(model);
-    move(&(model->ghost.cycle));
-    AIChoice(base, model);
-    move(&(model->program.cycle));
-    return noCrash;
-}
 
 /*
 ///////////////////////////////////////////////////////////////////
@@ -158,7 +149,7 @@ bool doMove(UINT8 *base, Model *model){
 // Outputs:        Model *model:    the updated game model.
 ///////////////////////////////////////////////////////////////////
 */
-bool onKey(Model *model){
+bool onKey(){
     int origSsp;
     int origIpl;
     bool quit = false;
@@ -172,7 +163,7 @@ bool onKey(Model *model){
         case RARW_KEY:/*right turn*/
         case UARW_KEY:/*accelerate*/
         case DARW_KEY:/*decelerate*/
-            maneuver(key, &(model->user.cycle));
+            maneuver(key, &(model.user.cycle));
     }
     
 

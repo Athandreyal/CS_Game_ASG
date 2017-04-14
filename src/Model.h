@@ -6,11 +6,11 @@
 #include "globals.h"
 
 
-void menuInit(Model *model);
-void init(Model *model);
-void reset(Model *model);
-bool crashed(UINT8 *base, Model *model);
-void matchStart(Model *model);
-bool crashed2(UINT8 *base, int x, int y, const UINT8 bitmap[]);
+void menuInit();
+void init();
+void reset();
+bool crashed();
+void matchStart();
+bool crashed2(int x, int y, const UINT8 bitmap[]);
 
 #endif

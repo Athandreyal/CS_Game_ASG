@@ -19,9 +19,9 @@ void sub_life(Player *player);
 void maneuver(UINT8 key, Cycle* cycle);
 void move(Cycle* cycle);
 /*UINT32 collide(UINT8 *base, Cycle *cycle);*/
-bool collide(UINT8 *base, Cycle *cycle);
-int readGrid(UINT8 *base, int x, int y,int length);
+bool collide(Cycle *cycle);
+int readGrid(int x, int y,int length);
 void AITurn(Cycle *cycle,Turn dir);
-void AIChoice(UINT8 *base, Model *model);
-void setGhost(Model *model);
+void AIChoice();
+void setGhost();
 #endif

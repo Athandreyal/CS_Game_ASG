@@ -48,10 +48,10 @@ typedef struct Cycle {
     int y;
     int speed;
     int direction[2];
-    int last[3][4];/* xy coords, direction[x,y] -- where were we*/
+    int last[4][4];/* xy coords, direction[x,y] -- where were we*/
     int player;/*0 for player, 1 for AI, 2 for ghost*/
     UINT8 *bmp;
-    UINT8 *lastbmp[3];
+    UINT8 *lastbmp[4];
 }Cycle;
 
 typedef struct Player {
@@ -64,6 +64,8 @@ typedef struct Player {
 typedef struct Model{
     int mode;  
     int mode2;  
+    bool menu;
+    bool doCrash;
     Player user;
     Player ghost;/*used to predict of 'program' will crash afte next move*/
     Player program;/*its what they were called in Tron :P */

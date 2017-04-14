@@ -6,13 +6,16 @@ int mouse_x_old;
 int mouse_y_old;
 int mouse_x;
 int mouse_y;
-volatile unsigned char keyRegister;
+unsigned char keyRegister;
 unsigned char buffer[256];
-volatile unsigned char mouseState;
-volatile unsigned char mouseKeys;
-volatile bool keyWaiting;
-volatile bool rndrRqst;
+unsigned char mouseState;
+unsigned char mouseKeys;
+bool keyWaiting;
+bool rndrRqst=true;
+FILE *f;
+UINT8 ticks=1;
 
-volatile UINT8 *base;
+
+UINT8 *base;
 Model model;
 

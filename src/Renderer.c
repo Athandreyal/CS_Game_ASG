@@ -20,11 +20,11 @@ Purpose:    raster driver functions: access the model and call the appropriate r
 //                 Model *model :  the current game model, to be drawn
 ///////////////////////////////////////////////////////////////////
 */
-void render(UINT8 *base, Model *model){
+void render(){
     /*render black */
-    rndr_bak(base, model);
+    rndr_bak();
     /*render field*/
-    rndr_fld(base, model);    /*gifting this control over the paths, since its a field thing*/
+    rndr_fld();    /*gifting this control over the paths, since its a field thing*/
 }
 
 /*
@@ -35,7 +35,7 @@ void render(UINT8 *base, Model *model){
 //                 Model *model :  the current game model, to be drawn
 ///////////////////////////////////////////////////////////////////
 */
-void rndr_bak(UINT8 *base, Model *model){/*square corners, overwrites whatever it finds along border!*/
+void rndr_bak(){/*square corners, overwrites whatever it finds along border!*/
     UINT16* rebase = (UINT16*)base;
     int Vmin = VBORDER_BITS;/*why can't I use #define values here??*/
     int Vmax = SCREEN_HEIGHT_PIX - VBORDER_BITS;
@@ -52,8 +52,8 @@ void rndr_bak(UINT8 *base, Model *model){/*square corners, overwrites whatever i
             }
         }
         
-    rndr_lif(base, &(model->user));
-    rndr_lif(base, &(model->program));
+    rndr_lif(&(model.user));
+    rndr_lif(&(model.program));
 }
 
 /*
@@ -67,18 +67,19 @@ void rndr_bak(UINT8 *base, Model *model){/*square corners, overwrites whatever i
 //                 Model *model :  the current game model, to be drawn
 ///////////////////////////////////////////////////////////////////
 */
-void rndr_fld(UINT8 *base, Model *model)
+void rndr_fld()
 {
-    rndr_cyc(base, &(model->user),1);
-    rndr_cyc(base, &(model->program),1);
-    rndr_lw(base, &(model->user.cycle),0);
-    rndr_lw(base, &(model->user.cycle),1);
-    rndr_lw(base, &(model->program.cycle),0);
-    rndr_lw(base, &(model->program.cycle),1);
-    setLPos(&(model->user.cycle));
-    setLPos(&(model->program.cycle));
-    rndr_cyc(base, &(model->user),-1);
-    rndr_cyc(base, &(model->program),-1);
+    rndr_cyc(&(model.user),1);
+    rndr_lw(&(model.user.cycle),1);
+    rndr_lw(&(model.user.cycle),2);
+    setLPos(&(model.user.cycle));
+    rndr_cyc(&(model.user),-1);
+    
+    rndr_cyc(&(model.program),1);
+    rndr_lw(&(model.program.cycle),1);
+    rndr_lw(&(model.program.cycle),2);
+    setLPos(&(model.program.cycle));
+    rndr_cyc(&(model.program),-1);
 }
 
 /*
@@ -90,6 +91,10 @@ void rndr_fld(UINT8 *base, Model *model)
 ///////////////////////////////////////////////////////////////////
 */
 void setLPos(Cycle* cycle){
+    cycle->last[3][0] = cycle->last[2][0];
+    cycle->last[3][1] = cycle->last[2][1];
+    cycle->last[3][2] = cycle->last[2][2];
+    cycle->last[3][3] = cycle->last[2][3];
     cycle->last[2][0] = cycle->last[1][0];
     cycle->last[2][1] = cycle->last[1][1];
     cycle->last[2][2] = cycle->last[1][2];
@@ -102,6 +107,7 @@ void setLPos(Cycle* cycle){
     cycle->last[0][1] = cycle->y;
     cycle->last[0][2] = cycle->direction[0];
     cycle->last[0][3] = cycle->direction[1];
+    cycle->lastbmp[3] = cycle->lastbmp[2];
     cycle->lastbmp[2] = cycle->lastbmp[1];
     cycle->lastbmp[1] = cycle->lastbmp[0];
     cycle->lastbmp[0] = cycle->bmp;
@@ -115,14 +121,14 @@ void setLPos(Cycle* cycle){
 //                 Player *player :  the current player whose lives will be drawn
 ///////////////////////////////////////////////////////////////////
 */
-void rndr_lif(UINT8 *base, Player *player)
+void rndr_lif(Player *player)
 {
     int i;
     for (i = 0;i < player->life;i++){
         if (player->isUser)
-            p_btmp_8(base, P1LIFEX + (i<<SHIFT),P1LIFEY, STICKMAN);
+            p_btmp_8(P1LIFEX + (i<<SHIFT),P1LIFEY, STICKMAN);
         else
-            p_btmp_8(base, P2LIFEX + (i<<SHIFT),P2LIFEY, STICKMAN);
+            p_btmp_8(P2LIFEX + (i<<SHIFT),P2LIFEY, STICKMAN);
     }
 }
 
@@ -134,7 +140,7 @@ void rndr_lif(UINT8 *base, Player *player)
 //                 Cycle *cycle :  the current cycle whose light wall will be drawn
 ///////////////////////////////////////////////////////////////////
 */
-void rndr_lw(UINT8 *base, Cycle *cycle, int index)
+void rndr_lw(Cycle *cycle, int index)
 {  /*index will be either 1 or 2 for last*/
     int x, y, length;
     if (cycle->last[index+1][0] > 0 && cycle->last[index+1][1] > 0){
@@ -142,13 +148,13 @@ void rndr_lw(UINT8 *base, Cycle *cycle, int index)
             x = cycle->last[index][0];
             y = (cycle->last[index][1]<cycle->last[index+1][1]?cycle->last[index][1]:cycle->last[index+1][1]);
             length = (cycle->last[index][1]>cycle->last[index+1][1]?cycle->last[index][1]:cycle->last[index+1][1]) - y;
-            p_v_ln(base, x, y, length);
+            p_v_ln(x, y, length);
             }
         else{
             x = (cycle->last[index][0]<cycle->last[index+1][0]?cycle->last[index][0]:cycle->last[index+1][0]);
             y = cycle->last[index][1];
             length = (cycle->last[index][0]>cycle->last[index+1][0]?cycle->last[index][0]:cycle->last[index+1][0]) - x;
-            p_h_ln(base, x, y, length);
+            p_h_ln(x, y, length);
             }
         }
 }
@@ -161,11 +167,11 @@ void rndr_lw(UINT8 *base, Cycle *cycle, int index)
 //                 Player *player :  the current player whose cycle will be rendered
 ///////////////////////////////////////////////////////////////////
 */
-void rndr_cyc(UINT8 *base, Player *player, int index)
+void rndr_cyc(Player *player, int index)
 {  /*[n,e,s,w]*/
     /*draw at new locale*/
     if (index < 0)
-        p_btmp_8(base, player->cycle.x+BMP_OFFSET,player->cycle.y+BMP_OFFSET,player->cycle.bmp);
+        p_btmp_8(player->cycle.x+BMP_OFFSET,player->cycle.y+BMP_OFFSET,player->cycle.bmp);
     else
-        p_btmp_8(base, player->cycle.last[index][0]+BMP_OFFSET,player->cycle.last[index][1]+BMP_OFFSET,player->cycle.lastbmp[index]);
+        p_btmp_8(player->cycle.last[index][0]+BMP_OFFSET,player->cycle.last[index][1]+BMP_OFFSET,player->cycle.lastbmp[index]);
 }
