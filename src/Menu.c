@@ -23,17 +23,6 @@ bool menuLoop(bool *buffer, UINT8 *base0, UINT8 *base1){
     bool quit = false;
     UINT8 key;
     bool LRMouse = false;
-/*    fst_blk(base);
-    plotSplsh(SPLASH);/*should be buffer 1 */
-/*    toggleScreen(buffer, base0, base1);/*switch to buffer 0*/
-/*    if(base != base1){
-        fprintf(f,"renderSplashChoice(1,model)\n");fflush(f);
-        renderSplashChoice(base1);/*render to current, mode 1, mode2 1*/
-/*        }
-    else{
-        fprintf(f,"renderSplashChoice(0,model)\n");fflush(f);
-        renderSplashChoice(base0);/*render to current, mode 1, mode2 1*/
-/*        }*/
     do{
         key = 0;
         if(keyWaiting || mouseKeys)

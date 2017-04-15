@@ -1,12 +1,12 @@
 #include "isr.h"
 #include "globals.h"
 #include "Model.h"
+#include "Events.h"
+#include "isr_asm.h"
 
 void initKeyboard(){
     tail = 0;
     head = 0;
-    mouse_x_old = 0;
-    mouse_y_old = 0;
     mouse_x = 0;
     mouse_y = 0;
     keyRegister = 0;
@@ -44,22 +44,21 @@ void VBL(){
 }
 
 void keyboard(){
-    if      ((keyRegister >= 0xF8) || mouseState > 0){
+    if      ((mouseState > 0) || (keyRegister >= 0xF8)){
         /*mouse in progress*/
-        switch(mouseState){
-            case 0:/*header*/
+        if      (mouseState == 0){
                 mouseKeys = keyRegister & 3;
                 mouseState=1;
-                break;
-            case 1:/*x*/
+        }
+        else if (mouseState == 1){
                 mouse_x += (int)((signed char)keyRegister);
                 if (mouse_x > 636)
                     mouse_x = 636;
                 else if (mouse_x < 4)
                     mouse_x = 4;
                 mouseState=2;
-                break;
-            case 2:/*y*/
+        }
+        else if (mouseState == 2){
                 mouse_y += (int)((signed char)keyRegister);
                 if (mouse_y > 396)
                     mouse_y = 396;
@@ -68,10 +67,11 @@ void keyboard(){
                 mouseState=0;
         }
     }
-    else if (keyRegister < 0x80){
+    else if (mouseState == 0 && keyRegister < 0x80){
         /*keyboard*/
         tail++;
-        *(buffer+tail) = keyRegister;
+        buffer[tail] = keyRegister;
         keyWaiting = true;
     }
+    else;
 }

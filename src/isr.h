@@ -9,8 +9,6 @@
 #define TRAP_70 70
 #include "globals.h"
 
-UINT32 getTime();
-
 void keyboard();
 Vector install_vector(int num, Vector vector);
 void initKeyboard();

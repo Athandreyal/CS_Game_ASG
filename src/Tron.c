@@ -20,6 +20,7 @@ Purpose:    Primary game code, Main, doMode, getTime, onKey
 #include "isr.h"
 #include "isr_asm.h"
 #include "globals.h"
+#include "effects.h"
 
 #define ESC_KEY   0x01
 #define LARW_KEY  0x4B
@@ -43,9 +44,6 @@ void main(){
 	Vector orig_vector70 = install_vector(TRAP_70,trap70_isr);  /*  kybd  */
 	Vector orig_vector28 = install_vector(TRAP_28,trap28_isr);  /*  VBL  */
     rndrRqst = false;
-    f = fopen("log.txt","w");
-    fclose(f);
-    f = fopen("log.txt","a");
     
     initKeyboard();
     buffer = quit = false;
@@ -85,22 +83,10 @@ void gameLoop(bool *buffer, UINT8 *base0, UINT8 *base1){
             }
         }while (!endMatch && !crash);
     }
-}
-
-/*
-///////////////////////////////////////////////////////////////////
-// Function Name:  getTime
-// Purpose:        access the system timer to onbtaint and return the current time
-// Outputs:        lont timeNow:  the current timer value;
-///////////////////////////////////////////////////////////////////
-*/
-UINT32 getTime(){
-    long *timer = (long*)0x462;
-    long old_ssp = Super(0);
-    UINT32 timeNow;
-    timeNow = (UINT32)*timer;
-    Super(old_ssp);
-    return timeNow;
+    if (model.user.life > 0)
+        success_music();
+    else
+        fail_music();
 }
 
 void getScreen(bool *buffer, UINT8 **base0, UINT8 **base1){

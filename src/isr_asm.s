@@ -13,11 +13,11 @@ _trap70_isr:            ;keyboard/mouse
             movem.l     d0-7/a0-7,-(sp)
             jsr         _keyboard
             movem.l     (sp)+,d0-7/a0-7
-            and.b       #$BF,inservB
+            ;and.b       #$BF,inservB
+            move.b       #$BF,inservB
             rte
 
 _trap28_isr:            ;VBL
-            add.l       #1,$462
             movem.l     d0-7/a0-7,-(sp)
             jsr         _VBL
             movem.l     (sp)+,d0-7/a0-7

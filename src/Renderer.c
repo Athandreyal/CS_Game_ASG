@@ -42,8 +42,6 @@ void rndr_bak(){/*square corners, overwrites whatever it finds along border!*/
     int Hmin = HBORDER_BITS >> SHIFT_WORD;
     int Hmax = (SCREEN_WIDTH_PIX - HBORDER_BITS) >> SHIFT_WORD;
     int x,y;
-	printf("\033f");
-	fflush(stdout);
     clr_scrn(base);
     for(x = 0;x < SCREEN_WIDTH_WORD;x++){
         for (y = 0;y < SCREEN_HEIGHT_PIX;y++){

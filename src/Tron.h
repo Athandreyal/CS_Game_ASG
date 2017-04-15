@@ -9,8 +9,6 @@ Instructor: Paul pospisil
 #include "TYPES.H"
 #include "Model.h"
 
-UINT32 getTime();
-
 void gameLoop();
 bool onKey();
 void getScreen(bool *buffer, UINT8 **base0, UINT8 **base1);
