@@ -134,7 +134,7 @@ void rndr_lif(Player *player)
 ///////////////////////////////////////////////////////////////////
 // Function Name:  rndr_lw
 // Purpose:        renders game grid light walls using positional history
-// Inputs:         UINT8 *base  :  the frame buffer
+// Inputs:         int index
 //                 Cycle *cycle :  the current cycle whose light wall will be drawn
 ///////////////////////////////////////////////////////////////////
 */
@@ -161,7 +161,7 @@ void rndr_lw(Cycle *cycle, int index)
 ///////////////////////////////////////////////////////////////////
 // Function Name:  rndr_cyc
 // Purpose:        renders light cycle using the models co-ordinates for the cycle to position it
-// Inputs:         UINT8 *base  :  the frame buffer
+// Inputs:         int index
 //                 Player *player :  the current player whose cycle will be rendered
 ///////////////////////////////////////////////////////////////////
 */
