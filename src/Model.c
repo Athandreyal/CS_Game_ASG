@@ -10,6 +10,12 @@ Purpose:    Primary model manipulations, initialisation, resetting, etc.
 #include "Model.h"
 #include "Events.h"
 
+/*
+///////////////////////////////////////////////////////////////////
+// Function Name:  menuInit()
+// Purpose:       Inits menu screen 
+///////////////////////////////////////////////////////////////////
+*/
 void menuInit(){
     model.ghost.cycle.x=CHOICE_X;
     model.ghost.cycle.y=CHOICE_Y;
@@ -27,8 +33,6 @@ void menuInit(){
 ///////////////////////////////////////////////////////////////////
 // Function Name:  init
 // Purpose:        model initialisation, triggers reset to finish off initialisation
-// Inputs:         Model *model:    the current game model for initiaisation and updating
-// Outputs:        Model *model:    the updated game model.
 ///////////////////////////////////////////////////////////////////
 */
 void init(){
@@ -44,8 +48,6 @@ void init(){
 ///////////////////////////////////////////////////////////////////
 // Function Name:  reset
 // Purpose:        resets the position history of the cycles.
-// Inputs:         Model *model:    the current game model for updating
-// Outputs:        Model *model:    the updated game model.
 ///////////////////////////////////////////////////////////////////
 */
 void reset(){
@@ -79,9 +81,8 @@ void reset(){
 /*
 ///////////////////////////////////////////////////////////////////
 // Function Name:  matchStart
-// Purpose:        sets the intiial state of the cycles for beginning a match, primes them with invalid history to avoid its bing used prematurely.
-// Inputs:         Model *model:    the current game model for manipulation and updating
-// Outputs:        Model *model:    the updated game model.
+// Purpose:        sets the intiial state of the cycles for beginning a match, primes 
+					them with invalid history to avoid its bing used prematurely.
 ///////////////////////////////////////////////////////////////////
 */
 void matchStart(){
@@ -133,4 +134,3 @@ void matchStart(){
     model.menu = false;
     model.doCrash = false;
 }
-

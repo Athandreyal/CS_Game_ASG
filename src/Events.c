@@ -23,9 +23,8 @@ Purpose:    Event handlers, various model manipulations
 ///////////////////////////////////////////////////////////////////
 // Function Name:  maneuver
 // Purpose:        determine if player tried to turn, or change speed
-// Inputs:         UINT32 key   :the key they pressed
+// Inputs:         UINT8 key   :the key they pressed
 //                 Cycle *cycle :their cycle struct         
-// Outputs:        Cycle *cycle :their cycle struct
 ///////////////////////////////////////////////////////////////////
 */
 void maneuver(UINT8 key, Cycle* cycle){
@@ -47,9 +46,8 @@ void maneuver(UINT8 key, Cycle* cycle){
 ///////////////////////////////////////////////////////////////////
 // Function Name:  setTurn
 // Purpose:        determine which direction the decision to turn results in
-// Inputs:         UINT32 key   :the key they pressed
+// Inputs:         UINT8 key   :the key they pressed
 //                 Cycle *cycle :their cycle struct         
-// Outputs:        Cycle *cycle :their cycle struct
 ///////////////////////////////////////////////////////////////////
 */
 void setTurn(Cycle *cycle, UINT8 key){
@@ -83,7 +81,6 @@ void setTurn(Cycle *cycle, UINT8 key){
 // Purpose:        apply the speed change as determined by setSpd
 // Inputs:         accelerate accel :enum for speed changes
 //                 Cycle *cycle     :their cycle struct         
-// Outputs:        Cycle *cycle     :their cycle struct
 ///////////////////////////////////////////////////////////////////
 */
 void setSpd2(Cycle *cycle, accelerate accel){
@@ -99,11 +96,10 @@ void setSpd2(Cycle *cycle, accelerate accel){
 
 /*
 ///////////////////////////////////////////////////////////////////
-// Function Name:  setTurn
+// Function Name:  setSpd
 // Purpose:        determine if the speed change results in acceleration or deceleration
-// Inputs:         UINT32 key   :the key they pressed
+// Inputs:         UINT8 key   :the key they pressed
 //                 Cycle *cycle :their cycle struct         
-// Outputs:        Cycle *cycle :their cycle struct
 ///////////////////////////////////////////////////////////////////
 */
 void setSpd(Cycle *cycle, UINT8 key){
@@ -140,7 +136,6 @@ void setSpd(Cycle *cycle, UINT8 key){
 // Purpose:        apply change of direciton as chosen by setTurn
 // Inputs:         int direction :the chosen direction
 //                 Cycle *cycle  :their cycle struct         
-// Outputs:        Cycle *cycle  :their cycle struct
 ///////////////////////////////////////////////////////////////////
 */
 void chng_dir(Cycle *cycle, int direction[])
@@ -155,7 +150,6 @@ void chng_dir(Cycle *cycle, int direction[])
 // Purpose:        apply change of speed as chosen by setSpd2
 // Inputs:         velocity speed:enum for speed changes
 //                 Cycle *cycle  :their cycle struct         
-// Outputs:        Cycle *cycle  :their cycle struct
 ///////////////////////////////////////////////////////////////////
 */
 void chng_spd(Cycle *cycle, velocity speed)
@@ -168,7 +162,6 @@ void chng_spd(Cycle *cycle, velocity speed)
 // Function Name:  sub_life
 // Purpose:        subtracts one life from given player
 // Inputs:         Player *player: player struct which loses a life
-// Outputs:        Player *player: player struct which loses a life
 ///////////////////////////////////////////////////////////////////
 */
 void sub_life(Player *player)
@@ -182,10 +175,9 @@ void sub_life(Player *player)
 // Purpose:        determine if collision has occured or not.
 // Inputs:         base          :the frame buffer, since collision is determined by the pressence of enabled bits int he path.
 //                 Cycle *cycle  :their cycle struct         
-// Outputs:        Cycle *cycle  :their cycle struct
+// Outputs:        true if collision
 ///////////////////////////////////////////////////////////////////
 */
-
 bool collide(Cycle *cycle){
     int x, y,i, length, depth, detected;
     bool crash = false;
@@ -220,6 +212,14 @@ bool collide(Cycle *cycle){
     return crash;
 }
 
+/*
+///////////////////////////////////////////////////////////////////
+// Function Name:  readGrid
+// Purpose:        reads grid to detect if collision ahead will occur this results in crash signal
+	outputs: int 0 or 1 detection of collision or not.
+///////////////////////////////////////////////////////////////////
+*/
+
 int readGrid(int x, int y,int length){
     /*out of bounds detection is unecessary because the grid border is large enough to prevent us getting there*/
     UINT8 detected = 0;
@@ -244,7 +244,6 @@ int readGrid(int x, int y,int length){
 // Function Name:  move
 // Purpose:        applies position change
 // Inputs:         Cycle *cycle  :their cycle struct         
-// Outputs:        Cycle *cycle  :their cycle struct
 ///////////////////////////////////////////////////////////////////
 */
 void move(Cycle* cycle){
@@ -256,8 +255,6 @@ void move(Cycle* cycle){
 ///////////////////////////////////////////////////////////////////
 // Function Name:  setGhost
 // Purpose:        ties the ghost cycle to the program cycle - used for collision prediction
-// Inputs:         Model *model  :the current model, so the cost and program structs can be manipulated         
-// Outputs:        Model *model  :the current model, updated
 ///////////////////////////////////////////////////////////////////
 */
 void setGhost(){
@@ -275,7 +272,6 @@ void setGhost(){
 // Purpose:        apply a change of direction as chosen by AIChoice
 // Inputs:         Turn dir      :turn direction enum;
 //                 Cycle *cycle  :their cycle struct         
-// Outputs:        Cycle *cycle  :their cycle struct
 ///////////////////////////////////////////////////////////////////
 */
 void AITurn(Cycle *cycle,Turn dir){
@@ -305,7 +301,16 @@ void AITurn(Cycle *cycle,Turn dir){
         cycle->bmp = CYCLE1[2];
 }
 
-/*uses ghost to check for turn collisions
+
+/*
+///////////////////////////////////////////////////////////////////
+// Function Name:  ghostTurns
+// Purpose:        Assist in predicting collision events in the AI
+// Outputs:       Returns int that specifies available turns for the ai as stated below
+///////////////////////////////////////////////////////////////////
+*/
+/*
+uses ghost to check for turn collisions
     0 none 
     1 left
     2 right
@@ -335,11 +340,7 @@ int ghostTurns(){
 // Function Name:  AIChoice
 // Purpose:        determine if collision will occur, choose to turn if so, potentially turn 
                    or change speed as well
-// Inputs:         long time     :a seed for rand to make a decision with
-//                 Model *model  :the current game model, so that the ghost and 
-                   program can be accessed
-//
-// Outputs:        Model *model  :the current game model, so that the ghost and program can be accessed
+// Outputs:       N/A
 ///////////////////////////////////////////////////////////////////
 */
 void AIChoice(){

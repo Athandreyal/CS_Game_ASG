@@ -8,43 +8,66 @@ L1:
 	dc.b	108,111,103,46,116,120,116,0
 	even
 _main:
-	link	a6,#0
+	link	a6,#-4
 	move.l	a3,-(a7)
 	lea	_f,a3
-	;line	36
+	;line	41
+	pea	_trap28_isr
+	move.w	#28,-(a7)
+	jsr	_install_vector
+	addq.l	#6,a7
+	move.l	d0,-4(a6)
+	;line	41
 	jsr	_stop_sound
-	;line	37
+	;line	42
 	pea	L2
 	pea	L1
 	jsr	_fopen
 	addq.l	#8,a7
 	move.l	d0,(a3)
-	;line	38
+	;line	43
 	move.l	(a3),-(a7)
 	jsr	_fclose
 	addq.l	#4,a7
-	;line	39
+	;line	44
 	pea	L3
 	pea	L1
 	jsr	_fopen
 	addq.l	#8,a7
 	move.l	d0,(a3)
-	;line	42
-	jsr	_fail_music
-	;line	115
+	;line	51
+	bra	L5
+L4:
+	;line	53
+	pea	2
+	jsr	_update_game_music
+	addq.l	#4,a7
+L5:
+	move.w	#11,-(a7)
+	jsr	__trap_1_w
+	addq.l	#2,a7
+	tst.w	d0
+	beq	L4
+L6:
+	;line	57
+	move.l	-4(a6),-(a7)
+	move.w	#28,-(a7)
+	jsr	_install_vector
+	addq.l	#6,a7
+	;line	127
 	move.w	#8,-(a7)
 	jsr	__trap_1_w
 	addq.l	#2,a7
-	;line	116
+	;line	128
 	move.l	(a3),-(a7)
 	jsr	_fclose
 	addq.l	#4,a7
-	;line	117
+	;line	129
 	jsr	_stop_sound
-	;line	119
+	;line	131
 	moveq	#0,d0
-L4:
-	move.l	-4(a6),a3
+L7:
+	move.l	-8(a6),a3
 	unlk	a6
 	rts
 	globl	_main

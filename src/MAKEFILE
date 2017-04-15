@@ -4,8 +4,11 @@ game: raster.o rast_asm.o Objects.o Model.o Renderer.o Events.o Tron.o Constant.
 tst_rast: tst_rast.o raster.o rast_asm.o Objects.o Model.o Renderer.o Events.o Constant.o
 	cc68x -g tst_rast.o raster.o Objects.o Model.o Renderer.o Events.o Constant.o -o tst
 
-tst_sound: TST_PSG.o PSG.o effects.o globals.o isr.o isr_asm.o Events.o Model.o Objects.o Constant.o
-	cc68x -g TST_PSG.o PSG.o effects.o globals.o isr.o isr_asm.o Events.o Model.o Objects.o Constant.o -o psg
+tst_sound: TST_PSG.o PSG.o effects.o globals.o isr.o isr_asm.o Events.o Model.o Objects.o Constant.o music.o
+	cc68x -g TST_PSG.o PSG.o effects.o globals.o isr.o isr_asm.o Events.o Model.o Objects.o Constant.o music.o -o psg
+
+music.o: music.c music.h isr.h isr_asm.h globals.h psg.h
+	cc68x -g -c music.c
 
 tst_key: isr.o isr_asm.o Events.o Objects.o Constant.o traplab.o globals.o PSG.o effects.o
 	cc68x -g isr.o isr_asm.o Events.o Objects.o Constant.o traplab.o globals.o PSG.o effects.o -o t

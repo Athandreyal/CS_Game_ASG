@@ -1,9 +1,22 @@
+/*
+Name:       Phillip Renwick, Jaden McConkey
+Email:      prenw499@mtroyal.ca
+Course:     COMP 2659-001
+Instructor: Paul pospisil
+
+Purpose:    Primary game code, Main, doMode, getTime, onKey
+*/
+
 #include "PSG.h"
 #include "effects.h"
 #include <osbind.h>
 #include "TYPES.H"
 #include <stdio.h>
 #include "globals.h"
+#include "music.h"
+#include "isr.h"
+#include "isr_asm.h"
+
 
 #define CHAN_A 0
 #define CHAN_B 2
@@ -33,16 +46,24 @@
 
 int main()
 {
+	Vector orig_vector28 = install_vector(TRAP_28,trap28_isr);  /*  VBL  */
     stop_sound();
     f = fopen("log.txt","w");
 	fclose(f);
 	f = fopen("log.txt","a");
+	
+	
    
        /* siren();*/
-        fail_music();
-      /*derez();*/
+       /* fail_music();
+		start_music();*/
+	while (!Cconis())
+	{
+	update_game_music(2);
+	/*update_music();*/
+	}
 	/*success_music();	*/
-        
+    install_vector(TRAP_28,orig_vector28);    
     /* 
     setEnvSt(C_LEVEL,1);
     setEnvlp(0x00, 15625);

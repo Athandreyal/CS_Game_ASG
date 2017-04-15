@@ -1,3 +1,12 @@
+/*
+Name:       Phillip Renwick, Jaden McConkey
+Email:      prenw499@mtroyal.ca
+Course:     COMP 2659-001
+Instructor: Paul pospisil
+
+Purpose:    Primary game code, Main, doMode, getTime, onKey
+*/
+
 #include <osbind.h>
 #include "PSG.h"
 #include "TYPES.H"
@@ -53,30 +62,13 @@ UINT32 timeElapsed;
     prev = now;
     updtMusc(timeElapsed);
 
-
-
-void playSound(UINT8 Channel, UINT8 envOnOFF, UINT8 noiseOnOff, UINT32 noteFreq, UINT8 envShape, UINT16 envPeriod, UINT8 volume, UINT32 time)
-{
-
-}
 */
-
 /*
 ///////////////////////////////////////////////////////////////////
-// Function Name:  getTime
-// Purpose:        access the system timer to onbtaint and return the current time
-// Outputs:        lont timeNow:  the current timer value;
+// Function Name:  wait
+// Purpose:        wait for x time using divisor a measure of accuracy
 ///////////////////////////////////////////////////////////////////
 */
-UINT32 getTime(){
-    long *timer = (long*)0x462;
-    long old_ssp = Super(0);
-    UINT32 timeNow;
-    timeNow = (UINT32)*timer;
-    Super(old_ssp);
-    return timeNow;
-}
-
 void wait(UINT32 time,UINT32 divisor)
 {
     UINT32 originalTime = 0;
@@ -90,7 +82,12 @@ void wait(UINT32 time,UINT32 divisor)
 	}
 	install_vector(TRAP_28,orig_vector28);
 }
-
+/*
+///////////////////////////////////////////////////////////////////
+// Function Name:  writePsg 
+// Purpose:  write given value to given register
+///////////////////////////////////////////////////////////////////
+*/
 void writePsg(UINT8 reg, UINT8 val)
 {
     long old_ssp;
@@ -104,6 +101,12 @@ void writePsg(UINT8 reg, UINT8 val)
 	Super(old_ssp);
 
 }
+/*
+///////////////////////////////////////////////////////////////////
+// Function Name:  AIChoice
+// Purpose:  to read value from selected psg register
+///////////////////////////////////////////////////////////////////
+*/
 
 UINT8 readPsg(UINT16 reg)
 {
@@ -129,6 +132,14 @@ UINT8 readPsg(UINT16 reg)
      
     return psgVal;
 }
+
+/*
+///////////////////////////////////////////////////////////////////
+// Function Name: setNote
+// Purpose:       takes channel and freq to set the a b or c channels to the given td vals to 
+					produce the related sound.
+///////////////////////////////////////////////////////////////////
+*/
 
 void setNote(UINT8 channel, UINT32 freq)/*, UINT8 volume)*/
 {
@@ -178,6 +189,13 @@ void setNote(UINT8 channel, UINT32 freq)/*, UINT8 volume)*/
     */
 }
 
+/*
+///////////////////////////////////////////////////////////////////
+// Function Name:  setEnvSt
+// Purpose:       toggles the level control state in 5th bit of a b or c levels
+///////////////////////////////////////////////////////////////////
+*/
+
 void setEnvSt(UINT8 levelChannel,UINT8 envState)
 {
     UINT8 oldData = 0;
@@ -188,6 +206,13 @@ void setEnvSt(UINT8 levelChannel,UINT8 envState)
     writePsg(levelChannel, ((oldData & 0x00) | 0x10));
 }
 
+
+/*
+///////////////////////////////////////////////////////////////////
+// Function Name:  chngVol
+// Purpose:     	changes or sets the volume to the given channel
+///////////////////////////////////////////////////////////////////
+*/
 /* 
 Change Volume 
 0-1
@@ -212,6 +237,13 @@ void chngVol(UINT8 channel, UINT8 volume)
         writePsg(channel, (volume & 0x0F));
 }
 
+/*
+///////////////////////////////////////////////////////////////////
+// Function Name: setMix
+// Purpose:      Used to set and manipulated the mixer onOFF is the requested position for device 
+// NOISE or TONE in any given channel a b or c.
+///////////////////////////////////////////////////////////////////
+*/
 void setMix(int channel, UINT8 device, UINT8 onOFF) /*, UINT8 switch)*/
 {
     UINT8 Setting = 0;
@@ -247,6 +279,13 @@ void setMix(int channel, UINT8 device, UINT8 onOFF) /*, UINT8 switch)*/
     writePsg(MIXER, newPsgVal);
 }
 
+/*
+///////////////////////////////////////////////////////////////////
+// Function Name:  AIChoice
+// Purpose:        sets all registers to initial inactive values.
+///////////////////////////////////////////////////////////////////
+*/
+
 void stop_sound()
 {
     UINT8 blackout = 0x00;
@@ -277,7 +316,12 @@ void stop_sound()
     writePsg(ENV_PERIOD_COURSE,blackout);
     writePsg(ENV_SHAPE,blackout);
 }
-
+/*
+///////////////////////////////////////////////////////////////////
+// Function Name:  setNoise
+// Purpose:        sets the noise to a given level within its range
+///////////////////////////////////////////////////////////////////
+*/
 /*range 1 - 31*/
 void setNoise(UINT8 freq)
 {
@@ -303,6 +347,13 @@ void setNoise(UINT8 freq)
 -0x0E        -upSine
 -0x0F        -hitwDropoff
 */
+
+/*
+///////////////////////////////////////////////////////////////////
+// Function Name:  setEnvlp
+// Purpose:       sets the shape and period for the psg envelope generator.
+///////////////////////////////////////////////////////////////////
+*/
 void setEnvlp(UINT8 shape, UINT16 period)
 {
     UINT8 fine = 0;
@@ -315,13 +366,12 @@ void setEnvlp(UINT8 shape, UINT16 period)
     
     writePsg(ENV_SHAPE, (shape & 0x0F));    
 }
-
-void allmOn()
-{
-    
-     writePsg(MIXER, 0xC0 );
-}
-
+/*
+///////////////////////////////////////////////////////////////////
+// Function Name:  getTDVal
+// Purpose:     helper to calculate the td value (in the psg docs) from the requested frequency in setNote
+///////////////////////////////////////////////////////////////////
+*/
 UINT16 getTDVal(UINT32 freq)
 {
    /* assumption that clock speed is 2 MHz */

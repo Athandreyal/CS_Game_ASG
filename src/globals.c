@@ -1,5 +1,14 @@
 #include "globals.h"
 
+/*
+Name:       Phillip Renwick, Jaden McConkey
+Email:      prenw499@mtroyal.ca
+Course:     COMP 2659-001
+Instructor: Paul pospisil
+
+Purpose:    Primary game code, Main, doMode, getTime, onKey
+*/
+
 volatile unsigned char tail;
 volatile unsigned char head;
 int mouse_x_old;

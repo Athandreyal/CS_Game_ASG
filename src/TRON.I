@@ -11,6 +11,7 @@ typedef enum velocity {norm = 4, fast=6} velocity;
 typedef enum accelerate {slower,faster} accelerate;
 typedef enum Turn {left,right} Turn;
 typedef enum menuPosition {ONE=0, TWO=40, ESCAPE=80} menuPosition;
+typedef void (*Vector)();
 # 9 "./Tron.h" 2
 # 1 "./Model.h" 1
 # 1 "./TYPES.H" 1
@@ -209,7 +210,7 @@ extern  bool rndrRqst;
 extern UINT8 *base;
 extern Model model;
 extern FILE *f;
-extern UINT8 ticks;
+extern UINT32 ticks;
 # 6 "./Model.h" 2
 
 
@@ -220,6 +221,8 @@ void reset();
 bool crashed();
 void matchStart();
 bool crashed2(int x, int y, const UINT8 bitmap[]);
+
+void doMove();
 # 10 "./Tron.h" 2
 
 
@@ -608,15 +611,11 @@ typedef unsigned long  fd_set;
 # 4 "./isr.h" 2
 # 1 "C:/c68/include/stdio.h" 1
 # 5 "./isr.h" 2
-# 1 "./Model.h" 1
-# 10 "./isr.h" 2
 # 1 "./globals.h" 1
-# 11 "./isr.h" 2
+# 10 "./isr.h" 2
 
-void doMove();
 
 UINT32 getTime();
-typedef void (*Vector)();
 
 void keyboard();
 Vector install_vector(int num, Vector vector);
