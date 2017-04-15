@@ -370,3 +370,23 @@ void AIChoice(){
     }
     setGhost();
 }
+
+-/*
+-///////////////////////////////////////////////////////////////////
+-// Function Name:  doMove
+-// Purpose:        top level move driver: initiates moves, detects crashes, triggers reset when necessary.
+-// Inputs:         UINT8 *base :    the frame buffer
+-//                 Model *model:    the current game model for manipulation and updating
+-//                 long timeNow:    the current timer value, used here for random seeding in AIChoice
+-// Outputs:        Model *model:    the updated game model.
+-///////////////////////////////////////////////////////////////////
+-*/
+-bool doMove(UINT8 *base, Model *model){
+    bool noCrash = true;
+    move(&(model.user.cycle));
+    setGhost(model);
+    move(&(model.ghost.cycle));
+    AIChoice(base, model);
+    move(&(model.program.cycle));
+    return noCrash;
+}

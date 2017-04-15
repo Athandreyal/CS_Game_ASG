@@ -24,4 +24,5 @@ int readGrid(int x, int y,int length);
 void AITurn(Cycle *cycle,Turn dir);
 void AIChoice();
 void setGhost();
+bool doMove();
 #endif
