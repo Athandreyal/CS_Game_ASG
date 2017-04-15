@@ -19,6 +19,12 @@
 #define TWO_KEY   0x03
 #define ENT_KEY   0x1C
 
+/*
+///////////////////////////////////////////////////////////////////
+// Function Name:  menuLoop
+// Purpose:        iterate through loop to operate menu
+///////////////////////////////////////////////////////////////////
+*/
 bool menuLoop(bool *buffer, UINT8 *base0, UINT8 *base1){
     bool quit = false;
     UINT8 key;
@@ -70,6 +76,13 @@ bool menuLoop(bool *buffer, UINT8 *base0, UINT8 *base1){
     return quit;
 }
 
+/*
+///////////////////////////////////////////////////////////////////
+// Function Name:  AIChoice
+// Purpose:        add choice options to title / choice screen
+///////////////////////////////////////////////////////////////////
+*/
+
 void renderSplashChoice(){
     switch(model.mode){
         case 0:/*            180      -4        240     64      -4    is 180,300*/
@@ -84,6 +97,13 @@ void renderSplashChoice(){
     }
     model.mode2=model.mode;
 }
+
+/*
+///////////////////////////////////////////////////////////////////
+// Function Name:  setMenuChoice
+// Purpose:        pipe through chosen menu option
+///////////////////////////////////////////////////////////////////
+*/
 
 void setMenuChoice(UINT8 key){
     model.mode2=model.mode;
@@ -114,6 +134,12 @@ void setMenuChoice(UINT8 key){
     }
 }
 
+/*
+///////////////////////////////////////////////////////////////////
+// Function Name:  AIChoice
+// Purpose:        renders the mouse(oddly slow??s)
+///////////////////////////////////////////////////////////////////
+*/
 void renderMouse(){
     int origSsp = Super(0);
     int origIpl = set_ipl(7);
