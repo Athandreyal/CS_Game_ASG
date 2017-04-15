@@ -4,6 +4,12 @@
 #include "Events.h"
 #include "isr_asm.h"
 
+/*
+///////////////////////////////////////////////////////////////////
+// Function Name:  initKeyboard
+// Purpose:        initialize keyBoard
+///////////////////////////////////////////////////////////////////
+*/
 void initKeyboard(){
     tail = 0;
     head = 0;
@@ -15,7 +21,13 @@ void initKeyboard(){
     mouseKeys = 0;
     keyWaiting = 0;
 }
-
+/*
+///////////////////////////////////////////////////////////////////
+// Function Name:  AIChoice
+// Purpose:        installs vector 
+// returns current vector to backup 
+///////////////////////////////////////////////////////////////////
+*/
 Vector install_vector(int num, Vector vector){
 	Vector orig;
 	Vector *vectp = (Vector *)((long)num << 2);
@@ -25,7 +37,12 @@ Vector install_vector(int num, Vector vector){
 	Super(old_ssp);
 	return orig;
 }
-
+/*
+///////////////////////////////////////////////////////////////////
+// Function Name:  AIChoice
+// Purpose:       VBL interupt timer
+///////////////////////////////////////////////////////////////////
+*/
 void VBL(){
     ticks++;
     if (!rndrRqst && (ticks & 1)){
@@ -43,6 +60,12 @@ void VBL(){
     }
 }
 
+/*
+///////////////////////////////////////////////////////////////////
+// Function Name:  AIChoice
+// Purpose:        actual guts of the keyboard isr input 
+///////////////////////////////////////////////////////////////////
+*/
 void keyboard(){
     if      ((mouseState > 0) || (keyRegister >= 0xF8)){
         /*mouse in progress*/
