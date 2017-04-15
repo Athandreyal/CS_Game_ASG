@@ -5,7 +5,7 @@
 #include <stdio.h>
 
 UINT32 getTime();
-void wait(UINT32 time);
+void wait(UINT32 time,UINT32 divisor);
 UINT8 readPsg(UINT16 reg);
 void allmOn();
 void writePsg(UINT8 reg, UINT8 val);

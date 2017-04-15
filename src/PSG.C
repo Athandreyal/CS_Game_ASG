@@ -1,6 +1,10 @@
 #include <osbind.h>
 #include "PSG.h"
 #include "TYPES.H"
+#include "globals.h"
+#include <stdio.h>
+#include "isr.h"
+#include "isr_asm.h"
 
 /*Frequencies & volumes */
 #define A_FINE 0
@@ -12,7 +16,7 @@
 #define B_LEVEL 9  /* lower 4 bits to control */
 
 #define C_FINE 4
-#define C_COURSE   /* lower 4 bits to control */
+#define C_COURSE 5  /* lower 4 bits to control */
 #define C_LEVEL 10 /* lower 4 bits to control */
 
 #define NOISE_CHANNEL 6 /* lower 5 bits to control */
@@ -73,28 +77,32 @@ UINT32 getTime(){
     return timeNow;
 }
 
-void wait(UINT32 time)
+void wait(UINT32 time,UINT32 divisor)
 {
     UINT32 originalTime = 0;
-    UINT32 divisor = 17;
     UINT32 elapsedTime = 0;
+	Vector orig_vector28 = install_vector(TRAP_28,trap28_isr);  /*  VBL  */
+    originalTime = ticks;
 
-    originalTime = getTime();
-
-    while(getTime() <= (originalTime + (divisor*time)))
-        ;
+    while(ticks <= (originalTime + (divisor*time))){
+		fprintf(f,"ticks: %5d  originalTime:  %5d  divisor: %2d  time: %5d   result: %5d\n",ticks,originalTime,divisor,time,(originalTime + (divisor*time)));
+		fflush(f);
+	}
+	install_vector(TRAP_28,orig_vector28);
 }
 
 void writePsg(UINT8 reg, UINT8 val)
 {
-    long old_ssp = Super(0);
+    long old_ssp;
     volatile char *PSG_reg_select = 0xFF8800;
     volatile char *PSG_reg_write  = 0xFF8802;
-    
+	
+    old_ssp = Super(0);
     *PSG_reg_select = reg;
     *PSG_reg_write  = val;
     
-     Super(old_ssp);
+	Super(old_ssp);
+
 }
 
 UINT8 readPsg(UINT16 reg)
@@ -124,17 +132,20 @@ UINT8 readPsg(UINT16 reg)
 
 void setNote(UINT8 channel, UINT32 freq)/*, UINT8 volume)*/
 {
-    UINT16 TD = getTDVal(freq);
+    UINT16 TD = 0;
     UINT8 course;
     UINT8 cChannel;
     UINT8 vChannel;
     UINT8 fine;
-    
- 
-    FILE *f = fopen("log.txt", "a");
-     fprintf(f,"Set note TD Val: %i\n",TD); 
-     fprintf(f,"Channel before switch: %i\n",channel); 
- 
+	fprintf(f,"line 138 TD: %d\n",TD);
+	fprintf(f,"line 139 freq: %ld\n",freq);    	fflush(f);
+	TD = getTDVal(freq);
+	fprintf(f,"line 141 set note: %5ld\n",freq);
+    	fflush(f);
+	fprintf(f,"line 143 set note hex: %4x\n",TD);
+	fprintf(f,"line 144 set note dec: %d\n",TD);
+	fflush(f);
+  
     switch(channel){ 
         case A_FINE: cChannel = A_COURSE;
                      vChannel = A_LEVEL;
@@ -150,11 +161,11 @@ void setNote(UINT8 channel, UINT32 freq)/*, UINT8 volume)*/
     fprintf(f,"cChannel: %i\n", cChannel);
     fprintf(f,"vChannel: %i\n", vChannel);
     
-    fine = TD;
+    fine = (TD & 0x00ff);
     course = (TD >> 8) & 0x0F;
     
-    fprintf(f,"Course: %i\n",course );
-    fprintf(f,"Fine: %i\n", fine);  
+    fprintf(f,"Course: %x\n",course );
+    fprintf(f,"Fine: %x\n", fine);  
     
     /* fine tune (take lower 8 bits)*/
     writePsg(channel,fine);
@@ -165,7 +176,6 @@ void setNote(UINT8 channel, UINT32 freq)/*, UINT8 volume)*/
     /* Volume (take lower 4 bits)
     writePsg(vChannel,(volume & 0x0F));
     */
-    fclose(f);
 }
 
 void setEnvSt(UINT8 levelChannel,UINT8 envState)
@@ -315,15 +325,14 @@ void allmOn()
 UINT16 getTDVal(UINT32 freq)
 {
    /* assumption that clock speed is 2 MHz */
-   UINT32 clckSpd = 2000000;
+   UINT32 clckSpd = 125000;
    UINT16 TD = 0;
-   FILE *f = fopen("log.txt", "a");
-   TD = (clckSpd / (16*freq));
+   TD = (UINT16)(clckSpd / freq);
    fprintf(f,"\n");
    
-   fprintf(f,"GetTDVal output in DEC: %i\n", TD);
+   
+   fprintf(f,"GetTDVal output in DEC: %d\n", TD);
    fprintf(f,"GetTDVal output in HEX: %X\n", TD);
-   fclose(f);
   
    return TD;
 }

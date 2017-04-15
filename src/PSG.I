@@ -171,6 +171,8 @@ typedef enum bool{ false, true } bool;
 typedef enum velocity {norm = 4, fast=6} velocity;
 typedef enum accelerate {slower,faster} accelerate;
 typedef enum Turn {left,right} Turn;
+typedef enum menuPosition {ONE=0, TWO=40, ESCAPE=80} menuPosition;
+typedef void (*Vector)();
 # 4 "./PSG.h" 2
 # 1 "C:/c68/include/stdio.h" 1
 # 20 "C:/c68/include/stdio.h"
@@ -271,7 +273,7 @@ extern	FILE	_iob[];
 
 
 UINT32 getTime();
-void wait(UINT32 time);
+void wait(UINT32 time,UINT32 divisor);
 UINT8 readPsg(UINT16 reg);
 void allmOn();
 void writePsg(UINT8 reg, UINT8 val);
@@ -312,7 +314,150 @@ typedef struct RegState {
 # 2 "PSG.c" 2
 # 1 "./TYPES.H" 1
 # 3 "PSG.c" 2
-# 67 "PSG.c"
+# 1 "./globals.h" 1
+# 1 "./Model.h" 1
+# 1 "./TYPES.H" 1
+# 3 "./Model.h" 2
+# 1 "./Objects.h" 1
+# 1 "./TYPES.H" 1
+# 12 "./Objects.h" 2
+# 21 "./Objects.h"
+extern UINT8 STICKMAN[];
+extern UINT8 CYCLE1[4][8];
+extern UINT8 CYCLE2[4][8];
+extern UINT32 SPLASH[];
+void drawBackground(UINT8* base);
+void drawLives(UINT8* base, int lives, int player);
+# 46 "./Objects.h"
+typedef struct Cycle {
+    int x;
+    int y;
+    int speed;
+    int direction[2];
+    int last[4][4];
+    int player;
+    UINT8 *bmp;
+    UINT8 *lastbmp[4];
+}Cycle;
+
+typedef struct Player {
+    Cycle cycle;
+    int life;
+    bool isUser;
+    bool crashed;
+}Player;
+
+typedef struct Model{
+    int mode;
+    int mode2;
+    bool menu;
+    bool doCrash;
+    Player user;
+    Player ghost;
+    Player program;
+}Model;
+# 4 "./Model.h" 2
+# 1 "./Constant.h" 1
+# 1 "./TYPES.H" 1
+# 9 "./Constant.h" 2
+
+
+
+extern UINT8 SCREEN_WIDTH;
+extern UINT8 MSB;
+extern UINT8 REMAINDER_MAX;
+extern UINT8 BITS_PER;
+extern UINT8 SHIFT;
+extern UINT8 LINE_BODY;
+
+
+
+extern UINT16 SCREEN_WIDTH_PIX;
+extern UINT16 SCREEN_HEIGHT_PIX;
+extern int    BMP_OFFSET;
+extern UINT8  VBORDER_BITS;
+extern UINT8  HBORDER_BITS;
+extern UINT8  SCREEN_WIDTH_WORD;
+extern UINT8  SCREEN_WIDTH_LONG;
+extern UINT8  SHIFT_WORD;
+extern UINT16 LINE_BODY_WORD;
+
+extern int P1STARTX;
+extern int P1STARTY;
+extern int P2STARTX;
+extern int P2STARTY;
+
+extern int PLAYER_LIVES;
+
+extern UINT16 CHOICE_X;
+extern UINT16 CHOICE_Y;
+# 5 "./Model.h" 2
+# 1 "./globals.h" 1
+# 6 "./Model.h" 2
+
+
+
+void menuInit();
+void init();
+void reset();
+bool crashed();
+void matchStart();
+bool crashed2(int x, int y, const UINT8 bitmap[]);
+
+void doMove();
+# 3 "./globals.h" 2
+# 1 "./types.h" 1
+# 4 "./globals.h" 2
+# 1 "C:/c68/include/stdio.h" 1
+# 5 "./globals.h" 2
+
+
+extern volatile unsigned char tail;
+extern volatile unsigned char head;
+extern int mouse_x_old;
+extern int mouse_y_old;
+extern int mouse_x;
+extern int mouse_y;
+extern  unsigned char keyRegister;
+extern  unsigned char buffer[256];
+extern  unsigned char mouseState;
+extern  unsigned char mouseKeys;
+extern  bool keyWaiting;
+extern  bool rndrRqst;
+extern UINT8 *base;
+extern Model model;
+extern FILE *f;
+extern UINT32 ticks;
+# 4 "PSG.c" 2
+# 1 "C:/c68/include/stdio.h" 1
+# 5 "PSG.c" 2
+# 1 "./isr.h" 1
+# 1 "./types.h" 1
+# 3 "./isr.h" 2
+# 1 "C:/c68/include/osbind.h" 1
+# 4 "./isr.h" 2
+# 1 "C:/c68/include/stdio.h" 1
+# 5 "./isr.h" 2
+# 1 "./globals.h" 1
+# 10 "./isr.h" 2
+
+
+UINT32 getTime();
+
+void keyboard();
+Vector install_vector(int num, Vector vector);
+void initKeyboard();
+void VBL();
+# 6 "PSG.c" 2
+# 1 "./isr_asm.h" 1
+
+
+
+void trap70_isr();
+void trap28_isr();
+int set_ipl(int mask);
+# 7 "PSG.c" 2
+# 71 "PSG.c"
 UINT32 getTime(){
     long *timer = (long*)0x462;
     long old_ssp = _trap_1_wl((short)0x20,(long)(0)) ;
@@ -322,28 +467,32 @@ UINT32 getTime(){
     return timeNow;
 }
 
-void wait(UINT32 time)
+void wait(UINT32 time,UINT32 divisor)
 {
     UINT32 originalTime = 0;
-    UINT32 divisor = 17;
     UINT32 elapsedTime = 0;
+	Vector orig_vector28 = install_vector(28 ,trap28_isr);
+    originalTime = ticks;
 
-    originalTime = getTime();
-
-    while(getTime() <= (originalTime + (divisor*time)))
-        ;
+    while(ticks <= (originalTime + (divisor*time))){
+		fprintf(f,"ticks: %5d  originalTime:  %5d  divisor: %2d  time: %5d   result: %5d\n",ticks,originalTime,divisor,time,(originalTime + (divisor*time)));
+		fflush(f);
+	}
+	install_vector(28 ,orig_vector28);
 }
 
 void writePsg(UINT8 reg, UINT8 val)
 {
-    long old_ssp = _trap_1_wl((short)0x20,(long)(0)) ;
+    long old_ssp;
     volatile char *PSG_reg_select = 0xFF8800;
     volatile char *PSG_reg_write  = 0xFF8802;
 
+    old_ssp = _trap_1_wl((short)0x20,(long)(0)) ;
     *PSG_reg_select = reg;
     *PSG_reg_write  = val;
 
-     _trap_1_wl((short)0x20,(long)(old_ssp)) ;
+	_trap_1_wl((short)0x20,(long)(old_ssp)) ;
+
 }
 
 UINT8 readPsg(UINT16 reg)
@@ -373,16 +522,19 @@ UINT8 readPsg(UINT16 reg)
 
 void setNote(UINT8 channel, UINT32 freq)
 {
-    UINT16 TD = getTDVal(freq);
+    UINT16 TD = 0;
     UINT8 course;
     UINT8 cChannel;
     UINT8 vChannel;
     UINT8 fine;
-
-
-    FILE *f = fopen("log.txt", "a");
-     fprintf(f,"Set note TD Val: %i\n",TD);
-     fprintf(f,"Channel before switch: %i\n",channel);
+	fprintf(f,"line 138 TD: %d\n",TD);
+	fprintf(f,"line 139 freq: %ld\n",freq);    	fflush(f);
+	TD = getTDVal(freq);
+	fprintf(f,"line 141 set note: %5ld\n",freq);
+    	fflush(f);
+	fprintf(f,"line 143 set note hex: %4x\n",TD);
+	fprintf(f,"line 144 set note dec: %d\n",TD);
+	fflush(f);
 
     switch(channel){
         case 0 : cChannel = 1 ;
@@ -391,7 +543,7 @@ void setNote(UINT8 channel, UINT32 freq)
         case 2 : cChannel = 3 ;
                      vChannel = 9 ;
                      break;
-        case 4 : cChannel =;
+        case 4 : cChannel = 5 ;
                      vChannel = 10 ;
                      break;
     }
@@ -399,11 +551,11 @@ void setNote(UINT8 channel, UINT32 freq)
     fprintf(f,"cChannel: %i\n", cChannel);
     fprintf(f,"vChannel: %i\n", vChannel);
 
-    fine = TD;
+    fine = (TD & 0x00ff);
     course = (TD >> 8) & 0x0F;
 
-    fprintf(f,"Course: %i\n",course );
-    fprintf(f,"Fine: %i\n", fine);
+    fprintf(f,"Course: %x\n",course );
+    fprintf(f,"Fine: %x\n", fine);
 
 
     writePsg(channel,fine);
@@ -414,7 +566,6 @@ void setNote(UINT8 channel, UINT32 freq)
 
 
 
-    fclose(f);
 }
 
 void setEnvSt(UINT8 levelChannel,UINT8 envState)
@@ -426,7 +577,7 @@ void setEnvSt(UINT8 levelChannel,UINT8 envState)
 
     writePsg(levelChannel, ((oldData & 0x00) | 0x10));
 }
-# 200 "PSG.c"
+# 210 "PSG.c"
 void chngVol(UINT8 channel, UINT8 volume)
 {
         writePsg(channel, (volume & 0x0F));
@@ -458,7 +609,7 @@ void setMix(int channel, UINT8 device, UINT8 onOFF)
     psgVal = readPsg(7 );
 
     newPsgVal = psgVal & (~(1 << offset) | (onOFF << offset));
-# 237 "PSG.c"
+# 247 "PSG.c"
     writePsg(7 , newPsgVal);
 }
 
@@ -504,7 +655,7 @@ void setNoise(UINT8 freq)
     *PSG_reg_write = (freq & 0x1F);
      _trap_1_wl((short)0x20,(long)(old_ssp)) ;
 }
-# 296 "PSG.c"
+# 306 "PSG.c"
 void setEnvlp(UINT8 shape, UINT16 period)
 {
     UINT8 fine = 0;
@@ -527,15 +678,14 @@ void allmOn()
 UINT16 getTDVal(UINT32 freq)
 {
 
-   UINT32 clckSpd = 2000000;
+   UINT32 clckSpd = 125000;
    UINT16 TD = 0;
-   FILE *f = fopen("log.txt", "a");
-   TD = (clckSpd / (16*freq));
+   TD = (UINT16)(clckSpd / freq);
    fprintf(f,"\n");
 
-   fprintf(f,"GetTDVal output in DEC: %i\n", TD);
+
+   fprintf(f,"GetTDVal output in DEC: %d\n", TD);
    fprintf(f,"GetTDVal output in HEX: %X\n", TD);
-   fclose(f);
 
    return TD;
 }
@@ -549,7 +699,7 @@ void tstSound()
     FILE *f = fopen("log.txt", "a");
     fprintf(f,"Test the fuck out of this shit\n");
     fclose(f);
-# 374 "PSG.c"
+# 383 "PSG.c"
     *PSG_reg_select = 0;
 	*PSG_reg_write  = 0xEB;
 

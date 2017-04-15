@@ -3,6 +3,7 @@
 #include <osbind.h>
 #include "TYPES.H"
 #include <stdio.h>
+#include "globals.h"
 
 #define CHAN_A 0
 #define CHAN_B 2
@@ -33,12 +34,14 @@
 int main()
 {
     stop_sound();
-    
+    f = fopen("log.txt","w");
+	fclose(f);
+	f = fopen("log.txt","a");
    
        /* siren();*/
-        /*success_music();*/
-        derez();
- 
+        fail_music();
+      /*derez();*/
+	/*success_music();	*/
         
     /* 
     setEnvSt(C_LEVEL,1);
@@ -110,7 +113,7 @@ int main()
         ;
 
     Cnecin();
-    
+    fclose(f);
     stop_sound();
 
     return 0;
