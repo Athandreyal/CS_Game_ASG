@@ -89,6 +89,16 @@ void gameLoop(bool *buffer, UINT8 *base0, UINT8 *base1){
         fail_music();
 }
 
+/*
+///////////////////////////////////////////////////////////////////
+// Function Name:  getScreen
+// Purpose:        sets u the secondary buffer, and obtains the primary buffer from the $ff8201
+// Inputs:         bool *buffer
+//                 UINT8 ** base0   the original frame buffer, pointer to pointer to achieve changing the pointer
+//                 UINT8 ** base1   the secondary frame buffer, pointer to pointer to achieve changing the pointer
+// 
+///////////////////////////////////////////////////////////////////
+*/
 void getScreen(bool *buffer, UINT8 **base0, UINT8 **base1){
     long old_ssp = Super(0);
 	*base0 = Physbase();
@@ -100,12 +110,30 @@ void getScreen(bool *buffer, UINT8 **base0, UINT8 **base1){
     setBuffer(base);
 }
 
+/*
+///////////////////////////////////////////////////////////////////
+// Function Name:  setBuffer
+// Purpose:        sets a specific buffer to the screen, used to explicitely choose rather than merely toggle
+// Inputs:         UINT8*   buffer  a frame buffer
+// 
+///////////////////////////////////////////////////////////////////
+*/
 void setBuffer(UINT8 *baseX){
     long old_ssp = Super(0);
     mySetScreen(baseX);
     Super(old_ssp);
 }
 
+/*
+///////////////////////////////////////////////////////////////////
+// Function Name:   toggleScreen
+// Purpose:         takes a buffer indicator, the two frame buffers, and swaps them in the global base pointer
+// Inputs:          bool *buffer    the indicator, 1 or 0, to indicate which buffer is the active buffer
+//                  UINT8 *base0    original frame buffer
+//                  UINT8 *base1    alternate frame buffer
+// 
+///////////////////////////////////////////////////////////////////
+*/
 void toggleScreen(bool *buffer, UINT8 *base0, UINT8 *base1){
     long old_ssp = Super(0);
     if (*buffer){
@@ -130,9 +158,7 @@ void doReset(Model *model){
 ///////////////////////////////////////////////////////////////////
 // Function Name:  onKey
 // Purpose:        top level key driver: initiates key detection, access, and triggers quit and move events.
-// Inputs:         UINT32 key:      the key that was read
-//                 Model *model:    the current game model for manipulation and updating
-// Outputs:        Model *model:    the updated game model.
+//                 accesses everything globally
 ///////////////////////////////////////////////////////////////////
 */
 bool onKey(){
@@ -155,6 +181,13 @@ bool onKey(){
 
     return quit;
 }
+
+/*
+///////////////////////////////////////////////////////////////////
+// Function Name:  getKey
+// Purpose:        Cnecin replacement, reaches into the buffer, waits out the user if no key ready
+///////////////////////////////////////////////////////////////////
+*/
 
 void getKey(UINT8 *key){
     int origSsp;

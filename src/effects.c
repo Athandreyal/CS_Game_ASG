@@ -81,35 +81,20 @@ void derez()
 	UINT32 start = F_3;
 	UINT32 end = B_6;
 	UINT32 x = F_3;
-	stop_sound();
-
-	fprintf(f,"line 92 ticks: %5ld\n",ticks);
-	fflush(f);
+/*	stop_sound();*/
 	setEnvSt(C_LEVEL,1);
     setEnvlp(0x08, 500);
     setMix(CHAN_C,TONE,ON);
-	fprintf(f,"line 58 derez %5ld\n",F_3);
-	fflush(f);
-	fprintf(f,"line 58 x val %5ld\n",x);
-	fflush(f);
 
 	while (x < end)
 	{
-		fprintf(f,"line 65 x val %5ld\n",x);
-		fflush(f);
 		setEnvlp(0x08, 500);
 		setNote(CHAN_C,x);
 		
-		fprintf(f,"line 70 x val %5ld\n",x);
-		fflush(f);
 		setEnvlp(0x0A, 500);
    	 	setNote(CHAN_C,x);
    	 	
-		fprintf(f,"line 74 x val %5ld\n",x);
-		fflush(f);
    	 	x += 50;
-		fprintf(f,"line 78 x val %5ld\n",x);
-		fflush(f);
 	}
 
 	stop_sound();
@@ -117,67 +102,54 @@ void derez()
 
 void fail_music()
 {
-	fprintf(f,"entry of fail_music()\n");fflush(f);
 	stop_sound();
 	setEnvSt(C_LEVEL,1);
 	setMix(CHAN_C,TONE,ON);
 	
-	fprintf(f,"fail_music 110\n");fflush(f);
 	setEnvlp(0x00, 2500);
 	setNote(CHAN_C,B_4);
 	wait(2,4);
 	
-	fprintf(f,"fail_music 115\n");fflush(f);
 	setEnvlp(0x00, 2500);
 	setNote(CHAN_C,B_4);
 	wait(2,4);
 	
-	fprintf(f,"fail_music 120\n");fflush(f);
 	setEnvlp(0x00, 2500);
 	setNote(CHAN_C,B_4);
 	wait(2,4);
 	
-	fprintf(f,"fail_music 125\n");fflush(f);
 	setEnvlp(0x00, 3500);
 	setNote(CHAN_C,E_5);
 	wait(5,4);
 	
-	fprintf(f,"fail_music 130\n");fflush(f);
 	setEnvlp(0x00, 5000);
 	setNote(CHAN_C,B_4);
 	wait(2,4);
 	
-	fprintf(f,"fail_music 135\n");fflush(f);
 	setEnvlp(0x00, 3500);
 	setNote(CHAN_C,E_FLAT_5);
 	wait(5,4);
 	
-	fprintf(f,"fail_music 130\n");fflush(f);
 	setEnvlp(0x00, 5000);
 	setNote(CHAN_C,B_4);
 	wait(2,4);
 	
-	fprintf(f,"fail_music 130\n");fflush(f);
 	setEnvlp(0x00, 5000);
 	setNote(CHAN_C,B_4);
 	wait(2,4);
 	
-	fprintf(f,"fail_music 130\n");fflush(f);
 	setEnvlp(0x00, 5000);
 	setNote(CHAN_C,D_5);
 	wait(2,4);
 	
-	fprintf(f,"fail_music 130\n");fflush(f);
 	setEnvlp(0x00, 5000);
 	setNote(CHAN_C,D_FLAT_5);
 	wait(2,4);
 	
-	fprintf(f,"fail_music 130\n");fflush(f);
 	setEnvlp(0x00, 5000);
 	setNote(CHAN_C,C_5);
 	wait(2,4);
 	
-	fprintf(f,"fail_music 130\n");fflush(f);
 	setEnvlp(0x00, 5000);
 	setNote(CHAN_C,B_4);
 	wait(9,4);
@@ -185,70 +157,53 @@ void fail_music()
 	
 	
 	
-	fprintf(f,"fail_music 130\n");fflush(f);
 	setEnvlp(0x00, 5000);
 	setNote(CHAN_C,D_5);
 	wait(2,4);
 	
-	fprintf(f,"fail_music 130\n");fflush(f);
 	setEnvlp(0x00, 5000);
 	setNote(CHAN_C,D_FLAT_5);
 	wait(2,4);
 	
-	fprintf(f,"fail_music 130\n");fflush(f);
 	setEnvlp(0x00, 5000);
 	setNote(CHAN_C,C_5);
 	wait(2,4);
 	
-	fprintf(f,"fail_music 130\n");fflush(f);
 	setEnvlp(0x00, 5000);
 	setNote(CHAN_C,B_4);
 	wait(4,4);
 	
-	fprintf(f,"fail_music 130\n");fflush(f);
 	setEnvlp(0x00, 5000);
 	setNote(CHAN_C,C_5);
 	wait(2,4);
 	
-	fprintf(f,"fail_music 130\n");fflush(f);
 	setEnvlp(0x00, 5000);
 	setNote(CHAN_C,C_SHARP_5);
 	wait(2,4);
 	
-	fprintf(f,"fail_music 130\n");fflush(f);
 	setEnvlp(0x00, 5000);
 	setNote(CHAN_C,C_5);
 	wait(2,4);
 	
-	fprintf(f,"fail_music 130\n");fflush(f);
 	setEnvlp(0x00, 5000);
 	setNote(CHAN_C,B_4);
 	wait(2,4);
 	
-	fprintf(f,"fail_music 130\n");fflush(f);
 	setEnvlp(0x00, 5000);
 	setNote(CHAN_C,B_FLAT_4);
 	wait(2,4);
 	
-	fprintf(f,"fail_music 130\n");fflush(f);
 	setEnvlp(0x00, 5000);
 	setNote(CHAN_C,A_4);
 	wait(2,4);
 	
-	fprintf(f,"fail_music 130\n");fflush(f);
 	setEnvlp(0x00, 5000);
 	setNote(CHAN_C,A_FLAT_4);
 	wait(2,4);
 	
-	fprintf(f,"fail_music 130\n");fflush(f);
 	setEnvlp(0x00, 8000);
 	setNote(CHAN_C,G_4);
 	wait(7,8);
-	
-
-	
-	
-	
 	
 	/*
 	fprintf(f,"fail_music 125\n");fflush(f);
@@ -546,66 +501,41 @@ void success_music()
 
     setEnvlp(0x08, 10);
     setNote(CHAN_C,C_5);
-	fprintf(f,"line 98 ticks: %5ld\n",ticks);
-	fflush(f);
     wait(1,17);
     
     setEnvlp(0x0A, 10);
  	setNote(CHAN_C,C_5);
-	fprintf(f,"line 104 ticks: %5ld\n",ticks);
-	fflush(f);
     wait(1,17);
 
     setEnvlp(0x08, 10);
  	setNote(CHAN_C,C_5);
-	fprintf(f,"line 110 ticks: %5ld\n",ticks);
-	fflush(f);
     wait(1,17);
 	
 	setEnvlp(0x0A, 10);
 	/*setEnvlp(0x08, 10);*/
 	setNote(CHAN_C,G_5);
-	fprintf(f,"line 117 ticks: %5ld\n",ticks);
-	fflush(f);
     wait(1,17);
 	
 	setEnvlp(0x0C, 2500);
 
 	setNote(CHAN_C,C_6);
-	fprintf(f,"line 124 ticks: %5ld\n",ticks);
-	fflush(f);
     wait(1,17);
 
     setNote(CHAN_C,C_SHARP_6);
-	fprintf(f,"line 129 ticks: %5ld\n",ticks);
-	fflush(f);
     wait(1,17);
 
     setNote(CHAN_C,A_FLAT_5);
-	fprintf(f,"line 134 ticks: %5ld\n",ticks);
-	fflush(f);
     wait(1,17);
     
     setNote(CHAN_C,B_5);
-	fprintf(f,"line 139 ticks: %5ld\n",ticks);
-	fflush(f);
     wait(1,17);
     setNote(CHAN_C,A_5);
-	fprintf(f,"line 143 ticks: %5ld\n",ticks);
-	fflush(f);
     wait(1,17);
     setNote(CHAN_C,B_5);
-	fprintf(f,"line 147 ticks: %5ld\n",ticks);
-	fflush(f);
     wait(1,17);
 	
     setNote(CHAN_C,E_6);
-	fprintf(f,"line 152 ticks: %5ld\n",ticks);
-	fflush(f);
     wait(3,17);
-	fprintf(f,"line 156 exiting with ticks: %5ld\n",ticks);
-	fflush(f);
-	fclose(f);
 	stop_sound();
  }
 
