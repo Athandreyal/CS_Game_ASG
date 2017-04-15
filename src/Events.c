@@ -371,17 +371,13 @@ void AIChoice(){
     setGhost();
 }
 
--/*
--///////////////////////////////////////////////////////////////////
--// Function Name:  doMove
--// Purpose:        top level move driver: initiates moves, detects crashes, triggers reset when necessary.
--// Inputs:         UINT8 *base :    the frame buffer
--//                 Model *model:    the current game model for manipulation and updating
--//                 long timeNow:    the current timer value, used here for random seeding in AIChoice
--// Outputs:        Model *model:    the updated game model.
--///////////////////////////////////////////////////////////////////
--*/
--bool doMove(UINT8 *base, Model *model){
+/*
+///////////////////////////////////////////////////////////////////
+// Function Name:  doMove
+// Purpose:        top level move driver: initiates moves, detects crashes, triggers reset when necessary.
+///////////////////////////////////////////////////////////////////
+*/
+bool doMove(){
     bool noCrash = true;
     move(&(model.user.cycle));
     setGhost(model);
@@ -389,4 +385,54 @@ void AIChoice(){
     AIChoice(base, model);
     move(&(model.program.cycle));
     return noCrash;
+}
+
+/*
+///////////////////////////////////////////////////////////////////
+// Function Name:   crashed2
+// Purpose:         helper for crashed, reads in a bitmap sixed patch of the grid
+//                  if everything is the same, inverting the result indicates crash is false.
+///////////////////////////////////////////////////////////////////
+*/
+bool crashed2(int x, int y, const UINT8 bitmap[]){
+    int i;
+    bool same = true;
+    UINT8 found;
+    UINT8 LHalf;                            UINT8 RHalf;
+    UINT8 L_Offset = x & REMAINDER_MAX;     UINT8 R_Offset = BITS_PER - (x & REMAINDER_MAX);
+    UINT8 Lmask = LINE_BODY << R_Offset;    UINT8 Rmask = LINE_BODY >> L_Offset;
+    UINT8 col = x >> SHIFT;
+    for (i = 0;i < 8 && same;i++){
+        if (x & REMAINDER_MAX == 0){
+            found = *(base + (y+i) * SCREEN_WIDTH + col) & bitmap[i];
+            same &= found == bitmap[i];
+        }
+        else{
+            LHalf = bitmap[i] >> L_Offset;
+            found = *(base + (y+i) * SCREEN_WIDTH + col) & LHalf;
+            same &= found == LHalf;
+            RHalf = bitmap[i] << R_Offset;
+            found = *(base + (y+i) * SCREEN_WIDTH + col+1) & RHalf;
+            same &= found == RHalf;
+        }
+    }
+    return !same;
+    }
+ 
+
+
+/*
+///////////////////////////////////////////////////////////////////
+// Function Name:   crashed
+// Purpose:         crashed used crashed 2 to check the grid for each cycle to see if any crashed
+//                  
+///////////////////////////////////////////////////////////////////
+*/
+bool crashed(){
+    if(model.user.crashed    = crashed2(model.user.cycle.last[0][0]+BMP_OFFSET,model.user.cycle.last[0][1]+BMP_OFFSET,model.user.cycle.lastbmp[0]))
+        sub_life(&(model.user));
+    if(model.program.crashed = crashed2(model.program.cycle.last[0][0]+BMP_OFFSET,model.program.cycle.last[0][1]+BMP_OFFSET,model.program.cycle.lastbmp[0])) 
+        sub_life(&(model.program));
+    model.ghost.crashed = collide(&(model.ghost.cycle));
+    return (model.user.crashed || model.program.crashed);
 }
