@@ -83,10 +83,10 @@ void gameLoop(bool *buffer, UINT8 *base0, UINT8 *base1){
             }
         }while (!endMatch && !crash);
     }
-    if (model.user.life > 0)
+/*    if (model.user.life > 0)
         success_music();
     else
-        fail_music();
+        fail_music();*/
 }
 
 /*
